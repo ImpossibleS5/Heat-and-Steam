@@ -1,5 +1,10 @@
 {
   "block.banya.stove": "Печь-каменка (T1)",
   "block.banya.thermometer": "Термометр",
-  "itemGroup.banya": "Баня"
+  "container.banya.stove": "Печь-каменка",
+  "container.banya.stove.temperature": "%s °C",
+  "itemGroup.banya": "Баня",
+  "message.banya.thermometer.leaking": "(парная не замкнута)",
+  "message.banya.thermometer.no_stove": "Печь не найдена поблизости",
+  "message.banya.thermometer.reading": "Температура: %s °C"
 }

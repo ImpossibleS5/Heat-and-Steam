@@ -1,5 +1,10 @@
 {
   "block.banya.stove": "Banya Stove",
   "block.banya.thermometer": "Thermometer",
-  "itemGroup.banya": "Banya"
+  "container.banya.stove": "Banya Stove",
+  "container.banya.stove.temperature": "%s °C",
+  "itemGroup.banya": "Banya",
+  "message.banya.thermometer.leaking": "(room not sealed)",
+  "message.banya.thermometer.no_stove": "No stove nearby",
+  "message.banya.thermometer.reading": "Temperature: %s °C"
 }

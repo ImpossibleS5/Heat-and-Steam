@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "lit=false": {
       "model": "banya:block/stove"
+    },
+    "lit=true": {
+      "model": "banya:block/stove_lit"
     }
   }
 }

@@ -2,7 +2,7 @@ package com.banya.registry;
 
 import com.banya.Banya;
 import com.banya.stove.StoveBlock;
-import net.minecraft.world.level.block.Block;
+import com.banya.stove.ThermometerBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModBlocks {
     public static final DeferredRegister.Blocks REGISTER = DeferredRegister.createBlocks(Banya.MODID);
 
-    /** T1 single-block stove — owns the room microclimate (simulation added in a later sub-slice). */
+    /** T1 single-block stove — burns fuel and owns the room microclimate. */
     public static final DeferredBlock<StoveBlock> STOVE = REGISTER.registerBlock(
             "stove",
             StoveBlock::new,
@@ -24,11 +24,13 @@ public final class ModBlocks {
                     .mapColor(MapColor.STONE)
                     .strength(3.5F)
                     .requiresCorrectToolForDrops()
-                    .sound(SoundType.STONE));
+                    .sound(SoundType.STONE)
+                    .lightLevel(state -> state.getValue(StoveBlock.LIT) ? 13 : 0));
 
-    /** Wall/utility block that reads and displays the room temperature (readout added in a later sub-slice). */
-    public static final DeferredBlock<Block> THERMOMETER = REGISTER.registerSimpleBlock(
+    /** Reads out the microclimate of the nearest stove. */
+    public static final DeferredBlock<ThermometerBlock> THERMOMETER = REGISTER.registerBlock(
             "thermometer",
+            ThermometerBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
                     .strength(1.0F)

@@ -2,15 +2,20 @@ package com.banya.datagen;
 
 import com.banya.Banya;
 import com.banya.registry.ModBlocks;
+import com.banya.registry.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
-/** Vanilla mining tags so the blocks drop with the right tool. */
+/**
+ * Mining tags plus the insulation tiers that drive heat loss. Insulation is data-driven on purpose:
+ * KubeJS and other mods can classify their own blocks without touching Java.
+ */
 public class ModBlockTagProvider extends BlockTagsProvider {
     public ModBlockTagProvider(PackOutput output,
                                CompletableFuture<HolderLookup.Provider> lookupProvider,
@@ -24,5 +29,20 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.STOVE.get(), ModBlocks.THERMOMETER.get());
         tag(BlockTags.NEEDS_STONE_TOOL)
                 .add(ModBlocks.STOVE.get());
+
+        // Thick timber holds heat best — the classic banya srub.
+        tag(ModTags.Blocks.INSULATION_HIGH)
+                .addTag(BlockTags.LOGS)
+                .addTag(BlockTags.WOOL);
+
+        tag(ModTags.Blocks.INSULATION_MID)
+                .addTag(BlockTags.PLANKS)
+                .addTag(BlockTags.WOODEN_SLABS)
+                .addTag(BlockTags.WOODEN_STAIRS);
+
+        tag(ModTags.Blocks.INSULATION_LOW)
+                .addTag(BlockTags.STONE_BRICKS)
+                .add(Blocks.STONE, Blocks.COBBLESTONE, Blocks.BRICKS, Blocks.GLASS,
+                        Blocks.DEEPSLATE, Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE);
     }
 }
