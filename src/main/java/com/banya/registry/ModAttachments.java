@@ -1,6 +1,7 @@
 package com.banya.registry;
 
 import com.banya.Banya;
+import com.banya.player.Exposure;
 import com.mojang.serialization.Codec;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,12 +19,11 @@ public final class ModAttachments {
             "warmth", () -> AttachmentType.builder(() -> 0.0D).serialize(Codec.DOUBLE).build());
 
     /**
-     * Temperature the player is currently standing in, written by the owning stove each simulation
-     * step and consumed by the player tick. Transient: it is re-derived every step, so persisting it
-     * would only let a stale value leak across a reload.
+     * The room reading for this step. Transient on purpose: it is re-derived every step, so
+     * persisting it would only let a stale value leak across a reload.
      */
-    public static final Supplier<AttachmentType<Double>> EXPOSURE = REGISTER.register(
-            "exposure", () -> AttachmentType.builder(() -> 0.0D).build());
+    public static final Supplier<AttachmentType<Exposure>> EXPOSURE = REGISTER.register(
+            "exposure", () -> AttachmentType.builder(() -> Exposure.NONE).build());
 
     private ModAttachments() {}
 }

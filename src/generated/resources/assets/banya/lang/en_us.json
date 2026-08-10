@@ -3,6 +3,7 @@
   "block.banya.thermometer": "Thermometer",
   "container.banya.stove": "Banya Stove",
   "container.banya.stove.temperature": "%s °C",
+  "hud.banya.warmth": "Warmth: %s",
   "item.banya.felt_hat": "Felt Banya Hat",
   "itemGroup.banya": "Banya",
   "message.banya.thermometer.leaking": "(room not sealed)",

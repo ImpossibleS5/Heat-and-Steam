@@ -27,6 +27,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.thermometer.reading", "Температура: %s °C");
             add("message.banya.thermometer.leaking", "(парная не замкнута)");
             add("message.banya.thermometer.no_stove", "Печь не найдена поблизости");
+            add("hud.banya.warmth", "Прогрев: %s");
         } else {
             add("itemGroup.banya", "Banya");
             add(ModBlocks.STOVE.get(), "Banya Stove");
@@ -37,6 +38,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.thermometer.reading", "Temperature: %s °C");
             add("message.banya.thermometer.leaking", "(room not sealed)");
             add("message.banya.thermometer.no_stove", "No stove nearby");
+            add("hud.banya.warmth", "Warmth: %s");
         }
     }
 }

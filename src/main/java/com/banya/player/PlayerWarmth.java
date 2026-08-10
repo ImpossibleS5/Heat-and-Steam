@@ -1,11 +1,13 @@
 package com.banya.player;
 
 import com.banya.Config;
+import com.banya.network.WarmthSyncPayload;
 import com.banya.registry.ModAttachments;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * Advances a player's Warmth (прогрев) one simulation step and applies the effects of the band they
@@ -35,15 +37,16 @@ public final class PlayerWarmth {
 
     /** Runs once per simulation step (1 second) for each server player. */
     public static void tick(ServerPlayer player) {
-        double exposure = player.getData(ModAttachments.EXPOSURE);
+        Exposure exposure = player.getData(ModAttachments.EXPOSURE);
         // Consume the reading; the stove writes it again next step if the player is still inside.
-        player.setData(ModAttachments.EXPOSURE, 0.0D);
+        player.setData(ModAttachments.EXPOSURE, Exposure.NONE);
 
         double warmth = get(player);
         double threshold = Config.WARMTH_THRESHOLD_TEMPERATURE.get();
 
-        if (exposure >= threshold) {
-            warmth += gainFor(exposure, threshold) * WarmthModifiers.gainMultiplier(player, warmth);
+        if (exposure.temperature() >= threshold) {
+            warmth += gainFor(exposure.temperature(), threshold)
+                    * WarmthModifiers.gainMultiplier(player, warmth);
         } else {
             warmth -= Config.WARMTH_DECAY_PER_STEP.get();
         }
@@ -58,6 +61,11 @@ public final class PlayerWarmth {
         }
 
         set(player, warmth);
+
+        // Nothing to draw when the player is cold and outside — skip the packet entirely.
+        if (exposure.inRoom() || warmth > 0.0) {
+            PacketDistributor.sendToPlayer(player, new WarmthSyncPayload((float) warmth, exposure.inRoom()));
+        }
     }
 
     /** Hotter rooms heat proportionally faster, scaled around the reference temperature. */

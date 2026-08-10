@@ -1,6 +1,7 @@
 package com.banya;
 
 import com.banya.datagen.ModDataGenerator;
+import com.banya.network.ModNetwork;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import com.banya.registry.ModBlocks;
@@ -36,6 +37,7 @@ public final class Banya {
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(ModDataGenerator::onGatherData);
+        modEventBus.addListener(ModNetwork::register);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

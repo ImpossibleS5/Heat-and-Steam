@@ -1,0 +1,30 @@
+package com.banya.network;
+
+import com.banya.Banya;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
+/**
+ * Server -> owning client sync of the HUD values. Sent once per simulation step while there is
+ * something to show, so the bar can be driven entirely client-side between updates.
+ *
+ * @param warmth  the player's Warmth, 0-100
+ * @param inBanya whether the player is inside a parnaya (the HUD only shows there)
+ */
+public record WarmthSyncPayload(float warmth, boolean inBanya) implements CustomPacketPayload {
+    public static final Type<WarmthSyncPayload> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath(Banya.MODID, "warmth_sync"));
+
+    public static final StreamCodec<ByteBuf, WarmthSyncPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.FLOAT, WarmthSyncPayload::warmth,
+            ByteBufCodecs.BOOL, WarmthSyncPayload::inBanya,
+            WarmthSyncPayload::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+}

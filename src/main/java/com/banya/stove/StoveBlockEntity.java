@@ -4,6 +4,7 @@ import com.banya.Config;
 import com.banya.climate.RoomClimate;
 import com.banya.climate.RoomScanner;
 import com.banya.climate.RoomShape;
+import com.banya.player.Exposure;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -155,9 +156,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
         for (Player player : level.getEntitiesOfClass(Player.class, this.room.bounds())) {
             if (this.room.interior().contains(player.blockPosition())) {
-                // Highest reading wins when rooms or stoves overlap.
-                double current = player.getData(ModAttachments.EXPOSURE);
-                player.setData(ModAttachments.EXPOSURE, Math.max(current, this.temperature));
+                Exposure current = player.getData(ModAttachments.EXPOSURE);
+                player.setData(ModAttachments.EXPOSURE, current.merge(this.temperature));
             }
         }
     }
