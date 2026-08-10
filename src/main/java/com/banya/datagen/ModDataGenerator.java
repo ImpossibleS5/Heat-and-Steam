@@ -22,6 +22,7 @@ public final class ModDataGenerator {
 
         // Client assets
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(output, existingFileHelper));
+        generator.addProvider(event.includeClient(), new ModItemModelProvider(output, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, "en_us"));
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, "ru_ru"));
 

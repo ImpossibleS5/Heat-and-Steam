@@ -37,6 +37,24 @@ public final class Config {
                     "Larger rooms warm up proportionally slower.")
             .defineInRange("referenceVolume", 64, 1, 32768);
 
+    public static final ModConfigSpec.DoubleValue WARMTH_THRESHOLD_TEMPERATURE = BUILDER
+            .comment("Room temperature (deg C) at or above which a player starts gaining Warmth.")
+            .defineInRange("warmthThresholdTemperature", 50.0, 0.0, 300.0);
+
+    public static final ModConfigSpec.DoubleValue WARMTH_GAIN_PER_STEP = BUILDER
+            .comment(
+                    "Warmth gained per simulation step at the reference temperature.",
+                    "Scales with how far the room is above the threshold.")
+            .defineInRange("warmthGainPerStep", 2.0, 0.1, 50.0);
+
+    public static final ModConfigSpec.DoubleValue WARMTH_DECAY_PER_STEP = BUILDER
+            .comment("Warmth lost per simulation step while out of the heat.")
+            .defineInRange("warmthDecayPerStep", 1.5, 0.1, 50.0);
+
+    public static final ModConfigSpec.DoubleValue WARMTH_REFERENCE_TEMPERATURE = BUILDER
+            .comment("Room temperature (deg C) at which Warmth is gained at exactly the base rate.")
+            .defineInRange("warmthReferenceTemperature", 80.0, 1.0, 300.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}

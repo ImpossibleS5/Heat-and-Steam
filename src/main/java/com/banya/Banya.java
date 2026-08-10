@@ -1,6 +1,7 @@
 package com.banya;
 
 import com.banya.datagen.ModDataGenerator;
+import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import com.banya.registry.ModBlocks;
 import com.banya.registry.ModCreativeTabs;
@@ -30,6 +31,7 @@ public final class Banya {
         ModBlockEntities.REGISTER.register(modEventBus);
         ModItems.REGISTER.register(modEventBus);
         ModMenus.REGISTER.register(modEventBus);
+        ModAttachments.REGISTER.register(modEventBus);
         ModCreativeTabs.REGISTER.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);

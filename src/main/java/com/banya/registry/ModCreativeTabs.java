@@ -23,6 +23,7 @@ public final class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.STOVE.get());
                         output.accept(ModItems.THERMOMETER.get());
+                        output.accept(ModItems.FELT_HAT.get());
                     })
                     .build());
 

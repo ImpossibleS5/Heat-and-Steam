@@ -3,6 +3,7 @@
   "block.banya.thermometer": "Термометр",
   "container.banya.stove": "Печь-каменка",
   "container.banya.stove.temperature": "%s °C",
+  "item.banya.felt_hat": "Банная шапка",
   "itemGroup.banya": "Баня",
   "message.banya.thermometer.leaking": "(парная не замкнута)",
   "message.banya.thermometer.no_stove": "Печь не найдена поблизости",

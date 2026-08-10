@@ -4,6 +4,7 @@ import com.banya.Config;
 import com.banya.climate.RoomClimate;
 import com.banya.climate.RoomScanner;
 import com.banya.climate.RoomShape;
+import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -140,7 +141,25 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         this.temperature = RoomClimate.nextTemperature(this.temperature, isBurning(), this.room, level);
+        exposeOccupants(level);
         setChanged();
+    }
+
+    /**
+     * Publishes this room's temperature to the players standing in it. The stove is the one that
+     * already knows the room, so pushing from here avoids every player searching for a stove.
+     */
+    private void exposeOccupants(Level level) {
+        if (this.room == null) {
+            return;
+        }
+        for (Player player : level.getEntitiesOfClass(Player.class, this.room.bounds())) {
+            if (this.room.interior().contains(player.blockPosition())) {
+                // Highest reading wins when rooms or stoves overlap.
+                double current = player.getData(ModAttachments.EXPOSURE);
+                player.setData(ModAttachments.EXPOSURE, Math.max(current, this.temperature));
+            }
+        }
     }
 
     public boolean isBurning() {
