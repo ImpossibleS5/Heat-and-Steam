@@ -3,6 +3,8 @@ package com.banya.registry;
 import com.banya.Banya;
 import com.banya.bath.PolokBlock;
 import com.banya.bath.TubBlock;
+import com.banya.wood.ChoppingBlock;
+import com.banya.wood.DryingRackBlock;
 import com.banya.stove.StoveBlock;
 import com.banya.stove.ThermometerBlock;
 import net.minecraft.world.level.block.DoorBlock;
@@ -31,6 +33,25 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE)
                     .lightLevel(state -> state.getValue(StoveBlock.LIT) ? 13 : 0));
+
+    /** Set a log on it and split it with an axe. */
+    public static final DeferredBlock<ChoppingBlock> CHOPPING_BLOCK = REGISTER.registerBlock(
+            "chopping_block",
+            ChoppingBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(2.5F)
+                    .sound(SoundType.WOOD));
+
+    /** Woodshed rack: damp firewood left here dries out. */
+    public static final DeferredBlock<DryingRackBlock> DRYING_RACK = REGISTER.registerBlock(
+            "drying_rack",
+            DryingRackBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion());
 
     /** Tiered bench. Sitting high in the room warms you fastest. */
     public static final DeferredBlock<PolokBlock> POLOK = REGISTER.registerBlock(

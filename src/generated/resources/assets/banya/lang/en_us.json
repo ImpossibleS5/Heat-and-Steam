@@ -1,5 +1,7 @@
 {
   "block.banya.banya_door": "Banya Door",
+  "block.banya.chopping_block": "Chopping Block",
+  "block.banya.drying_rack": "Drying Rack",
   "block.banya.polok": "Polok Bench",
   "block.banya.stove": "Banya Stove",
   "block.banya.thermometer": "Thermometer",
@@ -9,6 +11,9 @@
   "effect.banya.hardening": "Hardening",
   "hud.banya.warmth": "Warmth: %s",
   "item.banya.felt_hat": "Felt Banya Hat",
+  "item.banya.firewood_birch": "Birch Firewood",
+  "item.banya.firewood_oak": "Oak Firewood",
+  "item.banya.firewood_spruce": "Spruce Firewood",
   "item.banya.ladle": "Ladle",
   "item.banya.venik_birch": "Birch Venik",
   "item.banya.venik_oak": "Oak Venik",
@@ -23,6 +28,8 @@
   "message.banya.venik.dry": "A dry venik just crumbles — steep it in a tub",
   "message.banya.venik.received": "%s is whisking you with a venik",
   "message.banya.venik.too_cold": "You can only whisk in a hot parnaya",
+  "tooltip.banya.firewood.dry": "Dry",
+  "tooltip.banya.firewood.wet": "Damp — dry it on a rack",
   "tooltip.banya.venik.dry": "Dry — steep it in a tub first",
   "tooltip.banya.venik.steeped": "Steeped (%s whisks left)"
 }

@@ -2,9 +2,11 @@ package com.banya.registry;
 
 import com.banya.Banya;
 import com.banya.item.FeltHatItem;
+import com.banya.item.FirewoodItem;
 import com.banya.item.LadleItem;
 import com.banya.item.VenikItem;
 import com.banya.item.VenikSpecies;
+import com.banya.item.WoodSpecies;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -29,6 +31,19 @@ public final class ModItems {
     /** Scoops water and throws it on the stones (поддача). */
     public static final DeferredItem<LadleItem> LADLE = REGISTER.registerItem(
             "ladle", LadleItem::new, new Item.Properties().stacksTo(1));
+
+    public static final DeferredItem<BlockItem> CHOPPING_BLOCK = REGISTER.registerSimpleBlockItem(ModBlocks.CHOPPING_BLOCK);
+    public static final DeferredItem<BlockItem> DRYING_RACK = REGISTER.registerSimpleBlockItem(ModBlocks.DRYING_RACK);
+
+    /** Firewood: the stove's proper fuel, damp until it has dried on a rack. */
+    public static final DeferredItem<FirewoodItem> FIREWOOD_BIRCH = REGISTER.registerItem(
+            "firewood_birch", properties -> new FirewoodItem(WoodSpecies.BIRCH, properties), new Item.Properties());
+
+    public static final DeferredItem<FirewoodItem> FIREWOOD_OAK = REGISTER.registerItem(
+            "firewood_oak", properties -> new FirewoodItem(WoodSpecies.OAK, properties), new Item.Properties());
+
+    public static final DeferredItem<FirewoodItem> FIREWOOD_SPRUCE = REGISTER.registerItem(
+            "firewood_spruce", properties -> new FirewoodItem(WoodSpecies.SPRUCE, properties), new Item.Properties());
 
     /** Birch venik — the all-rounder; leaves fall off with use, hence the durability. */
     public static final DeferredItem<VenikItem> VENIK_BIRCH = REGISTER.registerItem(

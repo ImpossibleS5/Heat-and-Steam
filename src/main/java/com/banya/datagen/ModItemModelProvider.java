@@ -33,6 +33,22 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         // A door's block model cannot be held, so its item is a flat icon.
         basicItem(ModItems.BANYA_DOOR.getId());
+
+        firewood(ModItems.FIREWOOD_BIRCH.getId().getPath());
+        firewood(ModItems.FIREWOOD_OAK.getId().getPath());
+        firewood(ModItems.FIREWOOD_SPRUCE.getId().getPath());
+    }
+
+    /** Damp and dry firewood look different, selected by the banya:dry predicate. */
+    private void firewood(String name) {
+        ItemModelBuilder dry = basicItem(
+                ResourceLocation.fromNamespaceAndPath(Banya.MODID, name + "_dry"));
+        withExistingParent(name, mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/" + name))
+                .override()
+                .predicate(ResourceLocation.fromNamespaceAndPath(Banya.MODID, "dry"), 1.0F)
+                .model(dry)
+                .end();
     }
 
     /** A venik shows its steeped state through the same predicate trick as the ladle. */

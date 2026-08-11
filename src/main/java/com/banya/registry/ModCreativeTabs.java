@@ -26,6 +26,11 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.TUB.get());
                         output.accept(ModItems.POLOK.get());
                         output.accept(ModItems.BANYA_DOOR.get());
+                        output.accept(ModItems.CHOPPING_BLOCK.get());
+                        output.accept(ModItems.DRYING_RACK.get());
+                        output.accept(ModItems.FIREWOOD_BIRCH.get());
+                        output.accept(ModItems.FIREWOOD_OAK.get());
+                        output.accept(ModItems.FIREWOOD_SPRUCE.get());
                         output.accept(ModItems.FELT_HAT.get());
                         output.accept(ModItems.LADLE.get());
                         output.accept(ModItems.VENIK_BIRCH.get());

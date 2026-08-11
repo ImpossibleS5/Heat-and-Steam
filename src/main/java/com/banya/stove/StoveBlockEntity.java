@@ -4,12 +4,16 @@ import com.banya.Config;
 import com.banya.climate.RoomClimate;
 import com.banya.climate.RoomScanner;
 import com.banya.climate.RoomShape;
+import com.banya.item.FirewoodItem;
 import com.banya.player.Exposure;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -21,6 +25,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -74,6 +79,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     /** Heat currently banked in the stones, spent to keep the room warm after the fire dies. */
     private double stoneCharge;
+    /** How hard the fuel currently burning drives the room; 1.0 for anything but firewood. */
+    private double fuelHeatFactor = 1.0;
+    /** Whether the current fuel throws embers (spruce does). */
+    private boolean fuelSparks;
 
     /** Ticks of burn time left on the current piece of fuel. */
     private int burnTime;
@@ -156,6 +165,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
         this.burnTime = burn;
         this.burnTimeTotal = burn;
+        // Species and dryness decide how hard this piece drives the room.
+        this.fuelHeatFactor = stack.getItem() instanceof FirewoodItem firewood
+                ? firewood.heatFactor(stack)
+                : 1.0;
+        this.fuelSparks = stack.getItem() instanceof FirewoodItem firewood2 && firewood2.species().sparks();
         stack.shrink(1);
         setChanged();
     }
@@ -171,6 +185,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
         this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(), this.room, level);
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
+        throwSparks(level);
         exposeOccupants(level);
         setChanged();
     }
@@ -185,7 +200,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
         if (isBurning()) {
             this.stoneCharge = Math.min(capacity, this.stoneCharge + Config.STONE_CHARGE_PER_STEP.get());
-            return Config.HEAT_PER_STEP.get();
+            return Config.HEAT_PER_STEP.get() * this.fuelHeatFactor;
         }
 
         // Stones cannot hold more than the current basket allows (e.g. after some were removed).
@@ -196,6 +211,33 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         double release = Math.min(this.stoneCharge, Config.STONE_RELEASE_PER_STEP.get());
         this.stoneCharge -= release;
         return release;
+    }
+
+    /**
+     * Spruce spits embers. They are mostly for show, but with a non-zero
+     * {@code sparkIgniteChance} they can start a fire beside the stove — authentic, and the reason
+     * that config value exists.
+     */
+    private void throwSparks(Level level) {
+        if (!this.fuelSparks || !isBurning() || !(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        serverLevel.sendParticles(ParticleTypes.LAVA,
+                this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 1.0,
+                this.worldPosition.getZ() + 0.5, 2, 0.3, 0.1, 0.3, 0.0);
+
+        double chance = Config.SPARK_IGNITE_CHANCE.get();
+        if (chance <= 0.0 || serverLevel.random.nextDouble() >= chance) {
+            return;
+        }
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            BlockPos side = this.worldPosition.relative(dir);
+            if (level.getBlockState(side).isAir()
+                    && level.getBlockState(side.below()).isFlammable(level, side.below(), Direction.UP)) {
+                level.setBlockAndUpdate(side, Blocks.FIRE.defaultBlockState());
+                return;
+            }
+        }
     }
 
     /** Whether the basket holds stones hot enough to flash water into light steam. */

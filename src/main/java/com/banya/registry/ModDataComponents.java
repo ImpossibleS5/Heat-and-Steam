@@ -27,5 +27,11 @@ public final class ModDataComponents {
                     .persistent(Codec.INT)
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /** Whether firewood has dried out on a rack and burns properly. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> DRY =
+            REGISTER.registerComponentType("dry", builder -> builder
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL));
+
     private ModDataComponents() {}
 }

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "loaded=false": {
+      "model": "banya:block/chopping_block"
+    },
+    "loaded=true": {
+      "model": "banya:block/chopping_block_loaded"
+    }
+  }
+}

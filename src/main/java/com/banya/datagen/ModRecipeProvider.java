@@ -60,6 +60,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_planks", has(ItemTags.PLANKS))
                 .save(output);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.CHOPPING_BLOCK.get())
+                .pattern("L")
+                .pattern("L")
+                .define('L', ItemTags.LOGS)
+                .unlockedBy("has_logs", has(ItemTags.LOGS))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.DRYING_RACK.get())
+                .pattern("SSS")
+                .pattern("P P")
+                .pattern("P P")
+                .define('S', Items.STICK)
+                .define('P', ItemTags.PLANKS)
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                .save(output);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.POLOK.get(), 4)
                 .pattern("PPP")
                 .pattern("S S")

@@ -26,6 +26,13 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.TUB.get(), "Ушат");
             add(ModBlocks.POLOK.get(), "Полок");
             add(ModBlocks.BANYA_DOOR.get(), "Банная дверь");
+            add(ModBlocks.CHOPPING_BLOCK.get(), "Колода для колки");
+            add(ModBlocks.DRYING_RACK.get(), "Дровница");
+            add(ModItems.FIREWOOD_BIRCH.get(), "Берёзовые поленья");
+            add(ModItems.FIREWOOD_OAK.get(), "Дубовые поленья");
+            add(ModItems.FIREWOOD_SPRUCE.get(), "Еловые поленья");
+            add("tooltip.banya.firewood.wet", "Сырые — просушить в дровнице");
+            add("tooltip.banya.firewood.dry", "Сухие");
             add(ModItems.VENIK_BIRCH.get(), "Берёзовый веник");
             add(ModItems.VENIK_OAK.get(), "Дубовый веник");
             add("tooltip.banya.venik.dry", "Сухой — нужно запарить в ушате");
@@ -53,6 +60,13 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.TUB.get(), "Banya Tub");
             add(ModBlocks.POLOK.get(), "Polok Bench");
             add(ModBlocks.BANYA_DOOR.get(), "Banya Door");
+            add(ModBlocks.CHOPPING_BLOCK.get(), "Chopping Block");
+            add(ModBlocks.DRYING_RACK.get(), "Drying Rack");
+            add(ModItems.FIREWOOD_BIRCH.get(), "Birch Firewood");
+            add(ModItems.FIREWOOD_OAK.get(), "Oak Firewood");
+            add(ModItems.FIREWOOD_SPRUCE.get(), "Spruce Firewood");
+            add("tooltip.banya.firewood.wet", "Damp — dry it on a rack");
+            add("tooltip.banya.firewood.dry", "Dry");
             add(ModItems.VENIK_BIRCH.get(), "Birch Venik");
             add(ModItems.VENIK_OAK.get(), "Oak Venik");
             add("tooltip.banya.venik.dry", "Dry — steep it in a tub first");

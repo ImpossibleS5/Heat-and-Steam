@@ -151,6 +151,21 @@ public final class Config {
             .comment("Warmth gain multiplier while sitting on the polok.")
             .defineInRange("polokBonus", 1.15, 1.0, 3.0);
 
+    public static final ModConfigSpec.IntValue FIREWOOD_PER_LOG = BUILDER
+            .comment("How many pieces of firewood one log splits into.")
+            .defineInRange("firewoodPerLog", 4, 1, 16);
+
+    public static final ModConfigSpec.IntValue FIREWOOD_DRY_STEPS = BUILDER
+            .comment("Seconds a rack takes to dry its load of firewood.")
+            .defineInRange("firewoodDrySteps", 300, 5, 100000);
+
+    public static final ModConfigSpec.DoubleValue SPARK_IGNITE_CHANCE = BUILDER
+            .comment(
+                    "Chance per second that burning spruce sets a fire next to the stove.",
+                    "Authentic, and a real hazard in a wooden banya. Set to 0 to disable ignition;",
+                    "the sparks still show as particles either way.")
+            .defineInRange("sparkIgniteChance", 0.002, 0.0, 1.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}

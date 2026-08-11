@@ -1,6 +1,7 @@
 package com.banya.client;
 
 import com.banya.Banya;
+import com.banya.item.FirewoodItem;
 import com.banya.item.LadleItem;
 import com.banya.item.VenikItem;
 import com.banya.player.WarmthHudData;
@@ -46,6 +47,13 @@ public final class BanyaClient {
             for (var venik : List.of(ModItems.VENIK_BIRCH.get(), ModItems.VENIK_OAK.get())) {
                 ItemProperties.register(venik, steeped,
                         (stack, level, entity, seed) -> VenikItem.isSteeped(stack) ? 1.0F : 0.0F);
+            }
+
+            ResourceLocation dry = ResourceLocation.fromNamespaceAndPath(Banya.MODID, "dry");
+            for (var firewood : List.of(ModItems.FIREWOOD_BIRCH.get(), ModItems.FIREWOOD_OAK.get(),
+                    ModItems.FIREWOOD_SPRUCE.get())) {
+                ItemProperties.register(firewood, dry,
+                        (stack, level, entity, seed) -> FirewoodItem.isDry(stack) ? 1.0F : 0.0F);
             }
         });
         Banya.LOGGER.info("Banya: client setup complete");

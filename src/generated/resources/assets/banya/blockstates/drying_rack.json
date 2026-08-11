@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "state=dry": {
+      "model": "banya:block/drying_rack_dry"
+    },
+    "state=drying": {
+      "model": "banya:block/drying_rack_drying"
+    },
+    "state=empty": {
+      "model": "banya:block/drying_rack"
+    }
+  }
+}

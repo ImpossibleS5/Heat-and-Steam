@@ -4,6 +4,8 @@ import com.banya.Banya;
 import com.banya.bath.TubBlock;
 import com.banya.registry.ModBlocks;
 import com.banya.stove.StoveBlock;
+import com.banya.wood.ChoppingBlock;
+import com.banya.wood.DryingRackBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.DoorBlock;
@@ -52,6 +54,40 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         doorBlockWithRenderType((DoorBlock) ModBlocks.BANYA_DOOR.get(),
                 modLoc("block/banya_door_bottom"), modLoc("block/banya_door_top"), "cutout");
+
+        // The chopping block shows whether a log is waiting on it.
+        ModelFile choppingEmpty = models().cubeBottomTop("chopping_block",
+                mcLoc("block/oak_log"), mcLoc("block/oak_log_top"), modLoc("block/chopping_block_top"));
+        ModelFile choppingLoaded = models().cubeBottomTop("chopping_block_loaded",
+                mcLoc("block/oak_log"), mcLoc("block/oak_log_top"), mcLoc("block/oak_log_top"));
+        getVariantBuilder(ModBlocks.CHOPPING_BLOCK.get())
+                .forAllStates(state -> ConfiguredModel.builder()
+                        .modelFile(state.getValue(ChoppingBlock.LOADED) ? choppingLoaded : choppingEmpty)
+                        .build());
+        simpleBlockItem(ModBlocks.CHOPPING_BLOCK.get(), choppingEmpty);
+
+        // The rack wears its contents on the outside: bare, damp, or ready.
+        ModelFile rackEmpty = rackModel("drying_rack", "block/drying_rack_empty");
+        ModelFile rackDrying = rackModel("drying_rack_drying", "block/drying_rack_drying");
+        ModelFile rackDry = rackModel("drying_rack_dry", "block/drying_rack_dry");
+        getVariantBuilder(ModBlocks.DRYING_RACK.get())
+                .forAllStates(state -> ConfiguredModel.builder()
+                        .modelFile(switch (state.getValue(DryingRackBlock.STATE)) {
+                            case EMPTY -> rackEmpty;
+                            case DRYING -> rackDrying;
+                            case DRY -> rackDry;
+                        })
+                        .build());
+        simpleBlockItem(ModBlocks.DRYING_RACK.get(), rackEmpty);
+    }
+
+    /** A waist-high rack, 12 blocks tall, textured on every side. */
+    private ModelFile rackModel(String name, String texture) {
+        return models().withExistingParent(name, mcLoc("block/block"))
+                .texture("all", modLoc(texture))
+                .texture("particle", modLoc(texture))
+                .element().from(0, 0, 0).to(16, 12, 16)
+                .allFaces((dir, face) -> face.texture("#all")).end();
     }
 
     /** A 12x10x12 open tub matching {@code TubBlock}'s collision shape. */
