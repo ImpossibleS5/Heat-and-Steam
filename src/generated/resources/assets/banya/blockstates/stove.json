@@ -1,32 +1,62 @@
 {
   "variants": {
-    "facing=east,lit=false": {
+    "embers=false,facing=east,lit=false": {
       "model": "banya:block/stove",
       "y": 90
     },
-    "facing=east,lit=true": {
+    "embers=false,facing=east,lit=true": {
       "model": "banya:block/stove_lit",
       "y": 90
     },
-    "facing=north,lit=false": {
+    "embers=false,facing=north,lit=false": {
       "model": "banya:block/stove"
     },
-    "facing=north,lit=true": {
+    "embers=false,facing=north,lit=true": {
       "model": "banya:block/stove_lit"
     },
-    "facing=south,lit=false": {
+    "embers=false,facing=south,lit=false": {
       "model": "banya:block/stove",
       "y": 180
     },
-    "facing=south,lit=true": {
+    "embers=false,facing=south,lit=true": {
       "model": "banya:block/stove_lit",
       "y": 180
     },
-    "facing=west,lit=false": {
+    "embers=false,facing=west,lit=false": {
       "model": "banya:block/stove",
       "y": 270
     },
-    "facing=west,lit=true": {
+    "embers=false,facing=west,lit=true": {
+      "model": "banya:block/stove_lit",
+      "y": 270
+    },
+    "embers=true,facing=east,lit=false": {
+      "model": "banya:block/stove",
+      "y": 90
+    },
+    "embers=true,facing=east,lit=true": {
+      "model": "banya:block/stove_lit",
+      "y": 90
+    },
+    "embers=true,facing=north,lit=false": {
+      "model": "banya:block/stove"
+    },
+    "embers=true,facing=north,lit=true": {
+      "model": "banya:block/stove_lit"
+    },
+    "embers=true,facing=south,lit=false": {
+      "model": "banya:block/stove",
+      "y": 180
+    },
+    "embers=true,facing=south,lit=true": {
+      "model": "banya:block/stove_lit",
+      "y": 180
+    },
+    "embers=true,facing=west,lit=false": {
+      "model": "banya:block/stove",
+      "y": 270
+    },
+    "embers=true,facing=west,lit=true": {
       "model": "banya:block/stove_lit",
       "y": 270
     }

@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -38,6 +39,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class StoveBlock extends Block implements EntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    /**
+     * Coals still glowing after the flames are out. This is the damper mini-game's tell: shut the
+     * flue while it is set and the fumes have nowhere to go but the room.
+     */
+    public static final BooleanProperty EMBERS = BooleanProperty.create("embers");
     /** Which way the firebox faces, so the stove reads like a real one. */
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -45,12 +51,26 @@ public class StoveBlock extends Block implements EntityBlock {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(LIT, false)
+                .setValue(EMBERS, false)
                 .setValue(FACING, Direction.NORTH));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LIT, FACING);
+        builder.add(LIT, EMBERS, FACING);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (!state.getValue(EMBERS)) {
+            return;
+        }
+        // Smouldering coals: the visible cue that it is too soon to close the damper.
+        level.addParticle(ParticleTypes.SMOKE,
+                pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.4,
+                pos.getY() + 1.0,
+                pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.4,
+                0.0, 0.02, 0.0);
     }
 
     @Override

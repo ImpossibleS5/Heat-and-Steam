@@ -2,6 +2,8 @@
   "values": [
     "banya:stove",
     "banya:thermometer",
-    "banya:soapstone_ore"
+    "banya:soapstone_ore",
+    "banya:chimney",
+    "banya:damper"
   ]
 }

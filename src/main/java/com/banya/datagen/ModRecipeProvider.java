@@ -106,6 +106,21 @@ public class ModRecipeProvider extends RecipeProvider {
         venik(output, ModItems.VENIK_BIRCH.get(), Blocks.BIRCH_LEAVES);
         venik(output, ModItems.VENIK_OAK.get(), Blocks.OAK_LEAVES);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.CHIMNEY.get(), 4)
+                .pattern("BB")
+                .pattern("BB")
+                .define('B', Items.BRICK)
+                .unlockedBy("has_brick", has(Items.BRICK))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.DAMPER.get())
+                .pattern("I")
+                .pattern("C")
+                .define('I', Items.IRON_INGOT)
+                .define('C', ModBlocks.CHIMNEY.get())
+                .unlockedBy("has_chimney", has(ModBlocks.CHIMNEY.get()))
+                .save(output);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.THERMOMETER.get())
                 .pattern("GI")
                 .pattern("GI")

@@ -103,6 +103,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private boolean fuelSparks;
     /** Whether the burning piece went in damp, which roughly doubles the smoke. */
     private boolean fuelWasWet;
+    /** Ticks of smouldering left after the flames die. */
+    private int emberTicks;
     /** Set when a pour just cracked a stone, read once by the block to tell the player. */
     private boolean crackedThisPour;
 
@@ -161,11 +163,19 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, StoveBlockEntity stove) {
         boolean wasBurning = stove.isBurning();
+        boolean hadEmbers = stove.hasEmbers();
 
         if (stove.burnTime > 0) {
             stove.burnTime--;
+            if (stove.burnTime == 0) {
+                // Flames out, coals still alive — the window in which the damper must not be shut.
+                stove.emberTicks = Config.EMBER_TICKS.get();
+            }
         } else {
             stove.consumeFuel();
+            if (stove.emberTicks > 0) {
+                stove.emberTicks--;
+            }
         }
 
         if (++stove.tickCounter >= SIMULATION_INTERVAL_TICKS) {
@@ -173,8 +183,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             stove.simulationStep(level);
         }
 
-        if (wasBurning != stove.isBurning()) {
-            level.setBlock(pos, state.setValue(StoveBlock.LIT, stove.isBurning()), Block.UPDATE_ALL);
+        if (wasBurning != stove.isBurning() || hadEmbers != stove.hasEmbers()) {
+            level.setBlock(pos, state
+                    .setValue(StoveBlock.LIT, stove.isBurning())
+                    .setValue(StoveBlock.EMBERS, stove.hasEmbers()), Block.UPDATE_ALL);
             stove.setChanged();
         }
     }
@@ -210,9 +222,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             this.needsRescan = true;
         }
 
-        this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(), this.room, level);
+        ChimneyState chimney = Chimney.detect(level, this.worldPosition);
+        this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(),
+                this.room, level, RoomClimate.leakMultiplier(chimney));
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
-        this.smoke = RoomClimate.nextSmoke(this.smoke, isBurning(), this.fuelWasWet, this.room);
+        this.smoke = RoomClimate.nextSmoke(this.smoke, smokeOutputForStep(), this.room, chimney);
         throwSparks(level);
         exposeOccupants(level);
         setChanged();
@@ -266,6 +280,26 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 return;
             }
         }
+    }
+
+    /**
+     * Smoke made this step. Embers keep smouldering for a while after the flames die, which is what
+     * makes shutting the damper a judgement call rather than a formality.
+     */
+    private double smokeOutputForStep() {
+        double output = Config.SMOKE_PER_STEP.get();
+        if (isBurning()) {
+            return this.fuelWasWet ? output * Config.WET_SMOKE_MULTIPLIER.get() : output;
+        }
+        if (hasEmbers()) {
+            return output * Config.EMBER_SMOKE_FRACTION.get();
+        }
+        return 0.0;
+    }
+
+    /** Coals still glowing: shut the damper now and the room fills with fumes. */
+    public boolean hasEmbers() {
+        return this.emberTicks > 0;
     }
 
     /** Whether the basket holds stones hot enough to flash water into light steam. */
@@ -426,6 +460,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         tag.put("Stones", this.stones.serializeNBT(registries));
         tag.putDouble("StoneCharge", this.stoneCharge);
         tag.putInt("BurnTime", this.burnTime);
+        tag.putInt("EmberTicks", this.emberTicks);
         tag.putInt("BurnTimeTotal", this.burnTimeTotal);
         tag.putDouble("Temperature", this.temperature);
         tag.putDouble("Humidity", this.humidity);
@@ -443,6 +478,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
         this.stoneCharge = tag.getDouble("StoneCharge");
         this.burnTime = tag.getInt("BurnTime");
+        this.emberTicks = tag.getInt("EmberTicks");
         this.burnTimeTotal = tag.getInt("BurnTimeTotal");
         this.temperature = tag.contains("Temperature")
                 ? tag.getDouble("Temperature")

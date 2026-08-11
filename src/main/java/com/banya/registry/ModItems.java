@@ -44,6 +44,8 @@ public final class ModItems {
             "ladle", LadleItem::new, new Item.Properties().stacksTo(1));
 
     public static final DeferredItem<BlockItem> SOAPSTONE_ORE = REGISTER.registerSimpleBlockItem(ModBlocks.SOAPSTONE_ORE);
+    public static final DeferredItem<BlockItem> CHIMNEY = REGISTER.registerSimpleBlockItem(ModBlocks.CHIMNEY);
+    public static final DeferredItem<BlockItem> DAMPER = REGISTER.registerSimpleBlockItem(ModBlocks.DAMPER);
     public static final DeferredItem<BlockItem> CHOPPING_BLOCK = REGISTER.registerSimpleBlockItem(ModBlocks.CHOPPING_BLOCK);
     public static final DeferredItem<BlockItem> DRYING_RACK = REGISTER.registerSimpleBlockItem(ModBlocks.DRYING_RACK);
 

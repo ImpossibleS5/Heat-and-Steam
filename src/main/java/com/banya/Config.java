@@ -141,6 +141,29 @@ public final class Config {
                     "Opening the door is the whole answer to a banya fired without a chimney.")
             .defineInRange("smokeVentMultiplier", 12.0, 1.0, 100.0);
 
+    public static final ModConfigSpec.DoubleValue CHIMNEY_VENT_MULTIPLIER = BUILDER
+            .comment(
+                    "How much faster smoke clears through an open flue.",
+                    "Lower than throwing the door open, but it does not cost you the whole room.")
+            .defineInRange("chimneyVentMultiplier", 8.0, 1.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue CHIMNEY_HEAT_LOSS = BUILDER
+            .comment(
+                    "Heat loss multiplier while the damper is open.",
+                    "An open flue is a hole in the roof — that is the trade for clean air.")
+            .defineInRange("chimneyHeatLoss", 1.8, 1.0, 10.0);
+
+    public static final ModConfigSpec.IntValue EMBER_TICKS = BUILDER
+            .comment(
+                    "How long coals keep smouldering after the flames die, in ticks.",
+                    "Shut the damper during this window and the fumes back up into the room;",
+                    "wait it out and the heat is yours to keep.")
+            .defineInRange("emberTicks", 600, 0, 24000);
+
+    public static final ModConfigSpec.DoubleValue EMBER_SMOKE_FRACTION = BUILDER
+            .comment("Fraction of the normal smoke output that smouldering coals give off.")
+            .defineInRange("emberSmokeFraction", 0.6, 0.0, 2.0);
+
     public static final ModConfigSpec.DoubleValue SMOKE_STING_LEVEL = BUILDER
             .comment("Smoke (%) at which the bather's eyes start to sting.")
             .defineInRange("smokeStingLevel", 30.0, 0.0, 100.0);

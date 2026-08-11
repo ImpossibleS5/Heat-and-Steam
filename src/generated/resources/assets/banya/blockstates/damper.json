@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "open=false": {
+      "model": "banya:block/damper_closed"
+    },
+    "open=true": {
+      "model": "banya:block/damper"
+    }
+  }
+}

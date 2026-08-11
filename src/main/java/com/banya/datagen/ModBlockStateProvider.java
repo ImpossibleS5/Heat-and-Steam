@@ -3,6 +3,7 @@ package com.banya.datagen;
 import com.banya.Banya;
 import com.banya.bath.TubBlock;
 import com.banya.registry.ModBlocks;
+import com.banya.stove.DamperBlock;
 import com.banya.stove.StoveBlock;
 import com.banya.stove.ThermometerBlock;
 import com.banya.wood.ChoppingBlock;
@@ -39,6 +40,20 @@ public class ModBlockStateProvider extends BlockStateProvider {
                         .rotationY(horizontalAngle(state.getValue(StoveBlock.FACING)))
                         .build());
         simpleBlockItem(ModBlocks.STOVE.get(), stoveOff);
+
+        simpleBlockWithItem(ModBlocks.CHIMNEY.get(),
+                models().cubeAll("chimney", mcLoc("block/bricks")));
+
+        // The damper reads open or shut at a glance from outside the flue.
+        ModelFile damperOpen = models().cubeBottomTop("damper",
+                mcLoc("block/bricks"), mcLoc("block/bricks"), mcLoc("block/iron_block"));
+        ModelFile damperShut = models().cubeBottomTop("damper_closed",
+                mcLoc("block/bricks"), mcLoc("block/bricks"), mcLoc("block/iron_trapdoor"));
+        getVariantBuilder(ModBlocks.DAMPER.get())
+                .forAllStates(state -> ConfiguredModel.builder()
+                        .modelFile(state.getValue(DamperBlock.OPEN) ? damperOpen : damperShut)
+                        .build());
+        simpleBlockItem(ModBlocks.DAMPER.get(), damperOpen);
 
         // A gauge on the wall rather than a block of iron.
         ModelFile thermometer = models().withExistingParent("thermometer", mcLoc("block/block"))

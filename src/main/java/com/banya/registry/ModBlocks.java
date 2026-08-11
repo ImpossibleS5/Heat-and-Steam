@@ -5,6 +5,8 @@ import com.banya.bath.PolokBlock;
 import com.banya.bath.TubBlock;
 import com.banya.wood.ChoppingBlock;
 import com.banya.wood.DryingRackBlock;
+import com.banya.stove.ChimneyBlock;
+import com.banya.stove.DamperBlock;
 import com.banya.stove.StoveBlock;
 import com.banya.stove.ThermometerBlock;
 import net.minecraft.world.level.block.Block;
@@ -33,7 +35,32 @@ public final class ModBlocks {
                     .strength(3.5F)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE)
-                    .lightLevel(state -> state.getValue(StoveBlock.LIT) ? 13 : 0));
+                    .lightLevel(state -> {
+                        if (state.getValue(StoveBlock.LIT)) {
+                            return 13;
+                        }
+                        return state.getValue(StoveBlock.EMBERS) ? 7 : 0;
+                    }));
+
+    /** A length of flue; stack it from the stove up to open sky. */
+    public static final DeferredBlock<ChimneyBlock> CHIMNEY = REGISTER.registerBlock(
+            "chimney",
+            ChimneyBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_RED)
+                    .strength(2.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE));
+
+    /** The damper in the flue: shut it at the right moment and the heat stays. */
+    public static final DeferredBlock<DamperBlock> DAMPER = REGISTER.registerBlock(
+            "damper",
+            DamperBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(2.5F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL));
 
     /** Soapstone ore — the one ore the mod adds, in mountains. Drops the stone itself. */
     public static final DeferredBlock<Block> SOAPSTONE_ORE = REGISTER.registerSimpleBlock(

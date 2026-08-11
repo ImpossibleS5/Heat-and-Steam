@@ -2,6 +2,7 @@ package com.banya.climate;
 
 import com.banya.Config;
 import com.banya.registry.ModTags;
+import com.banya.stove.ChimneyState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,9 +33,10 @@ public final class RoomClimate {
      * @return the temperature after one simulation step
      */
     public static double nextTemperature(double current, double heatInput,
-                                         @Nullable RoomShape room, LevelReader level) {
+                                         @Nullable RoomShape room, LevelReader level,
+                                         double leakMultiplier) {
         double ambient = Config.AMBIENT_TEMPERATURE.get();
-        double coefficient = Config.LEAK_COEFFICIENT.get();
+        double coefficient = Config.LEAK_COEFFICIENT.get() * leakMultiplier;
         double excess = current - ambient;
 
         if (room == null) {
@@ -70,23 +72,22 @@ public final class RoomClimate {
      * @param producing whether the fire is currently making smoke
      * @param wetFuel   damp wood smokes far worse, as the design intends
      */
-    public static double nextSmoke(double current, boolean producing, boolean wetFuel,
-                                   @Nullable RoomShape room) {
-        double next = current;
-        if (producing) {
-            double output = Config.SMOKE_PER_STEP.get();
-            if (wetFuel) {
-                output *= Config.WET_SMOKE_MULTIPLIER.get();
-            }
-            next += output;
-        }
-
+    public static double nextSmoke(double current, double output, @Nullable RoomShape room,
+                                   ChimneyState chimney) {
         double settle = Config.SMOKE_SETTLE_PER_STEP.get();
         if (room == null) {
             // Opened up: the smoke rolls out far faster than it ever settles.
             settle *= Config.SMOKE_VENT_MULTIPLIER.get();
+        } else if (chimney == ChimneyState.OPEN) {
+            settle *= Config.CHIMNEY_VENT_MULTIPLIER.get();
         }
-        return Math.clamp(next - settle, 0.0, 100.0);
+        return Math.clamp(current + output - settle, 0.0, 100.0);
+    }
+
+    /** How much faster the room bleeds heat, given what is above the stove. */
+    public static double leakMultiplier(ChimneyState chimney) {
+        // An open flue is a hole in the roof: it takes the smoke out and the warmth with it.
+        return chimney == ChimneyState.OPEN ? Config.CHIMNEY_HEAT_LOSS.get() : 1.0;
     }
 
     /** Whether steam is doing anything worth noticing, for readouts. */

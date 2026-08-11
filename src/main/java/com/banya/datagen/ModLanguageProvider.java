@@ -27,6 +27,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.POLOK.get(), "Полок");
             add(ModBlocks.BANYA_DOOR.get(), "Банная дверь");
             add(ModBlocks.SOAPSTONE_ORE.get(), "Талькохлоритовая руда");
+            add(ModBlocks.CHIMNEY.get(), "Дымоход");
+            add(ModBlocks.DAMPER.get(), "Заслонка");
             add(ModItems.RIVER_STONE.get(), "Речные голыши");
             add(ModItems.ANDESITE_STONE.get(), "Андезитовые камни");
             add(ModItems.BASALT_STONE.get(), "Базальтовые камни");
@@ -74,6 +76,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.POLOK.get(), "Polok Bench");
             add(ModBlocks.BANYA_DOOR.get(), "Banya Door");
             add(ModBlocks.SOAPSTONE_ORE.get(), "Soapstone Ore");
+            add(ModBlocks.CHIMNEY.get(), "Chimney");
+            add(ModBlocks.DAMPER.get(), "Damper");
             add(ModItems.RIVER_STONE.get(), "River Stones");
             add(ModItems.ANDESITE_STONE.get(), "Andesite Stones");
             add(ModItems.BASALT_STONE.get(), "Basalt Stones");
