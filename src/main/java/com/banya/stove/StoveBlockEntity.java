@@ -4,6 +4,7 @@ import com.banya.Config;
 import com.banya.climate.RoomClimate;
 import com.banya.climate.RoomScanner;
 import com.banya.climate.RoomShape;
+import com.banya.climate.Soot;
 import com.banya.item.FirewoodItem;
 import com.banya.player.Exposure;
 import com.banya.registry.ModAttachments;
@@ -34,6 +35,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Owns the room microclimate for its enclosing parnaya: burns fuel, tracks the room temperature,
@@ -105,6 +108,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private boolean fuelWasWet;
     /** Ticks of smouldering left after the flames die. */
     private int emberTicks;
+    /** Share of the walls blackened by smoke, recomputed when the room is rescanned. */
+    private double sootFraction;
+    /** What was above the stove on the last step, cached for readouts between scans. */
+    private ChimneyState chimneyState = ChimneyState.NONE;
     /** Set when a pour just cracked a stone, read once by the block to tell the player. */
     private boolean crackedThisPour;
 
@@ -218,6 +225,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             this.room = RoomScanner.scan(level, this.worldPosition, Config.MAX_ROOM_VOLUME.get());
             this.needsRescan = false;
             this.stepsSinceScan = 0;
+            // Counting soot walks every wall, so it rides along with the scan rather than each step.
+            this.sootFraction = this.room == null ? 0.0 : Soot.fractionOf(level, this.room);
         } else if (++this.stepsSinceScan >= RESCAN_EVERY_STEPS) {
             this.needsRescan = true;
         }
@@ -227,6 +236,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 this.room, level, RoomClimate.leakMultiplier(chimney));
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
         this.smoke = RoomClimate.nextSmoke(this.smoke, smokeOutputForStep(), this.room, chimney);
+        this.chimneyState = chimney;
+        seasonWalls(level, chimney);
         throwSparks(level);
         exposeOccupants(level);
         setChanged();
@@ -280,6 +291,36 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 return;
             }
         }
+    }
+
+    /**
+     * Blackens the parnaya a little at a time while it is full of smoke and has no flue. This is
+     * how a banya po-chornomu earns its patina — and its steam: {@link #steamQuality()} pays the
+     * soot back as a bonus.
+     */
+    private void seasonWalls(Level level, ChimneyState chimney) {
+        if (this.room == null || chimney != ChimneyState.NONE
+                || this.smoke < Config.SOOT_SMOKE_LEVEL.get()
+                || level.random.nextDouble() >= Config.SOOT_CHANCE_PER_STEP.get()) {
+            return;
+        }
+        // One block at a time, chosen at random, so the blackening creeps rather than snaps on.
+        List<BlockPos> walls = List.copyOf(this.room.walls());
+        BlockPos wall = walls.get(level.random.nextInt(walls.size()));
+        if (Soot.darken(level, wall)) {
+            this.sootFraction = Soot.fractionOf(level, this.room);
+        }
+    }
+
+    /**
+     * How good the steam is here. A seasoned black banya beats anything with a chimney, which is
+     * the reward the design promises for putting up with the smoke.
+     */
+    public double steamQuality() {
+        if (this.chimneyState != ChimneyState.NONE) {
+            return 1.0;
+        }
+        return 1.0 + this.sootFraction * Config.SOOT_STEAM_BONUS.get();
     }
 
     /**
@@ -345,7 +386,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         if (this.room == null) {
             return;
         }
-        double heatIndex = RoomClimate.heatIndex(this.temperature, this.humidity);
+        // Steam quality rides on the heat index: better steam simply warms you better.
+        double heatIndex = RoomClimate.heatIndex(this.temperature, this.humidity) * steamQuality();
         for (Player player : level.getEntitiesOfClass(Player.class, this.room.bounds())) {
             if (isInside(player)) {
                 Exposure current = player.getData(ModAttachments.EXPOSURE);

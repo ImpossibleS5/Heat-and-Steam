@@ -36,12 +36,17 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         tag(ModTags.Blocks.INSULATION_HIGH)
                 .addTag(BlockTags.LOGS)
                 .addTag(BlockTags.WOOL)
-                .add(ModBlocks.BANYA_DOOR.get());
+                .add(ModBlocks.BANYA_DOOR.get(), ModBlocks.SOOTY_LOG.get());
 
         tag(ModTags.Blocks.INSULATION_MID)
                 .addTag(BlockTags.PLANKS)
                 .addTag(BlockTags.WOODEN_SLABS)
-                .addTag(BlockTags.WOODEN_STAIRS);
+                .addTag(BlockTags.WOODEN_STAIRS)
+                .add(ModBlocks.SOOTY_PLANKS.get());
+
+        // Soot changes the look, not the timber: blackened walls insulate as they always did.
+        tag(BlockTags.MINEABLE_WITH_AXE)
+                .add(ModBlocks.SOOTY_PLANKS.get(), ModBlocks.SOOTY_LOG.get());
 
         tag(ModTags.Blocks.INSULATION_LOW)
                 .addTag(BlockTags.STONE_BRICKS)

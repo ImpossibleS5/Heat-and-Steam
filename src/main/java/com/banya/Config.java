@@ -164,6 +164,23 @@ public final class Config {
             .comment("Fraction of the normal smoke output that smouldering coals give off.")
             .defineInRange("emberSmokeFraction", 0.6, 0.0, 2.0);
 
+    public static final ModConfigSpec.DoubleValue SOOT_SMOKE_LEVEL = BUILDER
+            .comment("Smoke (%) a chimneyless room needs before its walls start to blacken.")
+            .defineInRange("sootSmokeLevel", 40.0, 0.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue SOOT_CHANCE_PER_STEP = BUILDER
+            .comment(
+                    "Chance per second of blackening one more wall block in a smoky black banya.",
+                    "Low on purpose: the patina should creep on over many firings, not appear at once.")
+            .defineInRange("sootChancePerStep", 0.08, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue SOOT_STEAM_BONUS = BUILDER
+            .comment(
+                    "Steam quality bonus at fully blackened walls, in a banya with no chimney.",
+                    "0.25 means a seasoned black banya warms you a quarter faster than any other.",
+                    "This is the payoff for putting up with the smoke.")
+            .defineInRange("sootSteamBonus", 0.25, 0.0, 3.0);
+
     public static final ModConfigSpec.DoubleValue SMOKE_STING_LEVEL = BUILDER
             .comment("Smoke (%) at which the bather's eyes start to sting.")
             .defineInRange("smokeStingLevel", 30.0, 0.0, 100.0);

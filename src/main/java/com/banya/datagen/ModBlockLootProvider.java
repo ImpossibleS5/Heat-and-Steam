@@ -24,6 +24,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // The ore yields the stone itself, and fortune helps as it does for any ore.
         add(ModBlocks.SOAPSTONE_ORE.get(),
                 block -> createOreDrop(block, ModItems.SOAPSTONE.get()));
+        dropSelf(ModBlocks.SOOTY_PLANKS.get());
+        dropSelf(ModBlocks.SOOTY_LOG.get());
         dropSelf(ModBlocks.CHIMNEY.get());
         dropSelf(ModBlocks.DAMPER.get());
         dropSelf(ModBlocks.CHOPPING_BLOCK.get());

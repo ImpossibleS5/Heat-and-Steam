@@ -11,6 +11,7 @@ import com.banya.stove.StoveBlock;
 import com.banya.stove.ThermometerBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
@@ -41,6 +42,24 @@ public final class ModBlocks {
                         }
                         return state.getValue(StoveBlock.EMBERS) ? 7 : 0;
                     }));
+
+    // Soot is applied by the game, never crafted: it is the patina a black banya earns.
+    public static final DeferredBlock<Block> SOOTY_PLANKS = REGISTER.registerSimpleBlock(
+            "sooty_planks",
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(2.0F, 3.0F)
+                    .sound(SoundType.WOOD)
+                    .ignitedByLava());
+
+    public static final DeferredBlock<RotatedPillarBlock> SOOTY_LOG = REGISTER.registerBlock(
+            "sooty_log",
+            RotatedPillarBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .ignitedByLava());
 
     /** A length of flue; stack it from the stove up to open sky. */
     public static final DeferredBlock<ChimneyBlock> CHIMNEY = REGISTER.registerBlock(

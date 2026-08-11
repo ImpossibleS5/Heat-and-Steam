@@ -44,6 +44,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.CHIMNEY.get(),
                 models().cubeAll("chimney", mcLoc("block/bricks")));
 
+        simpleBlockWithItem(ModBlocks.SOOTY_PLANKS.get(),
+                models().cubeAll("sooty_planks", modLoc("block/sooty_planks")));
+        axisBlock(ModBlocks.SOOTY_LOG.get(), modLoc("block/sooty_log"), modLoc("block/sooty_log_top"));
+        simpleBlockItem(ModBlocks.SOOTY_LOG.get(),
+                models().getExistingFile(modLoc("block/sooty_log")));
+
         // The damper reads open or shut at a glance from outside the flue.
         ModelFile damperOpen = models().cubeBottomTop("damper",
                 mcLoc("block/bricks"), mcLoc("block/bricks"), mcLoc("block/iron_block"));

@@ -2,6 +2,7 @@
   "values": [
     "#minecraft:planks",
     "#minecraft:wooden_slabs",
-    "#minecraft:wooden_stairs"
+    "#minecraft:wooden_stairs",
+    "banya:sooty_planks"
   ]
 }
