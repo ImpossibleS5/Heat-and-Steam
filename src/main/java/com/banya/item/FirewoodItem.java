@@ -1,15 +1,11 @@
 package com.banya.item;
 
 import com.banya.registry.ModDataComponents;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * Split firewood. Freshly split wood is damp: it burns short and cool until it has spent time on a
@@ -40,12 +36,13 @@ public class FirewoodItem extends Item {
         return this.species.heatFactor(isDry(stack));
     }
 
+    /**
+     * Dryness is part of what the item <em>is</em>, so it belongs in the name rather than on a
+     * separate tooltip line: "Dry Birch Firewood", not "Birch Firewood" plus a note underneath.
+     */
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context,
-                                List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(isDry(stack)
-                ? Component.translatable("tooltip.banya.firewood.dry").withStyle(ChatFormatting.GOLD)
-                : Component.translatable("tooltip.banya.firewood.wet").withStyle(ChatFormatting.GRAY));
+    public Component getName(ItemStack stack) {
+        return Component.translatable(this.getDescriptionId(stack) + (isDry(stack) ? ".dry" : ".wet"));
     }
 
     public static boolean isDry(ItemStack stack) {

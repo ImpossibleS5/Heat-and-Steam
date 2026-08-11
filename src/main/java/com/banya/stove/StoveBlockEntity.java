@@ -98,8 +98,6 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
 
-    /** Heat currently banked in the stones, spent to keep the room warm after the fire dies. */
-    private double stoneCharge;
     /** How hard the fuel currently burning drives the room; 1.0 for anything but firewood. */
     private double fuelHeatFactor = 1.0;
     /** Whether the current fuel throws embers (spruce does). */
@@ -249,21 +247,12 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
      * after the wood is gone.
      */
     private double heatInputForStep() {
-        double capacity = StoveStones.capacityOf(this.stones);
-
         if (isBurning()) {
-            this.stoneCharge = Math.min(capacity, this.stoneCharge + Config.STONE_CHARGE_PER_STEP.get());
+            StoveStones.charge(this.stones, Config.STONE_CHARGE_PER_STEP.get());
             return Config.HEAT_PER_STEP.get() * this.fuelHeatFactor;
         }
-
-        // Stones cannot hold more than the current basket allows (e.g. after some were removed).
-        this.stoneCharge = Math.min(this.stoneCharge, capacity);
-        if (this.stoneCharge <= 0.0) {
-            return 0.0;
-        }
-        double release = Math.min(this.stoneCharge, Config.STONE_RELEASE_PER_STEP.get());
-        this.stoneCharge -= release;
-        return release;
+        // The stones pay their heat back, which is what keeps a каменка warm after the wood is gone.
+        return StoveStones.release(this.stones, Config.STONE_RELEASE_PER_STEP.get());
     }
 
     /**
@@ -345,7 +334,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     /** Whether the basket holds stones hot enough to flash water into light steam. */
     public boolean hasHotStones() {
-        return StoveStones.capacityOf(this.stones) > 0.0 && this.stoneCharge > 0.0;
+        return StoveStones.totalHeat(this.stones) > 0;
     }
 
     /**
@@ -500,7 +489,6 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         super.saveAdditional(tag, registries);
         tag.put("Fuel", this.fuel.serializeNBT(registries));
         tag.put("Stones", this.stones.serializeNBT(registries));
-        tag.putDouble("StoneCharge", this.stoneCharge);
         tag.putInt("BurnTime", this.burnTime);
         tag.putInt("EmberTicks", this.emberTicks);
         tag.putInt("BurnTimeTotal", this.burnTimeTotal);
@@ -518,7 +506,6 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         if (tag.contains("Stones")) {
             this.stones.deserializeNBT(registries, tag.getCompound("Stones"));
         }
-        this.stoneCharge = tag.getDouble("StoneCharge");
         this.burnTime = tag.getInt("BurnTime");
         this.emberTicks = tag.getInt("EmberTicks");
         this.burnTimeTotal = tag.getInt("BurnTimeTotal");

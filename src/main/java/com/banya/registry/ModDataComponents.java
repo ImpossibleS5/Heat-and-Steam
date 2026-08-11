@@ -33,5 +33,20 @@ public final class ModDataComponents {
                     .persistent(Codec.BOOL)
                     .networkSynchronized(ByteBufCodecs.BOOL));
 
+    /**
+     * Heat banked in a banya stone. Lives on the stack rather than the stove, so a stone pulled out
+     * of a hot basket is still hot in your hand — and still hot in the next stove you put it in.
+     */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> HEAT =
+            REGISTER.registerComponentType("heat", builder -> builder
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** How far a stone has cracked. Visible on the texture; at the limit the stone is lost. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CRACKS =
+            REGISTER.registerComponentType("cracks", builder -> builder
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private ModDataComponents() {}
 }

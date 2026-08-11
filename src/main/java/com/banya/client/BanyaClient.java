@@ -8,6 +8,7 @@ import com.banya.player.WarmthHudData;
 import com.banya.registry.ModEntities;
 import com.banya.registry.ModItems;
 import com.banya.registry.ModMenus;
+import com.banya.stove.StoveStones;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -47,6 +48,13 @@ public final class BanyaClient {
             for (var venik : List.of(ModItems.VENIK_BIRCH.get(), ModItems.VENIK_OAK.get())) {
                 ItemProperties.register(venik, steeped,
                         (stack, level, entity, seed) -> VenikItem.isSteeped(stack) ? 1.0F : 0.0F);
+            }
+
+            ResourceLocation cracks = ResourceLocation.fromNamespaceAndPath(Banya.MODID, "cracks");
+            for (var stone : List.of(ModItems.RIVER_STONE.get(), ModItems.ANDESITE_STONE.get(),
+                    ModItems.BASALT_STONE.get(), ModItems.SOAPSTONE.get())) {
+                ItemProperties.register(stone, cracks,
+                        (stack, level, entity, seed) -> StoveStones.cracksOf(stack));
             }
 
             ResourceLocation dry = ResourceLocation.fromNamespaceAndPath(Banya.MODID, "dry");

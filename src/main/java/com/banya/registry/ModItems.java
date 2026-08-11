@@ -2,6 +2,7 @@ package com.banya.registry;
 
 import com.banya.Banya;
 import com.banya.item.FeltHatItem;
+import com.banya.item.BanyaStoneItem;
 import com.banya.item.FirewoodItem;
 import com.banya.item.LadleItem;
 import com.banya.item.VenikItem;
@@ -31,13 +32,18 @@ public final class ModItems {
     // Banya stones are items rather than raw building blocks, the same way firewood is: what goes
     // in the basket is prepared stone, and each tier is one recognisable item.
     /** Field and river stone — what you start with. */
-    public static final DeferredItem<Item> RIVER_STONE = REGISTER.registerSimpleItem("river_stone");
+    public static final DeferredItem<BanyaStoneItem> RIVER_STONE = stone("river_stone");
     /** Denser rock, holds heat better. */
-    public static final DeferredItem<Item> ANDESITE_STONE = REGISTER.registerSimpleItem("andesite_stone");
+    public static final DeferredItem<BanyaStoneItem> ANDESITE_STONE = stone("andesite_stone");
     /** Volcanic rock, the best you will find without a mountain expedition. */
-    public static final DeferredItem<Item> BASALT_STONE = REGISTER.registerSimpleItem("basalt_stone");
+    public static final DeferredItem<BanyaStoneItem> BASALT_STONE = stone("basalt_stone");
     /** Soapstone: the best banya stone there is, and the reason to go up the mountains. */
-    public static final DeferredItem<Item> SOAPSTONE = REGISTER.registerSimpleItem("soapstone");
+    public static final DeferredItem<BanyaStoneItem> SOAPSTONE = stone("soapstone");
+
+    private static DeferredItem<BanyaStoneItem> stone(String name) {
+        // Stones carry heat and cracks, so they stack small — a basket holds one per slot anyway.
+        return REGISTER.registerItem(name, BanyaStoneItem::new, new Item.Properties().stacksTo(16));
+    }
 
     /** Scoops water and throws it on the stones (поддача). */
     public static final DeferredItem<LadleItem> LADLE = REGISTER.registerItem(

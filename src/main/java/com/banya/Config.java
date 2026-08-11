@@ -206,6 +206,13 @@ public final class Config {
             .comment("Heat the stones absorb per simulation step while the stove burns.")
             .defineInRange("stoneChargePerStep", 3.0, 0.1, 100.0);
 
+    public static final ModConfigSpec.IntValue STONE_COOLING_PER_STEP = BUILDER
+            .comment(
+                    "Heat a stone loses per second while out of a stove.",
+                    "Slow enough that a hot stone can be carried to another banya, not so slow that",
+                    "it stays warm forever in a chest.")
+            .defineInRange("stoneCoolingPerStep", 2, 0, 1000);
+
     public static final ModConfigSpec.DoubleValue STONE_POURS_PER_CRACK = BUILDER
             .comment(
                     "Average hot-stone pours a quality-1 stone survives before it cracks and is lost.",

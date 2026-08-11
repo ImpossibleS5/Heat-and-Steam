@@ -34,14 +34,27 @@ public class ModItemModelProvider extends ItemModelProvider {
         // A door's block model cannot be held, so its item is a flat icon.
         basicItem(ModItems.BANYA_DOOR.getId());
 
-        basicItem(ModItems.RIVER_STONE.get());
-        basicItem(ModItems.ANDESITE_STONE.get());
-        basicItem(ModItems.BASALT_STONE.get());
-        basicItem(ModItems.SOAPSTONE.get());
+        banyaStone(ModItems.RIVER_STONE.getId().getPath());
+        banyaStone(ModItems.ANDESITE_STONE.getId().getPath());
+        banyaStone(ModItems.BASALT_STONE.getId().getPath());
+        banyaStone(ModItems.SOAPSTONE.getId().getPath());
 
         firewood(ModItems.FIREWOOD_BIRCH.getId().getPath());
         firewood(ModItems.FIREWOOD_OAK.getId().getPath());
         firewood(ModItems.FIREWOOD_SPRUCE.getId().getPath());
+    }
+
+    /** A stone shows its cracks: two damage stages before it gives out entirely. */
+    private void banyaStone(String name) {
+        ItemModelBuilder stage1 = basicItem(
+                ResourceLocation.fromNamespaceAndPath(Banya.MODID, name + "_cracked1"));
+        ItemModelBuilder stage2 = basicItem(
+                ResourceLocation.fromNamespaceAndPath(Banya.MODID, name + "_cracked2"));
+        ResourceLocation cracks = ResourceLocation.fromNamespaceAndPath(Banya.MODID, "cracks");
+        withExistingParent(name, mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/" + name))
+                .override().predicate(cracks, 1.0F).model(stage1).end()
+                .override().predicate(cracks, 2.0F).model(stage2).end();
     }
 
     /** Damp and dry firewood look different, selected by the banya:dry predicate. */

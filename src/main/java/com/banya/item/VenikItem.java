@@ -16,7 +16,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -126,14 +125,15 @@ public class VenikItem extends Item {
         return UseAnim.BOW;
     }
 
+    /**
+     * Being steeped is part of what the venik <em>is</em>, so it reads in the name rather than on a
+     * tooltip line below it.
+     */
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context,
-                                List<Component> tooltip, TooltipFlag flag) {
-        // State only: no counters and no instructions. What to do about it is the game's job to
-        // teach, not the tooltip's.
-        tooltip.add(isSteeped(stack)
-                ? Component.translatable("tooltip.banya.venik.steeped").withStyle(ChatFormatting.AQUA)
-                : Component.translatable("tooltip.banya.venik.dry").withStyle(ChatFormatting.GRAY));
+    public Component getName(ItemStack stack) {
+        return isSteeped(stack)
+                ? Component.translatable(this.getDescriptionId(stack) + ".steeped")
+                : super.getName(stack);
     }
 
     /**
