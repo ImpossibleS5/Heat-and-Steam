@@ -2,22 +2,18 @@ package com.banya.item;
 
 import com.banya.registry.ModDataComponents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.ChatFormatting;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
-
-import com.banya.stove.StoveBlockEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 /**
  * The ladle (ковш). Scoop water from any water source, then right-click the stove to throw it on the
@@ -25,6 +21,11 @@ import com.banya.stove.StoveBlockEntity;
  *
  * <p>Water state is a data component rather than a second item, so the ladle keeps its identity
  * (and any future durability) across fills.
+ *
+ * <p>Filling happens in {@link #use} rather than {@code useOn}: the crosshair never targets fluids,
+ * so a ladle aimed at water produces no block hit at all. Like the vanilla bucket, this does its own
+ * raycast that stops at fluid sources. Pouring lives on the stove itself — see
+ * {@code StoveBlock#useItemOn} — because a block with a menu would otherwise swallow the click.
  */
 public class LadleItem extends Item {
     public LadleItem(Properties properties) {
@@ -32,62 +33,34 @@ public class LadleItem extends Item {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        Player player = context.getPlayer();
-        ItemStack stack = context.getItemInHand();
-        if (player == null) {
-            return InteractionResult.PASS;
-        }
-
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         if (isFilled(stack)) {
-            return pourOnStove(level, pos, player, stack);
+            return InteractionResultHolder.pass(stack);
         }
-        return fillFrom(level, pos, player, stack);
-    }
 
-    private InteractionResult fillFrom(Level level, BlockPos pos, Player player, ItemStack stack) {
-        BlockState state = level.getBlockState(pos);
-        if (!state.getFluidState().is(Fluids.WATER)) {
-            return InteractionResult.PASS;
+        BlockHitResult hit = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
+        if (hit.getType() != HitResult.Type.BLOCK) {
+            return InteractionResultHolder.pass(stack);
         }
+
+        BlockPos pos = hit.getBlockPos();
+        if (!level.getFluidState(pos).is(Fluids.WATER) || !level.mayInteract(player, pos)) {
+            return InteractionResultHolder.pass(stack);
+        }
+
         if (!level.isClientSide()) {
             setFilled(stack, true);
-            level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.PLAYERS, 0.6F, 1.4F);
         }
-        return InteractionResult.sidedSuccess(level.isClientSide());
-    }
-
-    private InteractionResult pourOnStove(Level level, BlockPos pos, Player player, ItemStack stack) {
-        if (!(level.getBlockEntity(pos) instanceof StoveBlockEntity stove)) {
-            return InteractionResult.PASS;
-        }
-        if (!level.isClientSide()) {
-            boolean lightSteam = stove.pourWater();
-            setFilled(stack, false);
-
-            level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS,
-                    0.8F, lightSteam ? 1.6F : 1.1F);
-            if (level instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.CLOUD,
-                        pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5,
-                        lightSteam ? 30 : 10, 0.3, 0.3, 0.3, 0.02);
-            }
-            if (!lightSteam) {
-                player.displayClientMessage(
-                        Component.translatable("message.banya.steam.heavy").withStyle(ChatFormatting.GRAY),
-                        true);
-            }
-        }
-        return InteractionResult.sidedSuccess(level.isClientSide());
+        level.playSound(player, pos, SoundEvents.BUCKET_FILL, SoundSource.PLAYERS, 0.6F, 1.4F);
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 
     public static boolean isFilled(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.FILLED.get(), false);
     }
 
-    private static void setFilled(ItemStack stack, boolean filled) {
+    public static void setFilled(ItemStack stack, boolean filled) {
         stack.set(ModDataComponents.FILLED.get(), filled);
     }
 }

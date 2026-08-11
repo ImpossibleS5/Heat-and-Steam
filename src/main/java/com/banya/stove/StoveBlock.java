@@ -1,9 +1,19 @@
 package com.banya.stove;
 
+import com.banya.item.LadleItem;
 import com.banya.registry.ModBlockEntities;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -32,6 +42,40 @@ public class StoveBlock extends Block implements EntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(LIT);
+    }
+
+    /**
+     * Pouring is handled here rather than in {@code LadleItem#useOn}: a block with a menu consumes
+     * the click first, so the item hook would never run and the fuel screen would open instead.
+     */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!(stack.getItem() instanceof LadleItem) || !LadleItem.isFilled(stack)) {
+            return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+        }
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StoveBlockEntity stove) {
+            pourLadle(level, pos, player, stack, stove);
+        }
+        return ItemInteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    private static void pourLadle(Level level, BlockPos pos, Player player, ItemStack stack,
+                                  StoveBlockEntity stove) {
+        boolean lightSteam = stove.pourWater();
+        LadleItem.setFilled(stack, false);
+
+        level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS,
+                0.8F, lightSteam ? 1.6F : 1.1F);
+        if (level instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.CLOUD,
+                    pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5,
+                    lightSteam ? 30 : 10, 0.3, 0.3, 0.3, 0.02);
+        }
+        if (!lightSteam) {
+            player.displayClientMessage(
+                    Component.translatable("message.banya.steam.heavy").withStyle(ChatFormatting.GRAY), true);
+        }
     }
 
     @Override
