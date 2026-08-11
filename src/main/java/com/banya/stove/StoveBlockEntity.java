@@ -42,7 +42,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     public static final int DATA_BURN_TIME = 0;
     public static final int DATA_BURN_TIME_TOTAL = 1;
     public static final int DATA_TEMPERATURE = 2;
-    public static final int DATA_SIZE = 3;
+    public static final int DATA_HUMIDITY = 3;
+    public static final int DATA_SIZE = 4;
 
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
@@ -56,6 +57,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     /** Burn time the current piece of fuel started with, for the flame gauge. */
     private int burnTimeTotal;
     private double temperature = Config.AMBIENT_TEMPERATURE.get();
+    /** Room humidity, 0-100. Raised by throwing water on the stones, decays by condensation. */
+    private double humidity;
 
     private int tickCounter;
     private int stepsSinceScan;
@@ -71,6 +74,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_BURN_TIME -> burnTime;
                 case DATA_BURN_TIME_TOTAL -> burnTimeTotal;
                 case DATA_TEMPERATURE -> (int) Math.round(temperature);
+                case DATA_HUMIDITY -> (int) Math.round(humidity);
                 default -> 0;
             };
         }
@@ -81,6 +85,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_BURN_TIME -> burnTime = value;
                 case DATA_BURN_TIME_TOTAL -> burnTimeTotal = value;
                 case DATA_TEMPERATURE -> temperature = value;
+                case DATA_HUMIDITY -> humidity = value;
                 default -> {
                 }
             }
@@ -142,8 +147,26 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         this.temperature = RoomClimate.nextTemperature(this.temperature, isBurning(), this.room, level);
+        this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
         exposeOccupants(level);
         setChanged();
+    }
+
+    /**
+     * Throws a ladle of water onto the stones. Cold stones give "heavy steam": the humidity still
+     * rises, but far less, which is the design's nudge to heat the banya properly first.
+     *
+     * @return whether the steam was proper light steam
+     */
+    public boolean pourWater() {
+        boolean lightSteam = this.temperature >= Config.STEAM_TEMPERATURE.get();
+        double gain = Config.HUMIDITY_PER_LADLE.get();
+        if (!lightSteam) {
+            gain *= Config.HEAVY_STEAM_MULTIPLIER.get();
+        }
+        this.humidity = Math.min(100.0, this.humidity + gain);
+        setChanged();
+        return lightSteam;
     }
 
     /**
@@ -157,7 +180,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         for (Player player : level.getEntitiesOfClass(Player.class, this.room.bounds())) {
             if (this.room.interior().contains(player.blockPosition())) {
                 Exposure current = player.getData(ModAttachments.EXPOSURE);
-                player.setData(ModAttachments.EXPOSURE, current.merge(this.temperature));
+                player.setData(ModAttachments.EXPOSURE,
+                        current.merge(RoomClimate.heatIndex(this.temperature, this.humidity)));
             }
         }
     }
@@ -168,6 +192,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     public double getTemperature() {
         return this.temperature;
+    }
+
+    public double getHumidity() {
+        return this.humidity;
     }
 
     /** The current enclosed room, or {@code null} if the stove is open/leaking. */
@@ -207,6 +235,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         tag.putInt("BurnTime", this.burnTime);
         tag.putInt("BurnTimeTotal", this.burnTimeTotal);
         tag.putDouble("Temperature", this.temperature);
+        tag.putDouble("Humidity", this.humidity);
     }
 
     @Override
@@ -220,6 +249,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         this.temperature = tag.contains("Temperature")
                 ? tag.getDouble("Temperature")
                 : Config.AMBIENT_TEMPERATURE.get();
+        this.humidity = tag.getDouble("Humidity");
         this.needsRescan = true;
     }
 }

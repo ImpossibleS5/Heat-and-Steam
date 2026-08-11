@@ -67,7 +67,8 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
-        Component reading = Component.translatable("container.banya.stove.temperature", this.menu.getTemperature());
+        Component reading = Component.translatable("container.banya.stove.climate",
+                this.menu.getTemperature(), this.menu.getHumidity());
         graphics.drawString(this.font, reading,
                 (this.imageWidth - this.font.width(reading)) / 2, GAUGE_Y - 12, 0x404040, false);
     }

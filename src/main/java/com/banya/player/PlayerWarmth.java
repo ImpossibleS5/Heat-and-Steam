@@ -44,8 +44,8 @@ public final class PlayerWarmth {
         double warmth = get(player);
         double threshold = Config.WARMTH_THRESHOLD_TEMPERATURE.get();
 
-        if (exposure.temperature() >= threshold) {
-            warmth += gainFor(exposure.temperature(), threshold)
+        if (exposure.heatIndex() >= threshold) {
+            warmth += gainFor(exposure.heatIndex(), threshold)
                     * WarmthModifiers.gainMultiplier(player, warmth);
         } else {
             warmth -= Config.WARMTH_DECAY_PER_STEP.get();
@@ -68,11 +68,11 @@ public final class PlayerWarmth {
         }
     }
 
-    /** Hotter rooms heat proportionally faster, scaled around the reference temperature. */
-    private static double gainFor(double exposure, double threshold) {
+    /** Hotter rooms heat proportionally faster, scaled around the reference heat index. */
+    private static double gainFor(double heatIndex, double threshold) {
         double reference = Config.WARMTH_REFERENCE_TEMPERATURE.get();
         double span = Math.max(1.0, reference - threshold);
-        double intensity = (exposure - threshold) / span;
+        double intensity = (heatIndex - threshold) / span;
         return Config.WARMTH_GAIN_PER_STEP.get() * Math.max(0.0, intensity);
     }
 

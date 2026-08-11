@@ -1,8 +1,11 @@
 package com.banya.client;
 
 import com.banya.Banya;
+import com.banya.item.LadleItem;
 import com.banya.player.WarmthHudData;
+import com.banya.registry.ModItems;
 import com.banya.registry.ModMenus;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -26,6 +29,11 @@ public final class BanyaClient {
 
     @SubscribeEvent
     static void onClientSetup(final FMLClientSetupEvent event) {
+        // Item properties touch a non-thread-safe map, so they must run on the main thread.
+        event.enqueueWork(() -> ItemProperties.register(
+                ModItems.LADLE.get(),
+                ResourceLocation.fromNamespaceAndPath(Banya.MODID, "filled"),
+                (stack, level, entity, seed) -> LadleItem.isFilled(stack) ? 1.0F : 0.0F));
         Banya.LOGGER.info("Banya: client setup complete");
     }
 

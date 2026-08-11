@@ -2,11 +2,13 @@
   "block.banya.stove": "Печь-каменка (T1)",
   "block.banya.thermometer": "Термометр",
   "container.banya.stove": "Печь-каменка",
-  "container.banya.stove.temperature": "%s °C",
+  "container.banya.stove.climate": "%s °C · %s%%",
   "hud.banya.warmth": "Прогрев: %s",
   "item.banya.felt_hat": "Банная шапка",
+  "item.banya.ladle": "Ковш",
   "itemGroup.banya": "Баня",
+  "message.banya.steam.heavy": "Тяжёлый пар — камни ещё не раскалились",
   "message.banya.thermometer.leaking": "(парная не замкнута)",
   "message.banya.thermometer.no_stove": "Печь не найдена поблизости",
-  "message.banya.thermometer.reading": "Температура: %s °C"
+  "message.banya.thermometer.reading": "Температура: %s °C, влажность: %s%%"
 }

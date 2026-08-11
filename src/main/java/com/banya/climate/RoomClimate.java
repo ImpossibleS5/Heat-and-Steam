@@ -45,6 +45,31 @@ public final class RoomClimate {
         return clamp(current + heatIn - leak, ambient, Config.MAX_TEMPERATURE.get());
     }
 
+    /**
+     * Humidity after one simulation step. Steam condenses steadily, and an unsealed room loses it
+     * as fast as it loses heat.
+     */
+    public static double nextHumidity(double current, @Nullable RoomShape room) {
+        double decay = Config.HUMIDITY_DECAY_PER_STEP.get();
+        if (room == null) {
+            decay *= OPEN_SPACE_LEAK_MULTIPLIER;
+        }
+        return Math.max(0.0, current - decay);
+    }
+
+    /**
+     * Perceived heat ("индекс жара"): what the player's body actually reacts to. Humid air carries
+     * heat far better, so a 60 C parnaya at 90% humidity feels hotter than a 100 C dry sauna —
+     * the two play styles the design is built around.
+     *
+     * @param temperature room temperature in deg C
+     * @param humidity    room humidity, 0-100
+     */
+    public static double heatIndex(double temperature, double humidity) {
+        double weight = Config.HUMIDITY_HEAT_WEIGHT.get();
+        return temperature * (1.0 + weight * (humidity / 100.0));
+    }
+
     /** Mean insulation quality of the enclosing walls, in {@code [0, 1]}. */
     private static double averageInsulation(LevelReader level, RoomShape room) {
         if (room.walls().isEmpty()) {

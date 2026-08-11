@@ -38,16 +38,16 @@ public class ThermometerBlock extends Block {
             return Component.translatable("message.banya.thermometer.no_stove")
                     .withStyle(ChatFormatting.GRAY);
         }
-        Component temperature = Component.translatable(
-                "message.banya.thermometer.reading", Math.round(stove.getTemperature()));
+        Component reading = Component.translatable("message.banya.thermometer.reading",
+                Math.round(stove.getTemperature()), Math.round(stove.getHumidity()));
         if (stove.getRoom() == null) {
             return Component.empty()
-                    .append(temperature.copy().withStyle(ChatFormatting.AQUA))
+                    .append(reading.copy().withStyle(ChatFormatting.AQUA))
                     .append(Component.literal(" "))
                     .append(Component.translatable("message.banya.thermometer.leaking")
                             .withStyle(ChatFormatting.RED));
         }
-        return temperature.copy().withStyle(ChatFormatting.GOLD);
+        return reading.copy().withStyle(ChatFormatting.GOLD);
     }
 
     /**

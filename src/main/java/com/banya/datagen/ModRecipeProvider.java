@@ -34,6 +34,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_wool", has(ItemTags.WOOL))
                 .save(output);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.LADLE.get())
+                .pattern("  S")
+                .pattern("P P")
+                .pattern(" P ")
+                .define('S', Items.STICK)
+                .define('P', ItemTags.PLANKS)
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                .save(output);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.STOVE.get())
                 .pattern("SSS")
                 .pattern("S S")

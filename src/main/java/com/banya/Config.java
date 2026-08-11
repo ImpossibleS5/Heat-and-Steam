@@ -55,6 +55,31 @@ public final class Config {
             .comment("Room temperature (deg C) at which Warmth is gained at exactly the base rate.")
             .defineInRange("warmthReferenceTemperature", 80.0, 1.0, 300.0);
 
+    public static final ModConfigSpec.DoubleValue HUMIDITY_DECAY_PER_STEP = BUILDER
+            .comment("Humidity (%) lost per simulation step as steam condenses.")
+            .defineInRange("humidityDecayPerStep", 2.0, 0.1, 100.0);
+
+    public static final ModConfigSpec.DoubleValue HUMIDITY_PER_LADLE = BUILDER
+            .comment("Humidity (%) added by one ladle of water thrown onto hot stones.")
+            .defineInRange("humidityPerLadle", 25.0, 1.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue STEAM_TEMPERATURE = BUILDER
+            .comment(
+                    "Room temperature (deg C) the stove must reach for a proper light steam.",
+                    "Below this a ladle produces heavy steam: much less humidity and no benefit.")
+            .defineInRange("steamTemperature", 70.0, 0.0, 300.0);
+
+    public static final ModConfigSpec.DoubleValue HEAVY_STEAM_MULTIPLIER = BUILDER
+            .comment("Fraction of the normal humidity gained when the stones are too cold.")
+            .defineInRange("heavySteamMultiplier", 0.4, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue HUMIDITY_HEAT_WEIGHT = BUILDER
+            .comment(
+                    "How strongly humidity amplifies perceived heat.",
+                    "At 1.0, 100% humidity makes a room feel twice as hot as its dry temperature,",
+                    "so a moderate wet parnaya out-heats a very hot dry sauna — as intended.")
+            .defineInRange("humidityHeatWeight", 1.0, 0.0, 4.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}

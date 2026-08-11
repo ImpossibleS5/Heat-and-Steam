@@ -24,6 +24,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.STOVE.get());
                         output.accept(ModItems.THERMOMETER.get());
                         output.accept(ModItems.FELT_HAT.get());
+                        output.accept(ModItems.LADLE.get());
                     })
                     .build());
 

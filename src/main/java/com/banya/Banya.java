@@ -6,6 +6,7 @@ import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import com.banya.registry.ModBlocks;
 import com.banya.registry.ModCreativeTabs;
+import com.banya.registry.ModDataComponents;
 import com.banya.registry.ModItems;
 import com.banya.registry.ModMenus;
 import com.mojang.logging.LogUtils;
@@ -33,6 +34,7 @@ public final class Banya {
         ModItems.REGISTER.register(modEventBus);
         ModMenus.REGISTER.register(modEventBus);
         ModAttachments.REGISTER.register(modEventBus);
+        ModDataComponents.REGISTER.register(modEventBus);
         ModCreativeTabs.REGISTER.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
