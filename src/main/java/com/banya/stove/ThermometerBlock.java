@@ -1,5 +1,6 @@
 package com.banya.stove;
 
+import com.banya.climate.RoomClimate;
 import com.banya.climate.StoveLocator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -36,8 +37,12 @@ public class ThermometerBlock extends Block {
             return Component.translatable("message.banya.thermometer.no_stove")
                     .withStyle(ChatFormatting.GRAY);
         }
+        // Perceived heat is what the body reacts to, so show it: without this the humidity number
+        // looks decorative even though it is doing half the work.
         Component reading = Component.translatable("message.banya.thermometer.reading",
-                Math.round(stove.getTemperature()), Math.round(stove.getHumidity()));
+                Math.round(stove.getTemperature()),
+                Math.round(stove.getHumidity()),
+                Math.round(RoomClimate.heatIndex(stove.getTemperature(), stove.getHumidity())));
         if (stove.getRoom() == null) {
             return Component.empty()
                     .append(reading.copy().withStyle(ChatFormatting.AQUA))

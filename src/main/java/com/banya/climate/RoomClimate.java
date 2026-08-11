@@ -34,14 +34,21 @@ public final class RoomClimate {
     public static double nextTemperature(double current, double heatInput,
                                          @Nullable RoomShape room, LevelReader level) {
         double ambient = Config.AMBIENT_TEMPERATURE.get();
+        double coefficient = Config.LEAK_COEFFICIENT.get();
+        double excess = current - ambient;
+
         if (room == null) {
-            // Nothing to hold the heat: fall back toward ambient regardless of the fire.
-            double leak = Config.BASE_LEAK_PER_STEP.get() * OPEN_SPACE_LEAK_MULTIPLIER;
-            return approach(current, ambient, leak);
+            // Nothing to hold the heat: it bleeds away regardless of the fire.
+            double loss = coefficient * OPEN_SPACE_LEAK_MULTIPLIER * excess;
+            return Math.max(ambient, current - loss);
         }
 
-        double leak = Config.BASE_LEAK_PER_STEP.get() * (2.0 - averageInsulation(level, room));
-        return clamp(current + heatInput * volumeFactor(room) - leak, ambient, Config.MAX_TEMPERATURE.get());
+        // Newton's law of cooling: the hotter the room already is, the harder it fights back.
+        // That is what gives each banya a ceiling set by its walls, wood and size, instead of
+        // every room climbing to the same cap at the same rate.
+        double loss = coefficient * (2.0 - averageInsulation(level, room)) * excess;
+        double gain = heatInput * volumeFactor(room);
+        return clamp(current + gain - loss, ambient, Config.MAX_TEMPERATURE.get());
     }
 
     /**
@@ -54,6 +61,11 @@ public final class RoomClimate {
             decay *= OPEN_SPACE_LEAK_MULTIPLIER;
         }
         return Math.max(0.0, current - decay);
+    }
+
+    /** Whether steam is doing anything worth noticing, for readouts. */
+    public static boolean isHumid(double humidity) {
+        return humidity >= 1.0;
     }
 
     /**

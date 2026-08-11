@@ -3,6 +3,8 @@ package com.banya.player;
 import com.banya.Config;
 import com.banya.network.WarmthSyncPayload;
 import com.banya.registry.ModAttachments;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -21,9 +23,12 @@ public final class PlayerWarmth {
 
     /** Effects are refreshed every step, so they only need to outlive one simulation interval. */
     private static final int EFFECT_DURATION_TICKS = 60;
-    private static final int FAINT_DURATION_TICKS = 60;
-    /** Warmth a player is left with after fainting, so they wake below the danger band. */
-    private static final double WARMTH_AFTER_FAINT = 60.0;
+    /** The blackout itself: long enough that it interrupts whatever you were doing. */
+    private static final int FAINT_DURATION_TICKS = 120;
+    /** The wrung-out feeling afterwards, which is the real cost of ignoring the heat. */
+    private static final int FAINT_AFTERMATH_TICKS = 500;
+    /** Warmth a player is left with after fainting: below Deep Warmth, so the climb starts over. */
+    private static final double WARMTH_AFTER_FAINT = 45.0;
 
     private PlayerWarmth() {}
 
@@ -64,10 +69,21 @@ public final class PlayerWarmth {
         ContrastTracker.tick(player, exposure, warmth);
         warmth = get(player); // the plunge may have cooled the player as a side effect
 
-        // Nothing to draw when the player is cold and outside — skip the packet entirely.
-        if (exposure.inRoom() || warmth > 0.0) {
-            PacketDistributor.sendToPlayer(player, new WarmthSyncPayload((float) warmth, exposure.inRoom()));
+        syncToClient(player, (float) warmth, exposure.inRoom());
+    }
+
+    /**
+     * Sends the HUD values only when they actually changed. Crucially that includes the change back
+     * to "not in the banya": skipping that packet used to leave the bar stuck on screen at 0 after
+     * stepping out of a cold room.
+     */
+    private static void syncToClient(ServerPlayer player, float warmth, boolean inBanya) {
+        WarmthSync last = player.getData(ModAttachments.LAST_SYNC);
+        if (!last.differsFrom(warmth, inBanya)) {
+            return;
         }
+        player.setData(ModAttachments.LAST_SYNC, new WarmthSync(warmth, inBanya));
+        PacketDistributor.sendToPlayer(player, new WarmthSyncPayload(warmth, inBanya));
     }
 
     /** Hotter rooms heat proportionally faster, scaled around the reference heat index. */
@@ -84,18 +100,37 @@ public final class PlayerWarmth {
                     new MobEffectInstance(MobEffects.REGENERATION, EFFECT_DURATION_TICKS, 0, true, false));
             case DEEP_WARMTH -> player.addEffect(
                     new MobEffectInstance(MobEffects.REGENERATION, EFFECT_DURATION_TICKS, 1, true, false));
-            case OVERHEAT -> player.addEffect(
-                    new MobEffectInstance(MobEffects.CONFUSION, EFFECT_DURATION_TICKS, 0, true, true));
+            case OVERHEAT -> {
+                // Sitting it out has to be genuinely unpleasant, or the danger band is decoration.
+                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, EFFECT_DURATION_TICKS, 0, true, true));
+                player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, EFFECT_DURATION_TICKS, 1, true, true));
+                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, EFFECT_DURATION_TICKS, 1, true, true));
+                // The heat wrings you out: hunger drains rather than health.
+                player.causeFoodExhaustion(Config.OVERHEAT_EXHAUSTION.get().floatValue());
+            }
             case NEUTRAL -> {
             }
         }
     }
 
-    /** Soft faint: the screen goes dark and the player can barely move, but takes no damage. */
+    /**
+     * Soft faint, as agreed: no damage. It still has to cost something, so the blackout is long
+     * enough to interrupt, it knocks the bather off the polok, and it leaves them wrung out for a
+     * while afterwards.
+     */
     private static void faint(ServerPlayer player) {
+        player.stopRiding();
+
         player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, FAINT_DURATION_TICKS, 0, false, false));
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, FAINT_DURATION_TICKS, 3, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, FAINT_DURATION_TICKS, 4, false, true));
         player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, FAINT_DURATION_TICKS, 0, false, true));
+
+        player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, FAINT_AFTERMATH_TICKS, 1, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, FAINT_AFTERMATH_TICKS, 1, false, true));
+        player.causeFoodExhaustion(Config.FAINT_EXHAUSTION.get().floatValue());
+
+        player.displayClientMessage(
+                Component.translatable("message.banya.faint").withStyle(ChatFormatting.RED), true);
     }
 
     private static double clamp(double warmth) {

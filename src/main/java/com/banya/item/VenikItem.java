@@ -125,9 +125,10 @@ public class VenikItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
+        // State only: no counters and no instructions. What to do about it is the game's job to
+        // teach, not the tooltip's.
         tooltip.add(isSteeped(stack)
-                ? Component.translatable("tooltip.banya.venik.steeped", steepCharges(stack))
-                        .withStyle(ChatFormatting.AQUA)
+                ? Component.translatable("tooltip.banya.venik.steeped").withStyle(ChatFormatting.AQUA)
                 : Component.translatable("tooltip.banya.venik.dry").withStyle(ChatFormatting.GRAY));
     }
 

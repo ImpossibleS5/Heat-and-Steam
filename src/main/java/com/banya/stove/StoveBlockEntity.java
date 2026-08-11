@@ -272,12 +272,26 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
         double heatIndex = RoomClimate.heatIndex(this.temperature, this.humidity);
         for (Player player : level.getEntitiesOfClass(Player.class, this.room.bounds())) {
-            if (this.room.interior().contains(player.blockPosition())) {
+            if (isInside(player)) {
                 Exposure current = player.getData(ModAttachments.EXPOSURE);
                 player.setData(ModAttachments.EXPOSURE,
                         current.merge(heatIndex, relativeHeightOf(player)));
             }
         }
+    }
+
+    /**
+     * Whether the player counts as being in this room.
+     *
+     * <p>Checks the head as well as the feet: standing or sitting on a polok, a slab or a stair puts
+     * the feet inside a solid cell, which the room scan classes as wall. Only testing the feet made
+     * the bather drop out of their own banya the moment they sat down.
+     */
+    private boolean isInside(Player player) {
+        if (this.room.interior().contains(player.blockPosition())) {
+            return true;
+        }
+        return this.room.interior().contains(BlockPos.containing(player.getEyePosition()));
     }
 
     /** Where the player stands in the room's vertical span, 0 at the floor and 1 at the ceiling. */

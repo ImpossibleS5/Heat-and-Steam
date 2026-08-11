@@ -10,8 +10,11 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 
 /**
- * Warmth bar, drawn above the hotbar. Per the design decision it only appears while the player is
- * inside a parnaya, so it never clutters the HUD during normal play.
+ * Warmth bar, drawn above the hotbar.
+ *
+ * <p>Shown whenever there is warmth to report, not only inside the parnaya: warmth carries on
+ * draining after you step outside, and hiding the bar there hid live state the player still cares
+ * about. It disappears once warmth reaches zero.
  */
 public class WarmthHudLayer implements LayeredDraw.Layer {
     private static final int BAR_WIDTH = 80;
@@ -30,11 +33,14 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.options.hideGui || !WarmthHudData.inBanya()) {
+        if (minecraft.player == null || minecraft.options.hideGui) {
             return;
         }
 
         float warmth = WarmthHudData.warmth();
+        if (!WarmthHudData.inBanya() && warmth <= 0.0F) {
+            return;
+        }
         int left = (graphics.guiWidth() - BAR_WIDTH) / 2;
         int top = graphics.guiHeight() - BOTTOM_OFFSET;
 

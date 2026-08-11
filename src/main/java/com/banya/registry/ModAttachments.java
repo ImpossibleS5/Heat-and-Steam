@@ -2,6 +2,7 @@ package com.banya.registry;
 
 import com.banya.Banya;
 import com.banya.player.Exposure;
+import com.banya.player.WarmthSync;
 import com.mojang.serialization.Codec;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -24,6 +25,10 @@ public final class ModAttachments {
      */
     public static final Supplier<AttachmentType<Exposure>> EXPOSURE = REGISTER.register(
             "exposure", () -> AttachmentType.builder(() -> Exposure.NONE).build());
+
+    /** Last HUD values sent to this player's client, so packets only go out on a real change. */
+    public static final Supplier<AttachmentType<WarmthSync>> LAST_SYNC = REGISTER.register(
+            "last_sync", () -> AttachmentType.builder(() -> WarmthSync.NONE).build());
 
     /** Simulation steps left to reach cold water and earn Hardening. Transient by design. */
     public static final Supplier<AttachmentType<Integer>> CONTRAST_WINDOW = REGISTER.register(

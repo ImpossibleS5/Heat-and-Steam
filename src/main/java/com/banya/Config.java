@@ -24,12 +24,16 @@ public final class Config {
             .defineInRange("maxTemperature", 120.0, 30.0, 300.0);
 
     public static final ModConfigSpec.DoubleValue HEAT_PER_STEP = BUILDER
-            .comment("Degrees C added per simulation step (1 second) while the stove is burning.")
-            .defineInRange("heatPerStep", 6.0, 0.1, 50.0);
+            .comment("Heat the stove offers per simulation step (1 second) while burning.")
+            .defineInRange("heatPerStep", 3.0, 0.1, 50.0);
 
-    public static final ModConfigSpec.DoubleValue BASE_LEAK_PER_STEP = BUILDER
-            .comment("Degrees C lost per simulation step through perfectly insulated walls.")
-            .defineInRange("baseLeakPerStep", 1.0, 0.01, 50.0);
+    public static final ModConfigSpec.DoubleValue LEAK_COEFFICIENT = BUILDER
+            .comment(
+                    "Fraction of the room's excess heat lost per simulation step through perfect walls.",
+                    "Loss grows with how far above ambient the room already is, so a banya settles at",
+                    "an equilibrium instead of climbing to the cap: hotter needs better walls, drier",
+                    "wood or a smaller room. Roughly, equilibrium = ambient + heat / (this * wallFactor).")
+            .defineInRange("leakCoefficient", 0.05, 0.001, 1.0);
 
     public static final ModConfigSpec.IntValue REFERENCE_VOLUME = BUILDER
             .comment(
@@ -43,21 +47,33 @@ public final class Config {
 
     public static final ModConfigSpec.DoubleValue WARMTH_GAIN_PER_STEP = BUILDER
             .comment(
-                    "Warmth gained per simulation step at the reference temperature.",
-                    "Scales with how far the room is above the threshold.")
-            .defineInRange("warmthGainPerStep", 2.0, 0.1, 50.0);
+                    "Warmth gained per simulation step at the reference heat index.",
+                    "Scales with how far the room's perceived heat is above the threshold, so a humid",
+                    "parnaya warms you markedly faster than a dry one at the same temperature.")
+            .defineInRange("warmthGainPerStep", 0.8, 0.05, 50.0);
 
     public static final ModConfigSpec.DoubleValue WARMTH_DECAY_PER_STEP = BUILDER
             .comment("Warmth lost per simulation step while out of the heat.")
-            .defineInRange("warmthDecayPerStep", 1.5, 0.1, 50.0);
+            .defineInRange("warmthDecayPerStep", 1.0, 0.05, 50.0);
+
+    public static final ModConfigSpec.DoubleValue OVERHEAT_EXHAUSTION = BUILDER
+            .comment("Hunger exhaustion added each second spent in the overheat band.")
+            .defineInRange("overheatExhaustion", 0.6, 0.0, 20.0);
+
+    public static final ModConfigSpec.DoubleValue FAINT_EXHAUSTION = BUILDER
+            .comment("Hunger exhaustion dealt by a faint. The heat takes it out of you.")
+            .defineInRange("faintExhaustion", 6.0, 0.0, 40.0);
 
     public static final ModConfigSpec.DoubleValue WARMTH_REFERENCE_TEMPERATURE = BUILDER
             .comment("Room temperature (deg C) at which Warmth is gained at exactly the base rate.")
             .defineInRange("warmthReferenceTemperature", 80.0, 1.0, 300.0);
 
     public static final ModConfigSpec.DoubleValue HUMIDITY_DECAY_PER_STEP = BUILDER
-            .comment("Humidity (%) lost per simulation step as steam condenses.")
-            .defineInRange("humidityDecayPerStep", 2.0, 0.1, 100.0);
+            .comment(
+                    "Humidity (%) lost per simulation step as steam condenses.",
+                    "Low enough that one ladle is felt for a good while — steam that evaporates in",
+                    "seconds reads as doing nothing at all.")
+            .defineInRange("humidityDecayPerStep", 0.5, 0.05, 100.0);
 
     public static final ModConfigSpec.DoubleValue HUMIDITY_PER_LADLE = BUILDER
             .comment("Humidity (%) added by one ladle of water thrown onto hot stones.")
