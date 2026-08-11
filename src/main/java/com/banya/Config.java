@@ -123,6 +123,32 @@ public final class Config {
             .comment("Fraction of the normal humidity gained when the stones are too cold.")
             .defineInRange("heavySteamMultiplier", 0.4, 0.0, 1.0);
 
+    public static final ModConfigSpec.DoubleValue SMOKE_PER_STEP = BUILDER
+            .comment("Smoke (%) the fire adds per simulation step while burning.")
+            .defineInRange("smokePerStep", 1.2, 0.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue WET_SMOKE_MULTIPLIER = BUILDER
+            .comment("How much worse damp firewood smokes.")
+            .defineInRange("wetSmokeMultiplier", 2.0, 1.0, 10.0);
+
+    public static final ModConfigSpec.DoubleValue SMOKE_SETTLE_PER_STEP = BUILDER
+            .comment("Smoke (%) that settles out per step in a closed room.")
+            .defineInRange("smokeSettlePerStep", 0.3, 0.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue SMOKE_VENT_MULTIPLIER = BUILDER
+            .comment(
+                    "How much faster smoke clears once the room is open.",
+                    "Opening the door is the whole answer to a banya fired without a chimney.")
+            .defineInRange("smokeVentMultiplier", 12.0, 1.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue SMOKE_STING_LEVEL = BUILDER
+            .comment("Smoke (%) at which the bather's eyes start to sting.")
+            .defineInRange("smokeStingLevel", 30.0, 0.0, 100.0);
+
+    public static final ModConfigSpec.DoubleValue SMOKE_CHOKE_LEVEL = BUILDER
+            .comment("Smoke (%) at which breathing it starts to do harm.")
+            .defineInRange("smokeChokeLevel", 60.0, 0.0, 100.0);
+
     public static final ModConfigSpec.DoubleValue HUMIDITY_HEAT_WEIGHT = BUILDER
             .comment(
                     "How strongly humidity amplifies perceived heat.",

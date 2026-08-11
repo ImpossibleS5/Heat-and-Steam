@@ -28,7 +28,10 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
     private static final int READOUT_X = 92;
     private static final int READOUT_TEMPERATURE_Y = 43;
     private static final int READOUT_HUMIDITY_Y = 54;
+    /** Third line, in the gap above the inventory label. */
+    private static final int READOUT_SMOKE_Y = 64;
     private static final int READOUT_COLOR = 0x404040;
+    private static final int READOUT_SMOKE_COLOR = 0x8A5A2B;
     private static final int GAUGE_BORDER = 0xFF373737;
     private static final int GAUGE_EMPTY = 0xFF8B8B8B;
     private static final int GAUGE_FLAME = 0xFFFF9A2E;
@@ -82,5 +85,11 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
         graphics.drawString(this.font,
                 Component.translatable("container.banya.stove.humidity", this.menu.getHumidity()),
                 READOUT_X, READOUT_HUMIDITY_Y, READOUT_COLOR, false);
+        // Smoke only earns a line once there is some; a permanent "smoke 0%" is just noise.
+        if (this.menu.getSmoke() > 0) {
+            graphics.drawString(this.font,
+                    Component.translatable("container.banya.stove.smoke", this.menu.getSmoke()),
+                    READOUT_X, READOUT_SMOKE_Y, READOUT_SMOKE_COLOR, false);
+        }
     }
 }

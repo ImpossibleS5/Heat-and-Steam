@@ -87,6 +87,11 @@ public class StoveMenu extends AbstractContainerMenu {
         return this.data.get(StoveBlockEntity.DATA_HUMIDITY);
     }
 
+    /** Room smoke, 0-100. */
+    public int getSmoke() {
+        return this.data.get(StoveBlockEntity.DATA_SMOKE);
+    }
+
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = this.slots.get(index);

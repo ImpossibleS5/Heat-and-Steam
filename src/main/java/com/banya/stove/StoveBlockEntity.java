@@ -8,6 +8,7 @@ import com.banya.item.FirewoodItem;
 import com.banya.player.Exposure;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
+import com.banya.registry.ModEffects;
 import com.banya.registry.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,6 +19,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -49,10 +52,13 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     public static final int DATA_BURN_TIME_TOTAL = 1;
     public static final int DATA_TEMPERATURE = 2;
     public static final int DATA_HUMIDITY = 3;
-    public static final int DATA_SIZE = 4;
+    public static final int DATA_SMOKE = 4;
+    public static final int DATA_SIZE = 5;
 
     /** How many stones the T1 basket holds; bigger stoves get bigger baskets in Phase 3. */
     public static final int STONE_SLOTS = 4;
+    /** Smoke effects are refreshed every step, so they need only outlive one interval. */
+    private static final int SMOKE_EFFECT_TICKS = 60;
 
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
@@ -95,6 +101,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private double fuelHeatFactor = 1.0;
     /** Whether the current fuel throws embers (spruce does). */
     private boolean fuelSparks;
+    /** Whether the burning piece went in damp, which roughly doubles the smoke. */
+    private boolean fuelWasWet;
     /** Set when a pour just cracked a stone, read once by the block to tell the player. */
     private boolean crackedThisPour;
 
@@ -105,6 +113,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private double temperature = Config.AMBIENT_TEMPERATURE.get();
     /** Room humidity, 0-100. Raised by throwing water on the stones, decays by condensation. */
     private double humidity;
+    /** Room smoke, 0-100. Made by the fire, cleared mainly by opening the place up. */
+    private double smoke;
 
     private int tickCounter;
     private int stepsSinceScan;
@@ -121,6 +131,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_BURN_TIME_TOTAL -> burnTimeTotal;
                 case DATA_TEMPERATURE -> (int) Math.round(temperature);
                 case DATA_HUMIDITY -> (int) Math.round(humidity);
+                case DATA_SMOKE -> (int) Math.round(smoke);
                 default -> 0;
             };
         }
@@ -132,6 +143,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_BURN_TIME_TOTAL -> burnTimeTotal = value;
                 case DATA_TEMPERATURE -> temperature = value;
                 case DATA_HUMIDITY -> humidity = value;
+                case DATA_SMOKE -> smoke = value;
                 default -> {
                 }
             }
@@ -184,6 +196,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 ? firewood.heatFactor(stack)
                 : 1.0;
         this.fuelSparks = stack.getItem() instanceof FirewoodItem firewood2 && firewood2.species().sparks();
+        this.fuelWasWet = stack.getItem() instanceof FirewoodItem && !FirewoodItem.isDry(stack);
         stack.shrink(1);
         setChanged();
     }
@@ -199,6 +212,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
         this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(), this.room, level);
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
+        this.smoke = RoomClimate.nextSmoke(this.smoke, isBurning(), this.fuelWasWet, this.room);
         throwSparks(level);
         exposeOccupants(level);
         setChanged();
@@ -303,8 +317,29 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 Exposure current = player.getData(ModAttachments.EXPOSURE);
                 player.setData(ModAttachments.EXPOSURE,
                         current.merge(heatIndex, relativeHeightOf(player)));
+                applySmokeTo(player);
             }
         }
+    }
+
+    /**
+     * Smoke bites in two stages, as the design describes: first the eyes sting, then breathing it
+     * starts doing damage. Both clear the moment the room is aired out.
+     */
+    private void applySmokeTo(Player player) {
+        if (this.smoke < Config.SMOKE_STING_LEVEL.get()) {
+            return;
+        }
+        player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, SMOKE_EFFECT_TICKS, 0, true, false));
+
+        double choke = Config.SMOKE_CHOKE_LEVEL.get();
+        if (this.smoke < choke) {
+            return;
+        }
+        // Thicker smoke works faster rather than hitting harder.
+        int amplifier = (int) Math.min(2, (this.smoke - choke) / 15.0);
+        player.addEffect(new MobEffectInstance(
+                ModEffects.SMOKE_POISONING.getDelegate(), SMOKE_EFFECT_TICKS, amplifier, true, true));
     }
 
     /**
@@ -341,6 +376,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     public double getHumidity() {
         return this.humidity;
+    }
+
+    public double getSmoke() {
+        return this.smoke;
     }
 
     /** The current enclosed room, or {@code null} if the stove is open/leaking. */
@@ -390,6 +429,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         tag.putInt("BurnTimeTotal", this.burnTimeTotal);
         tag.putDouble("Temperature", this.temperature);
         tag.putDouble("Humidity", this.humidity);
+        tag.putDouble("Smoke", this.smoke);
     }
 
     @Override
@@ -408,6 +448,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 ? tag.getDouble("Temperature")
                 : Config.AMBIENT_TEMPERATURE.get();
         this.humidity = tag.getDouble("Humidity");
+        this.smoke = tag.getDouble("Smoke");
         this.needsRescan = true;
     }
 }

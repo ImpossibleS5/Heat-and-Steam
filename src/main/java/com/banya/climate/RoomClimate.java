@@ -63,6 +63,32 @@ public final class RoomClimate {
         return Math.max(0.0, current - decay);
     }
 
+    /**
+     * Smoke after one simulation step. A sealed room holds it in — it only really clears when the
+     * door is open, which is exactly how a banya fired without a chimney is aired out.
+     *
+     * @param producing whether the fire is currently making smoke
+     * @param wetFuel   damp wood smokes far worse, as the design intends
+     */
+    public static double nextSmoke(double current, boolean producing, boolean wetFuel,
+                                   @Nullable RoomShape room) {
+        double next = current;
+        if (producing) {
+            double output = Config.SMOKE_PER_STEP.get();
+            if (wetFuel) {
+                output *= Config.WET_SMOKE_MULTIPLIER.get();
+            }
+            next += output;
+        }
+
+        double settle = Config.SMOKE_SETTLE_PER_STEP.get();
+        if (room == null) {
+            // Opened up: the smoke rolls out far faster than it ever settles.
+            settle *= Config.SMOKE_VENT_MULTIPLIER.get();
+        }
+        return Math.clamp(next - settle, 0.0, 100.0);
+    }
+
     /** Whether steam is doing anything worth noticing, for readouts. */
     public static boolean isHumid(double humidity) {
         return humidity >= 1.0;

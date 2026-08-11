@@ -54,6 +54,9 @@ public class ModLanguageProvider extends LanguageProvider {
             add("container.banya.stove", "Печь-каменка");
             add("container.banya.stove.temperature", "%s °C");
             add("container.banya.stove.humidity", "влажность %s%%");
+            add("container.banya.stove.smoke", "дым %s%%");
+            add("message.banya.thermometer.smoke", "· дым %s%%");
+            add("effect.banya.smoke_poisoning", "Угар");
             add("message.banya.thermometer.dry", "%s °C · влажность %s%%");
             add("message.banya.thermometer.humid", "%s °C · влажность %s%% · как %s °C");
             add("message.banya.thermometer.leaking", "не замкнуто");
@@ -98,6 +101,9 @@ public class ModLanguageProvider extends LanguageProvider {
             add("container.banya.stove", "Banya Stove");
             add("container.banya.stove.temperature", "%s °C");
             add("container.banya.stove.humidity", "humidity %s%%");
+            add("container.banya.stove.smoke", "smoke %s%%");
+            add("message.banya.thermometer.smoke", "· smoke %s%%");
+            add("effect.banya.smoke_poisoning", "Smoke Poisoning");
             add("message.banya.thermometer.dry", "%s °C · humidity %s%%");
             add("message.banya.thermometer.humid", "%s °C · humidity %s%% · like %s °C");
             add("message.banya.thermometer.leaking", "not sealed");

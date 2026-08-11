@@ -98,6 +98,15 @@ public class ThermometerBlock extends Block {
                 ? Component.translatable("message.banya.thermometer.humid", temperature, humidity,
                         Math.round(RoomClimate.heatIndex(stove.getTemperature(), stove.getHumidity())))
                 : Component.translatable("message.banya.thermometer.dry", temperature, humidity);
+
+        // Smoke is worth shouting about, so it gets appended rather than replacing the reading.
+        if (stove.getSmoke() >= 1.0) {
+            reading = Component.empty()
+                    .append(reading)
+                    .append(Component.literal(" "))
+                    .append(Component.translatable("message.banya.thermometer.smoke",
+                            Math.round(stove.getSmoke())).withStyle(ChatFormatting.DARK_RED));
+        }
         if (stove.getRoom() == null) {
             return Component.empty()
                     .append(reading.copy().withStyle(ChatFormatting.AQUA))
