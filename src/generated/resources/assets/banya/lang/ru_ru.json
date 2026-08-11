@@ -20,7 +20,7 @@
   "item.banya.venik_oak": "Дубовый веник",
   "itemGroup.banya": "Баня",
   "message.banya.faint": "В глазах потемнело…",
-  "message.banya.hardening": "Закалка! Цикл %s",
+  "message.banya.hardening": "Закалка!",
   "message.banya.overheat": "Голова кружится — пора выйти",
   "message.banya.steam.heavy": "Тяжёлый пар — камни ещё не раскалились",
   "message.banya.thermometer.dry": "%s °C · влажность %s%%",

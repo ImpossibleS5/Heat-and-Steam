@@ -73,13 +73,30 @@ public final class Config {
 
     public static final ModConfigSpec.DoubleValue OVERHEAT_DAMAGE = BUILDER
             .comment(
-                    "Damage per second taken in the overheat band after having already fainted.",
-                    "The first faint is a warning; sitting back down in the heat is what hurts.")
+                    "Damage per second once heat strain has passed the fainting point.",
+                    "Scales up as strain keeps climbing, so staying put gets worse, never better.")
             .defineInRange("overheatDamage", 1.0, 0.0, 20.0);
 
-    public static final ModConfigSpec.DoubleValue HEAT_RECOVERY_WARMTH = BUILDER
-            .comment("Warmth a fainted player must cool back down to before the heat stops hurting.")
-            .defineInRange("heatRecoveryWarmth", 25.0, 0.0, 100.0);
+    public static final ModConfigSpec.DoubleValue STRAIN_GAIN = BUILDER
+            .comment(
+                    "Heat strain gained per second at full Warmth.",
+                    "Strain is the danger meter, kept separate from Warmth so that passing out",
+                    "cannot double as a way to clear the danger.")
+            .defineInRange("strainGainPerStep", 5.0, 0.1, 100.0);
+
+    public static final ModConfigSpec.DoubleValue STRAIN_RECOVERY = BUILDER
+            .comment(
+                    "Heat strain shed per second once Warmth is back below the overheat band.",
+                    "Only cooling down clears it: neither fainting nor waiting it out in the heat will.")
+            .defineInRange("strainRecoveryPerStep", 5.0, 0.1, 100.0);
+
+    public static final ModConfigSpec.DoubleValue STRAIN_FAINT = BUILDER
+            .comment("Heat strain at which the bather blacks out, and past which the heat starts to hurt.")
+            .defineInRange("strainFaintThreshold", 100.0, 1.0, 1000.0);
+
+    public static final ModConfigSpec.DoubleValue STRAIN_MAX = BUILDER
+            .comment("Ceiling on heat strain, which also caps how fast the damage ramps.")
+            .defineInRange("strainMax", 200.0, 1.0, 2000.0);
 
     public static final ModConfigSpec.DoubleValue WARMTH_REFERENCE_TEMPERATURE = BUILDER
             .comment("Room temperature (deg C) at which Warmth is gained at exactly the base rate.")

@@ -77,8 +77,9 @@ public final class ContrastTracker {
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, duration, cycles - 1, false, true));
 
         player.playNotifySound(SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 0.8F, 1.4F);
+        // The cycle count drives the effect strength; the player does not need it read out to them.
         player.displayClientMessage(
-                Component.translatable("message.banya.hardening", cycles).withStyle(ChatFormatting.AQUA), true);
+                Component.translatable("message.banya.hardening").withStyle(ChatFormatting.AQUA), true);
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(ParticleTypes.SNOWFLAKE,
                     player.getX(), player.getY() + 1.0, player.getZ(), 20, 0.4, 0.6, 0.4, 0.02);

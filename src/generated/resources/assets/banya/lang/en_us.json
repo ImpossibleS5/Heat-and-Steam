@@ -20,7 +20,7 @@
   "item.banya.venik_oak": "Oak Venik",
   "itemGroup.banya": "Banya",
   "message.banya.faint": "Everything goes dark…",
-  "message.banya.hardening": "Hardening! Cycle %s",
+  "message.banya.hardening": "Hardening!",
   "message.banya.overheat": "Your head is swimming — time to step out",
   "message.banya.steam.heavy": "Heavy steam — the stones are not hot enough yet",
   "message.banya.thermometer.dry": "%s °C · humidity %s%%",

@@ -23,12 +23,13 @@ public final class PlayerWarmth {
 
     /** Effects are refreshed every step, so they only need to outlive one simulation interval. */
     private static final int EFFECT_DURATION_TICKS = 60;
-    /** The blackout itself: long enough that it interrupts whatever you were doing. */
-    private static final int FAINT_DURATION_TICKS = 120;
+    /**
+     * The blackout: long enough to interrupt, short enough that the bather regains control and can
+     * still stagger out. A longer one plus the damage that follows was simply a death sentence.
+     */
+    private static final int FAINT_DURATION_TICKS = 60;
     /** The wrung-out feeling afterwards, which is the real cost of ignoring the heat. */
     private static final int FAINT_AFTERMATH_TICKS = 500;
-    /** Warmth a player is left with after fainting: below Deep Warmth, so the climb starts over. */
-    private static final double WARMTH_AFTER_FAINT = 45.0;
 
     private PlayerWarmth() {}
 
@@ -65,24 +66,56 @@ public final class PlayerWarmth {
 
         warmth = clamp(warmth);
         warnOnEnteringOverheat(player, zoneBefore, WarmthZone.of(warmth));
-
-        // Cooling right down is what clears the mark a faint leaves behind.
-        if (warmth <= Config.HEAT_RECOVERY_WARMTH.get()) {
-            player.setData(ModAttachments.HEAT_EXHAUSTED, false);
-        }
-
-        if (warmth >= MAX_WARMTH) {
-            faint(player);
-            warmth = WARMTH_AFTER_FAINT;
-        } else {
-            applyZoneEffects(player, WarmthZone.of(warmth));
-        }
-
         set(player, warmth);
-        ContrastTracker.tick(player, exposure, warmth);
-        warmth = get(player); // the plunge may have cooled the player as a side effect
 
-        syncToClient(player, (float) warmth, exposure.inRoom());
+        boolean inHeat = exposure.heatIndex() >= threshold;
+        double strain = updateStrain(player, warmth, inHeat);
+        applyZoneEffects(player, WarmthZone.of(warmth), strain);
+        applyOverheatDamage(player, strain, inHeat);
+
+        ContrastTracker.tick(player, exposure, warmth);
+        warmth = get(player); // the plunge cools the bather, which is the way out of the danger
+
+        syncToClient(player, (float) warmth, strainFraction(strain), exposure.inRoom());
+    }
+
+    /**
+     * Advances heat strain, the meter that actually decides how much trouble the bather is in.
+     *
+     * <p>It builds only near the very top of the Warmth range and drains only once they have cooled
+     * below the overheat band. Crucially the blackout does not touch it: an earlier version reset
+     * Warmth on fainting, which turned passing out into a way to clear the danger and produced a
+     * sawtooth of faint, recover, faint. Now the only way out is to leave the heat — or take a
+     * plunge, which halves Warmth and starts the strain draining.
+     *
+     * @return the strain after this step
+     */
+    private static double updateStrain(ServerPlayer player, double warmth, boolean inHeat) {
+        double strain = player.getData(ModAttachments.HEAT_STRAIN);
+
+        // Gated on still being in the heat, not merely on a high Warmth reading: Warmth takes a
+        // while to fall, and stepping outside has to start helping immediately.
+        if (inHeat && warmth >= WarmthZone.OVERHEAT_START) {
+            double intensity = (warmth - WarmthZone.OVERHEAT_START)
+                    / (MAX_WARMTH - WarmthZone.OVERHEAT_START);
+            strain = Math.min(Config.STRAIN_MAX.get(), strain + Config.STRAIN_GAIN.get() * intensity);
+        } else {
+            strain = Math.max(0.0, strain - Config.STRAIN_RECOVERY.get());
+        }
+        player.setData(ModAttachments.HEAT_STRAIN, strain);
+
+        if (strain <= 0.0) {
+            player.setData(ModAttachments.HEAT_EXHAUSTED, false);
+        } else if (strain >= Config.STRAIN_FAINT.get()
+                && !player.getData(ModAttachments.HEAT_EXHAUSTED)) {
+            faint(player);
+        }
+        return strain;
+    }
+
+    /** Strain as a 0..1 fraction, so the HUD needs no knowledge of the configured ceiling. */
+    private static float strainFraction(double strain) {
+        return (float) Math.min(1.0, strain / Math.max(1.0, Config.STRAIN_MAX.get()));
     }
 
     /** One clear shout on crossing into the danger band, rather than a message every second. */
@@ -98,13 +131,13 @@ public final class PlayerWarmth {
      * to "not in the banya": skipping that packet used to leave the bar stuck on screen at 0 after
      * stepping out of a cold room.
      */
-    private static void syncToClient(ServerPlayer player, float warmth, boolean inBanya) {
+    private static void syncToClient(ServerPlayer player, float warmth, float strain, boolean inBanya) {
         WarmthSync last = player.getData(ModAttachments.LAST_SYNC);
-        if (!last.differsFrom(warmth, inBanya)) {
+        if (!last.differsFrom(warmth, strain, inBanya)) {
             return;
         }
-        player.setData(ModAttachments.LAST_SYNC, new WarmthSync(warmth, inBanya));
-        PacketDistributor.sendToPlayer(player, new WarmthSyncPayload(warmth, inBanya));
+        player.setData(ModAttachments.LAST_SYNC, new WarmthSync(warmth, strain, inBanya));
+        PacketDistributor.sendToPlayer(player, new WarmthSyncPayload(warmth, strain, inBanya));
     }
 
     /** Hotter rooms heat proportionally faster, scaled around the reference heat index. */
@@ -115,7 +148,21 @@ public final class PlayerWarmth {
         return Config.WARMTH_GAIN_PER_STEP.get() * Math.max(0.0, intensity);
     }
 
-    private static void applyZoneEffects(ServerPlayer player, WarmthZone zone) {
+    /**
+     * Harm from staying in the heat once strain has passed the blackout point. It ramps with
+     * strain, so remaining only ever gets worse, and it is conditioned on still being in the heat
+     * rather than on Warmth: Warmth takes many seconds to fall, and walking out has to help at once.
+     */
+    private static void applyOverheatDamage(ServerPlayer player, double strain, boolean inHeat) {
+        double faintPoint = Config.STRAIN_FAINT.get();
+        if (!inHeat || strain < faintPoint) {
+            return;
+        }
+        double ramp = 1.0 + (strain - faintPoint) / faintPoint;
+        player.hurt(player.damageSources().onFire(), (float) (Config.OVERHEAT_DAMAGE.get() * ramp));
+    }
+
+    private static void applyZoneEffects(ServerPlayer player, WarmthZone zone, double strain) {
         switch (zone) {
             case LIGHT_STEAM -> player.addEffect(
                     new MobEffectInstance(MobEffects.REGENERATION, EFFECT_DURATION_TICKS, 0, true, false));
@@ -127,12 +174,6 @@ public final class PlayerWarmth {
                 player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, EFFECT_DURATION_TICKS, 1, true, true));
                 player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, EFFECT_DURATION_TICKS, 1, true, true));
                 player.causeFoodExhaustion(Config.OVERHEAT_EXHAUSTION.get().floatValue());
-
-                // Once you have already blacked out, staying in the heat stops being survivable.
-                // The first faint is the warning; ignoring it is what costs health.
-                if (player.getData(ModAttachments.HEAT_EXHAUSTED)) {
-                    player.hurt(player.damageSources().onFire(), Config.OVERHEAT_DAMAGE.get().floatValue());
-                }
             }
             case NEUTRAL -> {
             }
@@ -150,7 +191,7 @@ public final class PlayerWarmth {
         player.setData(ModAttachments.HEAT_EXHAUSTED, true);
 
         player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, FAINT_DURATION_TICKS, 0, false, false));
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, FAINT_DURATION_TICKS, 4, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, FAINT_DURATION_TICKS, 2, false, true));
         player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, FAINT_DURATION_TICKS, 0, false, true));
 
         player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, FAINT_AFTERMATH_TICKS, 1, false, true));

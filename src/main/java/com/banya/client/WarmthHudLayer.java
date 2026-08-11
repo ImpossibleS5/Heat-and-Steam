@@ -33,6 +33,9 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
     private static final int COLOR_LIGHT_STEAM = 0xFF6FCF6F;
     private static final int COLOR_DEEP_WARMTH = 0xFFF2A33C;
     private static final int COLOR_OVERHEAT = 0xFFE04B3A;
+    private static final int COLOR_STRAIN = 0xFFC1272D;
+    /** Strain rides as a thinner line beneath the warmth bar. */
+    private static final int STRAIN_HEIGHT = 2;
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
@@ -58,6 +61,25 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
         if (filled > 0) {
             graphics.fill(barLeft, top, barLeft + filled, top + BAR_HEIGHT, colorFor(WarmthZone.of(warmth)));
         }
+
+        renderStrain(graphics, barLeft, top);
+    }
+
+    /**
+     * A thin red line under the bar showing how much heat strain has built up. Without it the
+     * mechanic that decides whether the bather is in danger would be entirely invisible, and the
+     * damage would seem to come from nowhere.
+     */
+    private static void renderStrain(GuiGraphics graphics, int barLeft, int barTop) {
+        float strain = WarmthHudData.strain();
+        if (strain <= 0.0F) {
+            return;
+        }
+        int top = barTop + BAR_HEIGHT + 1;
+        int width = Math.max(1, Math.round(BAR_WIDTH * Math.min(1.0F, strain)));
+        graphics.fill(barLeft - 1, top - 1, barLeft + BAR_WIDTH + 1, top + STRAIN_HEIGHT + 1, COLOR_BORDER);
+        graphics.fill(barLeft, top, barLeft + BAR_WIDTH, top + STRAIN_HEIGHT, COLOR_EMPTY);
+        graphics.fill(barLeft, top, barLeft + width, top + STRAIN_HEIGHT, COLOR_STRAIN);
     }
 
     private static int colorFor(WarmthZone zone) {

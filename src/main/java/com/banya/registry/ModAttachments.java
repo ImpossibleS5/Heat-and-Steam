@@ -27,11 +27,16 @@ public final class ModAttachments {
             "exposure", () -> AttachmentType.builder(() -> Exposure.NONE).build());
 
     /**
-     * Set once a player has fainted and cleared only after they have properly cooled off. While it
-     * holds, staying in the overheat band actually hurts — the first faint is the warning.
+     * Heat strain: the danger meter, deliberately separate from Warmth. It builds only near the top
+     * of the Warmth range and drains only once the bather has cooled below the overheat band, so
+     * blacking out cannot be used to shed the danger.
      */
+    public static final Supplier<AttachmentType<Double>> HEAT_STRAIN = REGISTER.register(
+            "heat_strain", () -> AttachmentType.builder(() -> 0.0D).serialize(Codec.DOUBLE).build());
+
+    /** Whether the blackout for this strain episode has already happened, so it fires just once. */
     public static final Supplier<AttachmentType<Boolean>> HEAT_EXHAUSTED = REGISTER.register(
-            "heat_exhausted", () -> AttachmentType.builder(() -> false).build());
+            "heat_exhausted", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).build());
 
     /** Last HUD values sent to this player's client, so packets only go out on a real change. */
     public static final Supplier<AttachmentType<WarmthSync>> LAST_SYNC = REGISTER.register(

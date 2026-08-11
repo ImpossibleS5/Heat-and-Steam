@@ -9,17 +9,24 @@ package com.banya.player;
  */
 public final class WarmthHudData {
     private static float warmth;
+    private static float strain;
     private static boolean inBanya;
 
     private WarmthHudData() {}
 
-    public static void set(float warmth, boolean inBanya) {
+    public static void set(float warmth, float strain, boolean inBanya) {
         WarmthHudData.warmth = warmth;
+        WarmthHudData.strain = strain;
         WarmthHudData.inBanya = inBanya;
     }
 
     public static float warmth() {
         return warmth;
+    }
+
+    /** Heat strain as a 0..1 fraction of its ceiling. */
+    public static float strain() {
+        return strain;
     }
 
     public static boolean inBanya() {
@@ -29,6 +36,7 @@ public final class WarmthHudData {
     /** Called when leaving a world so a stale bar cannot survive into the next session. */
     public static void reset() {
         warmth = 0.0F;
+        strain = 0.0F;
         inBanya = false;
     }
 }

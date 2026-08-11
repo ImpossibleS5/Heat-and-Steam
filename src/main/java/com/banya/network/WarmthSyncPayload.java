@@ -12,14 +12,16 @@ import net.minecraft.resources.ResourceLocation;
  * something to show, so the bar can be driven entirely client-side between updates.
  *
  * @param warmth  the player's Warmth, 0-100
- * @param inBanya whether the player is inside a parnaya (the HUD only shows there)
+ * @param strain  heat strain as a 0..1 fraction, so the client needs no server config
+ * @param inBanya whether the player is inside a parnaya
  */
-public record WarmthSyncPayload(float warmth, boolean inBanya) implements CustomPacketPayload {
+public record WarmthSyncPayload(float warmth, float strain, boolean inBanya) implements CustomPacketPayload {
     public static final Type<WarmthSyncPayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(Banya.MODID, "warmth_sync"));
 
     public static final StreamCodec<ByteBuf, WarmthSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT, WarmthSyncPayload::warmth,
+            ByteBufCodecs.FLOAT, WarmthSyncPayload::strain,
             ByteBufCodecs.BOOL, WarmthSyncPayload::inBanya,
             WarmthSyncPayload::new);
 
