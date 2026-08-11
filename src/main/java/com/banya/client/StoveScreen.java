@@ -16,13 +16,19 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
     private static final ResourceLocation BACKGROUND =
             ResourceLocation.fromNamespaceAndPath(Banya.MODID, "textures/gui/stove.png");
 
-    /** Burn gauge sits to the right of the fuel slot. */
-    private static final int GAUGE_X = 104;
+    /** Burn gauge sits immediately right of the fuel slot. */
+    private static final int GAUGE_X = 68;
     private static final int GAUGE_Y = 48;
     private static final int GAUGE_WIDTH = 16;
     private static final int GAUGE_HEIGHT = 10;
-    /** Climate readout goes between the stone basket and the fuel slot. */
-    private static final int CLIMATE_LABEL_Y = 38;
+    /**
+     * Readout occupies the right half of the fuel row, on two short lines. Centring it over the row
+     * put it straight through the fuel slot and the flame.
+     */
+    private static final int READOUT_X = 92;
+    private static final int READOUT_TEMPERATURE_Y = 43;
+    private static final int READOUT_HUMIDITY_Y = 54;
+    private static final int READOUT_COLOR = 0x404040;
     private static final int GAUGE_BORDER = 0xFF373737;
     private static final int GAUGE_EMPTY = 0xFF8B8B8B;
     private static final int GAUGE_FLAME = 0xFFFF9A2E;
@@ -70,9 +76,11 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         super.renderLabels(graphics, mouseX, mouseY);
-        Component reading = Component.translatable("container.banya.stove.climate",
-                this.menu.getTemperature(), this.menu.getHumidity());
-        graphics.drawString(this.font, reading,
-                (this.imageWidth - this.font.width(reading)) / 2, CLIMATE_LABEL_Y, 0x404040, false);
+        graphics.drawString(this.font,
+                Component.translatable("container.banya.stove.temperature", this.menu.getTemperature()),
+                READOUT_X, READOUT_TEMPERATURE_Y, READOUT_COLOR, false);
+        graphics.drawString(this.font,
+                Component.translatable("container.banya.stove.humidity", this.menu.getHumidity()),
+                READOUT_X, READOUT_HUMIDITY_Y, READOUT_COLOR, false);
     }
 }

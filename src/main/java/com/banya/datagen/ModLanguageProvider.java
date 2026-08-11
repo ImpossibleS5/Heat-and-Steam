@@ -46,9 +46,10 @@ public class ModLanguageProvider extends LanguageProvider {
             add("effect.banya.hardening", "Закалка");
             add("message.banya.hardening", "Закалка! Цикл %s");
             add("container.banya.stove", "Печь-каменка");
-            add("container.banya.stove.climate", "%s °C · %s%%");
-            add("message.banya.thermometer.dry", "%s °C");
-            add("message.banya.thermometer.humid", "%s °C · пар %s%% · как %s °C");
+            add("container.banya.stove.temperature", "%s °C");
+            add("container.banya.stove.humidity", "влажность %s%%");
+            add("message.banya.thermometer.dry", "%s °C · влажность %s%%");
+            add("message.banya.thermometer.humid", "%s °C · влажность %s%% · как %s °C");
             add("message.banya.thermometer.leaking", "не замкнуто");
             add("message.banya.thermometer.no_stove", "Печь не найдена");
             add("message.banya.overheat", "Голова кружится — пора выйти");
@@ -83,9 +84,10 @@ public class ModLanguageProvider extends LanguageProvider {
             add("effect.banya.hardening", "Hardening");
             add("message.banya.hardening", "Hardening! Cycle %s");
             add("container.banya.stove", "Banya Stove");
-            add("container.banya.stove.climate", "%s °C · %s%%");
-            add("message.banya.thermometer.dry", "%s °C");
-            add("message.banya.thermometer.humid", "%s °C · steam %s%% · like %s °C");
+            add("container.banya.stove.temperature", "%s °C");
+            add("container.banya.stove.humidity", "humidity %s%%");
+            add("message.banya.thermometer.dry", "%s °C · humidity %s%%");
+            add("message.banya.thermometer.humid", "%s °C · humidity %s%% · like %s °C");
             add("message.banya.thermometer.leaking", "not sealed");
             add("message.banya.thermometer.no_stove", "No stove nearby");
             add("message.banya.overheat", "Your head is swimming — time to step out");

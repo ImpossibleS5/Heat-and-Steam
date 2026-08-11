@@ -89,15 +89,15 @@ public class ThermometerBlock extends Block {
             return Component.translatable("message.banya.thermometer.no_stove")
                     .withStyle(ChatFormatting.GRAY);
         }
-        // Keep it short. In dry air the perceived heat equals the temperature, so printing both
-        // would just be the same number twice; the humidity line only appears when steam is doing
-        // something.
+        // Temperature and humidity always show. The perceived-heat figure only joins them when
+        // there is steam: in dry air it equals the temperature, and printing the same number twice
+        // is the clutter, not the information.
         long temperature = Math.round(stove.getTemperature());
+        long humidity = Math.round(stove.getHumidity());
         Component reading = RoomClimate.isHumid(stove.getHumidity())
-                ? Component.translatable("message.banya.thermometer.humid", temperature,
-                        Math.round(stove.getHumidity()),
+                ? Component.translatable("message.banya.thermometer.humid", temperature, humidity,
                         Math.round(RoomClimate.heatIndex(stove.getTemperature(), stove.getHumidity())))
-                : Component.translatable("message.banya.thermometer.dry", temperature);
+                : Component.translatable("message.banya.thermometer.dry", temperature, humidity);
         if (stove.getRoom() == null) {
             return Component.empty()
                     .append(reading.copy().withStyle(ChatFormatting.AQUA))

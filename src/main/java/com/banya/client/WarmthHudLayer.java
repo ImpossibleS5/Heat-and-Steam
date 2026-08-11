@@ -7,7 +7,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.network.chat.Component;
 
 /**
  * Warmth bar, drawn above the hotbar.
@@ -17,15 +16,16 @@ import net.minecraft.network.chat.Component;
  * about. It disappears once warmth reaches zero.
  */
 public class WarmthHudLayer implements LayeredDraw.Layer {
-    private static final int BAR_WIDTH = 70;
+    /** Same span as a vanilla status row, so it lines up with the hotbar's right edge. */
+    private static final int BAR_WIDTH = 81;
     private static final int BAR_HEIGHT = 5;
-    /** Gap between the label and the bar, which share one row. */
-    private static final int LABEL_GAP = 4;
+    /** Left inset from screen centre, mirroring where vanilla starts the food row. */
+    private static final int CENTRE_INSET = 10;
     /**
-     * Distance from the bottom of the screen. Deliberately clear of the action bar around 68px,
-     * which is where the overheat and faint messages appear — those used to land on top of this.
+     * One row above the air bubbles. Keeps clear of health, armour, air and — importantly — the
+     * action bar in the middle, where the overheat and faint messages appear.
      */
-    private static final int BOTTOM_OFFSET = 88;
+    private static final int BOTTOM_OFFSET = 59;
 
     private static final int COLOR_BORDER = 0xFF000000;
     private static final int COLOR_EMPTY = 0x80303030;
@@ -33,7 +33,6 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
     private static final int COLOR_LIGHT_STEAM = 0xFF6FCF6F;
     private static final int COLOR_DEEP_WARMTH = 0xFFF2A33C;
     private static final int COLOR_OVERHEAT = 0xFFE04B3A;
-    private static final int COLOR_LABEL = 0xFFFFFFFF;
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
@@ -46,16 +45,11 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
         if (!WarmthHudData.inBanya() && warmth <= 0.0F) {
             return;
         }
-        // Label and bar share a single row, so the widget stays one line tall and cannot collide
-        // with anything vanilla draws above the hotbar.
-        Component label = Component.translatable("hud.banya.warmth", Math.round(warmth));
-        int labelWidth = minecraft.font.width(label);
-        int rowWidth = labelWidth + LABEL_GAP + BAR_WIDTH;
-        int rowLeft = (graphics.guiWidth() - rowWidth) / 2;
+        // Sits in the vanilla status stack rather than floating in the middle of the screen, and
+        // carries no number: health and food do not print one either, and the thermometer is there
+        // when an exact reading is wanted.
+        int barLeft = graphics.guiWidth() / 2 + CENTRE_INSET;
         int top = graphics.guiHeight() - BOTTOM_OFFSET;
-        int barLeft = rowLeft + labelWidth + LABEL_GAP;
-
-        graphics.drawString(minecraft.font, label, rowLeft, top - 1, COLOR_LABEL, true);
 
         graphics.fill(barLeft - 1, top - 1, barLeft + BAR_WIDTH + 1, top + BAR_HEIGHT + 1, COLOR_BORDER);
         graphics.fill(barLeft, top, barLeft + BAR_WIDTH, top + BAR_HEIGHT, COLOR_EMPTY);

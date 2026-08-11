@@ -19,7 +19,8 @@ import net.neoforged.neoforge.items.SlotItemHandler;
  * Slot coordinates match the generated {@code textures/gui/stove.png} panel.
  */
 public class StoveMenu extends AbstractContainerMenu {
-    public static final int FUEL_SLOT_X = 80;
+    /** Fuel sits on the left of its row, with the flame gauge beside it and the readout to the right. */
+    public static final int FUEL_SLOT_X = 44;
     public static final int FUEL_SLOT_Y = 45;
     /** Left edge of the stone row; four slots sit side by side from here. */
     public static final int STONE_SLOT_X = 52;
