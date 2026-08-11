@@ -4,6 +4,7 @@ import com.banya.Banya;
 import com.banya.item.FeltHatItem;
 import com.banya.item.LadleItem;
 import com.banya.item.VenikItem;
+import com.banya.item.VenikSpecies;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -29,11 +30,15 @@ public final class ModItems {
 
     /** Birch venik — the all-rounder; leaves fall off with use, hence the durability. */
     public static final DeferredItem<VenikItem> VENIK_BIRCH = REGISTER.registerItem(
-            "venik_birch", VenikItem::new, new Item.Properties().stacksTo(1).durability(48));
+            "venik_birch",
+            properties -> new VenikItem(VenikSpecies.BIRCH, properties),
+            new Item.Properties().stacksTo(1).durability(48));
 
     /** Oak venik — sturdier bundle. */
     public static final DeferredItem<VenikItem> VENIK_OAK = REGISTER.registerItem(
-            "venik_oak", VenikItem::new, new Item.Properties().stacksTo(1).durability(64));
+            "venik_oak",
+            properties -> new VenikItem(VenikSpecies.OAK, properties),
+            new Item.Properties().stacksTo(1).durability(64));
 
     private ModItems() {}
 }

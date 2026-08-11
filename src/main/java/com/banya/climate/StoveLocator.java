@@ -23,6 +23,18 @@ public final class StoveLocator {
         return findNearest(level, origin, DEFAULT_RADIUS);
     }
 
+    /**
+     * Perceived heat at a position, or 0 when it is not inside a sealed parnaya. Used by
+     * interactions that are only meaningful in a working banya.
+     */
+    public static double heatIndexAt(Level level, BlockPos pos) {
+        StoveBlockEntity stove = findNearest(level, pos);
+        if (stove == null || stove.getRoom() == null || !stove.getRoom().interior().contains(pos)) {
+            return 0.0;
+        }
+        return RoomClimate.heatIndex(stove.getTemperature(), stove.getHumidity());
+    }
+
     @Nullable
     public static StoveBlockEntity findNearest(Level level, BlockPos origin, int radius) {
         StoveBlockEntity nearest = null;

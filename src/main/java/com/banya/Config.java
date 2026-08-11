@@ -98,6 +98,20 @@ public final class Config {
             .comment("Room temperature (deg C) the tub's water must reach before a venik can be steeped.")
             .defineInRange("tubSteepTemperature", 60.0, 0.0, 300.0);
 
+    public static final ModConfigSpec.DoubleValue VENIK_HEAT_INDEX = BUILDER
+            .comment("Perceived heat the room must reach before a venik can be used at all.")
+            .defineInRange("venikHeatIndex", 60.0, 0.0, 400.0);
+
+    public static final ModConfigSpec.IntValue VENIK_CHANNEL_TICKS = BUILDER
+            .comment("How long whisking takes, in ticks (20 = 1 second).")
+            .defineInRange("venikChannelTicks", 60, 5, 200);
+
+    public static final ModConfigSpec.DoubleValue VENIK_OTHER_PLAYER_MULTIPLIER = BUILDER
+            .comment(
+                    "Effect multiplier when whisking someone else rather than yourself.",
+                    "Above 1.0 this is the mod's nudge towards bathing together.")
+            .defineInRange("venikOtherPlayerMultiplier", 1.5, 1.0, 5.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}
