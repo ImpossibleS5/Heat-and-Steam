@@ -1,7 +1,5 @@
 {
   "values": [
-    "minecraft:cobblestone",
-    "minecraft:stone",
-    "minecraft:granite"
+    "banya:river_stone"
   ]
 }

@@ -28,6 +28,14 @@ public final class ModItems {
     public static final DeferredItem<FeltHatItem> FELT_HAT = REGISTER.registerItem(
             "felt_hat", FeltHatItem::new, new Item.Properties().stacksTo(1));
 
+    // Banya stones are items rather than raw building blocks, the same way firewood is: what goes
+    // in the basket is prepared stone, and each tier is one recognisable item.
+    /** Field and river stone — what you start with. */
+    public static final DeferredItem<Item> RIVER_STONE = REGISTER.registerSimpleItem("river_stone");
+    /** Denser rock, holds heat better. */
+    public static final DeferredItem<Item> ANDESITE_STONE = REGISTER.registerSimpleItem("andesite_stone");
+    /** Volcanic rock, the best you will find without a mountain expedition. */
+    public static final DeferredItem<Item> BASALT_STONE = REGISTER.registerSimpleItem("basalt_stone");
     /** Soapstone: the best banya stone there is, and the reason to go up the mountains. */
     public static final DeferredItem<Item> SOAPSTONE = REGISTER.registerSimpleItem("soapstone");
 

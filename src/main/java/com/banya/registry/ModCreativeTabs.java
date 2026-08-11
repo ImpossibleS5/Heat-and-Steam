@@ -33,6 +33,9 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.POLOK.get());
                         output.accept(ModItems.BANYA_DOOR.get());
                         output.accept(ModItems.SOAPSTONE_ORE.get());
+                        output.accept(ModItems.RIVER_STONE.get());
+                        output.accept(ModItems.ANDESITE_STONE.get());
+                        output.accept(ModItems.BASALT_STONE.get());
                         output.accept(ModItems.SOAPSTONE.get());
                         output.accept(ModItems.CHOPPING_BLOCK.get());
                         output.accept(ModItems.DRYING_RACK.get());

@@ -1,5 +1,6 @@
 package com.banya.datagen;
 
+import com.banya.Banya;
 import com.banya.registry.ModBlocks;
 import com.banya.registry.ModItems;
 import net.minecraft.core.HolderLookup;
@@ -8,7 +9,10 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.SingleItemRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
@@ -92,6 +96,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_logs", has(ItemTags.LOGS))
                 .save(output);
 
+        banyaStone(output, ModItems.RIVER_STONE.get(),
+                Blocks.COBBLESTONE, Blocks.STONE, Blocks.GRANITE);
+        banyaStone(output, ModItems.ANDESITE_STONE.get(),
+                Blocks.ANDESITE, Blocks.DIORITE, Blocks.DEEPSLATE);
+        banyaStone(output, ModItems.BASALT_STONE.get(),
+                Blocks.BASALT, Blocks.SMOOTH_BASALT, Blocks.BLACKSTONE);
+
         venik(output, ModItems.VENIK_BIRCH.get(), Blocks.BIRCH_LEAVES);
         venik(output, ModItems.VENIK_OAK.get(), Blocks.OAK_LEAVES);
 
@@ -102,6 +113,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('I', Items.IRON_NUGGET)
                 .unlockedBy("has_glass", has(Blocks.GLASS))
                 .save(output);
+    }
+
+    /** Rock is cut down to banya stones; any of the listed blocks yields the same tier. */
+    private static void banyaStone(RecipeOutput output, ItemLike result, ItemLike... sources) {
+        for (ItemLike source : sources) {
+            SingleItemRecipeBuilder.stonecutting(Ingredient.of(source), RecipeCategory.MISC, result, 2)
+                    .unlockedBy("has_stone", has(source))
+                    .save(output, ResourceLocation.fromNamespaceAndPath(Banya.MODID,
+                            getItemName(result) + "_from_" + getItemName(source)));
+        }
     }
 
     /** Six leaves bound to two sticks with string — the standard venik. */

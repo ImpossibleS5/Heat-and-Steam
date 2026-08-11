@@ -1,7 +1,5 @@
 {
   "values": [
-    "minecraft:andesite",
-    "minecraft:diorite",
-    "minecraft:deepslate"
+    "banya:andesite_stone"
   ]
 }

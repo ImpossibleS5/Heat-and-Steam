@@ -143,8 +143,10 @@ public final class Config {
     public static final ModConfigSpec.DoubleValue STONE_POURS_PER_CRACK = BUILDER
             .comment(
                     "Average hot-stone pours a quality-1 stone survives before it cracks and is lost.",
-                    "Scaled by quality, so soapstone lasts four times as long as cobble.")
-            .defineInRange("stonePoursPerCrack", 40.0, 1.0, 100000.0);
+                    "Scaled by quality, so soapstone lasts four times as long as river stone.",
+                    "With four stones in the basket that is roughly 60 pours for the cheapest rock",
+                    "and 240 for the best — a few sessions versus a few dozen.")
+            .defineInRange("stonePoursPerCrack", 15.0, 1.0, 100000.0);
 
     public static final ModConfigSpec.DoubleValue STONE_RELEASE_PER_STEP = BUILDER
             .comment("Degrees C the stones give back per simulation step after the fire goes out.")

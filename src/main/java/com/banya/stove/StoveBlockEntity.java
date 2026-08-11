@@ -77,6 +77,16 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         public boolean isItemValid(int slot, ItemStack stack) {
             return StoveStones.isStone(stack);
         }
+
+        /**
+         * One stone per slot. A каменка holds a handful of big stones, not a bucket of gravel, and
+         * without this the basket's heat store and its lifetime both scaled with stack size — four
+         * full stacks of soapstone would have held heat for hours and never needed replacing.
+         */
+        @Override
+        public int getSlotLimit(int slot) {
+            return 1;
+        }
     };
 
     /** Heat currently banked in the stones, spent to keep the room warm after the fire dies. */

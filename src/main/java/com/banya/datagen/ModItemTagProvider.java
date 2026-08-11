@@ -28,17 +28,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
         tag(ModTags.Items.FIREWOOD)
                 .add(ModItems.FIREWOOD_BIRCH.get(), ModItems.FIREWOOD_OAK.get(), ModItems.FIREWOOD_SPRUCE.get());
 
-        tag(ModTags.Items.STONES_LOW)
-                .add(Blocks.COBBLESTONE.asItem(), Blocks.STONE.asItem(), Blocks.GRANITE.asItem());
-
-        tag(ModTags.Items.STONES_MID)
-                .add(Blocks.ANDESITE.asItem(), Blocks.DIORITE.asItem(), Blocks.DEEPSLATE.asItem());
-
-        tag(ModTags.Items.STONES_HIGH)
-                .add(Blocks.BASALT.asItem(), Blocks.SMOOTH_BASALT.asItem(), Blocks.BLACKSTONE.asItem());
-
-        // Soapstone is the banya stone proper: hottest and longest-lived.
-        tag(ModTags.Items.STONES_BEST)
-                .add(ModItems.SOAPSTONE.get());
+        // Prepared stones rather than raw building blocks, the same shape as the firewood chain.
+        // Still tags, so KubeJS and other mods can qualify their own rock at any tier.
+        tag(ModTags.Items.STONES_LOW).add(ModItems.RIVER_STONE.get());
+        tag(ModTags.Items.STONES_MID).add(ModItems.ANDESITE_STONE.get());
+        tag(ModTags.Items.STONES_HIGH).add(ModItems.BASALT_STONE.get());
+        tag(ModTags.Items.STONES_BEST).add(ModItems.SOAPSTONE.get());
     }
 }
