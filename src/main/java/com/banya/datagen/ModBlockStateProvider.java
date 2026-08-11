@@ -78,6 +78,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         doorBlockWithRenderType((DoorBlock) ModBlocks.BANYA_DOOR.get(),
                 modLoc("block/banya_door_bottom"), modLoc("block/banya_door_top"), "cutout");
 
+        simpleBlockWithItem(ModBlocks.SOAPSTONE_ORE.get(),
+                models().cubeAll("soapstone_ore", modLoc("block/soapstone_ore")));
+
         // The chopping block shows whether a log is waiting on it.
         ModelFile choppingEmpty = models().cubeBottomTop("chopping_block",
                 mcLoc("block/oak_log"), mcLoc("block/oak_log_top"), modLoc("block/chopping_block_top"));

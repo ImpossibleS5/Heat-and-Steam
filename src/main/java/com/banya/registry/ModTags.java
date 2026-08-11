@@ -43,8 +43,10 @@ public final class ModTags {
         public static final TagKey<Item> STONES_LOW = create("stones/low");
         /** Better retention. */
         public static final TagKey<Item> STONES_MID = create("stones/mid");
-        /** Dense volcanic rock — the good stuff until soapstone arrives. */
+        /** Dense volcanic rock. */
         public static final TagKey<Item> STONES_HIGH = create("stones/high");
+        /** Soapstone and its equals — the banya stone proper. */
+        public static final TagKey<Item> STONES_BEST = create("stones/best");
 
         private static TagKey<Item> create(String path) {
             return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(Banya.MODID, path));

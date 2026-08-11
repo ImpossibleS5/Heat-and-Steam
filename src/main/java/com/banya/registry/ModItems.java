@@ -28,10 +28,14 @@ public final class ModItems {
     public static final DeferredItem<FeltHatItem> FELT_HAT = REGISTER.registerItem(
             "felt_hat", FeltHatItem::new, new Item.Properties().stacksTo(1));
 
+    /** Soapstone: the best banya stone there is, and the reason to go up the mountains. */
+    public static final DeferredItem<Item> SOAPSTONE = REGISTER.registerSimpleItem("soapstone");
+
     /** Scoops water and throws it on the stones (поддача). */
     public static final DeferredItem<LadleItem> LADLE = REGISTER.registerItem(
             "ladle", LadleItem::new, new Item.Properties().stacksTo(1));
 
+    public static final DeferredItem<BlockItem> SOAPSTONE_ORE = REGISTER.registerSimpleBlockItem(ModBlocks.SOAPSTONE_ORE);
     public static final DeferredItem<BlockItem> CHOPPING_BLOCK = REGISTER.registerSimpleBlockItem(ModBlocks.CHOPPING_BLOCK);
     public static final DeferredItem<BlockItem> DRYING_RACK = REGISTER.registerSimpleBlockItem(ModBlocks.DRYING_RACK);
 

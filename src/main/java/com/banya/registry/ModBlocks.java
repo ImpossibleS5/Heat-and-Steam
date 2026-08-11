@@ -7,6 +7,7 @@ import com.banya.wood.ChoppingBlock;
 import com.banya.wood.DryingRackBlock;
 import com.banya.stove.StoveBlock;
 import com.banya.stove.ThermometerBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -33,6 +34,15 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE)
                     .lightLevel(state -> state.getValue(StoveBlock.LIT) ? 13 : 0));
+
+    /** Soapstone ore — the one ore the mod adds, in mountains. Drops the stone itself. */
+    public static final DeferredBlock<Block> SOAPSTONE_ORE = REGISTER.registerSimpleBlock(
+            "soapstone_ore",
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .strength(3.0F, 3.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE));
 
     /** Set a log on it and split it with an axe. */
     public static final DeferredBlock<ChoppingBlock> CHOPPING_BLOCK = REGISTER.registerBlock(

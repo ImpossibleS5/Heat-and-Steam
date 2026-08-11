@@ -85,6 +85,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private double fuelHeatFactor = 1.0;
     /** Whether the current fuel throws embers (spruce does). */
     private boolean fuelSparks;
+    /** Set when a pour just cracked a stone, read once by the block to tell the player. */
+    private boolean crackedThisPour;
 
     /** Ticks of burn time left on the current piece of fuel. */
     private int burnTime;
@@ -260,8 +262,21 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             gain *= Config.HEAVY_STEAM_MULTIPLIER.get();
         }
         this.humidity = Math.min(100.0, this.humidity + gain);
+
+        // Only a proper hot-stone pour is violent enough to crack anything.
+        if (lightSteam && this.level != null
+                && StoveStones.wearOne(this.stones, this.level.random, Config.STONE_POURS_PER_CRACK.get())) {
+            this.crackedThisPour = true;
+        }
         setChanged();
         return lightSteam;
+    }
+
+    /** Whether the last pour cost a stone, so the block can report it to the player. */
+    public boolean consumeCrackedFlag() {
+        boolean cracked = this.crackedThisPour;
+        this.crackedThisPour = false;
+        return cracked;
     }
 
     /**

@@ -26,9 +26,9 @@ public class ModBlockTagProvider extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(ModBlocks.STOVE.get(), ModBlocks.THERMOMETER.get());
+                .add(ModBlocks.STOVE.get(), ModBlocks.THERMOMETER.get(), ModBlocks.SOAPSTONE_ORE.get());
         tag(BlockTags.NEEDS_STONE_TOOL)
-                .add(ModBlocks.STOVE.get());
+                .add(ModBlocks.STOVE.get(), ModBlocks.SOAPSTONE_ORE.get());
 
         // Thick timber holds heat best — the classic banya srub. The banya door earns its place
         // here: a low door with a threshold is exactly what keeps the heat in.

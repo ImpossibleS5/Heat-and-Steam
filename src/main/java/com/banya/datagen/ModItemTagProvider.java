@@ -34,8 +34,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
         tag(ModTags.Items.STONES_MID)
                 .add(Blocks.ANDESITE.asItem(), Blocks.DIORITE.asItem(), Blocks.DEEPSLATE.asItem());
 
-        // Dense volcanic rock holds heat best — until soapstone arrives in Phase 3.
         tag(ModTags.Items.STONES_HIGH)
                 .add(Blocks.BASALT.asItem(), Blocks.SMOOTH_BASALT.asItem(), Blocks.BLACKSTONE.asItem());
+
+        // Soapstone is the banya stone proper: hottest and longest-lived.
+        tag(ModTags.Items.STONES_BEST)
+                .add(ModItems.SOAPSTONE.get());
     }
 }

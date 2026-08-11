@@ -34,6 +34,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         // A door's block model cannot be held, so its item is a flat icon.
         basicItem(ModItems.BANYA_DOOR.getId());
 
+        basicItem(ModItems.SOAPSTONE.get());
+
         firewood(ModItems.FIREWOOD_BIRCH.getId().getPath());
         firewood(ModItems.FIREWOOD_OAK.getId().getPath());
         firewood(ModItems.FIREWOOD_SPRUCE.getId().getPath());

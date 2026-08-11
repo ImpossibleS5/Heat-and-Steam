@@ -32,6 +32,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.TUB.get());
                         output.accept(ModItems.POLOK.get());
                         output.accept(ModItems.BANYA_DOOR.get());
+                        output.accept(ModItems.SOAPSTONE_ORE.get());
+                        output.accept(ModItems.SOAPSTONE.get());
                         output.accept(ModItems.CHOPPING_BLOCK.get());
                         output.accept(ModItems.DRYING_RACK.get());
                         // Both states of a stateful item, the way vanilla lists potion variants:

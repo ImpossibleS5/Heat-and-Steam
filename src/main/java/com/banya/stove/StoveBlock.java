@@ -100,6 +100,10 @@ public class StoveBlock extends Block implements EntityBlock {
         if (!lightSteam) {
             player.displayClientMessage(
                     Component.translatable("message.banya.steam.heavy").withStyle(ChatFormatting.GRAY), true);
+        } else if (stove.consumeCrackedFlag()) {
+            level.playSound(null, pos, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.7F, 1.3F);
+            player.displayClientMessage(
+                    Component.translatable("message.banya.stone.cracked").withStyle(ChatFormatting.GRAY), true);
         }
     }
 
