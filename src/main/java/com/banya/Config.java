@@ -140,6 +140,17 @@ public final class Config {
                     "A longer gap starts the cycle count over.")
             .defineInRange("contrastCycleMemoryTicks", 12000, 200, 240000);
 
+    public static final ModConfigSpec.DoubleValue HEIGHT_BONUS = BUILDER
+            .comment(
+                    "Extra Warmth gain at the very top of the room, as a fraction.",
+                    "0.3 means the ceiling warms you 30% faster than the floor — heat rises,",
+                    "which is what makes a tiered polok worth building.")
+            .defineInRange("heightBonus", 0.3, 0.0, 3.0);
+
+    public static final ModConfigSpec.DoubleValue POLOK_BONUS = BUILDER
+            .comment("Warmth gain multiplier while sitting on the polok.")
+            .defineInRange("polokBonus", 1.15, 1.0, 3.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}

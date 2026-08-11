@@ -19,6 +19,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> STOVE = REGISTER.registerSimpleBlockItem(ModBlocks.STOVE);
     public static final DeferredItem<BlockItem> THERMOMETER = REGISTER.registerSimpleBlockItem(ModBlocks.THERMOMETER);
     public static final DeferredItem<BlockItem> TUB = REGISTER.registerSimpleBlockItem(ModBlocks.TUB);
+    public static final DeferredItem<BlockItem> POLOK = REGISTER.registerSimpleBlockItem(ModBlocks.POLOK);
+    public static final DeferredItem<BlockItem> BANYA_DOOR = REGISTER.registerSimpleBlockItem(ModBlocks.BANYA_DOOR);
 
     /** Head-slot cosmetic that slows Warmth gain in a hot parnaya. */
     public static final DeferredItem<FeltHatItem> FELT_HAT = REGISTER.registerItem(

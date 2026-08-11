@@ -3,7 +3,11 @@ package com.banya.climate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,10 +71,25 @@ public final class RoomScanner {
         return new RoomShape(Set.copyOf(interior), Set.copyOf(walls), computeBounds(interior));
     }
 
-    /** A cell blocks the climate only if it is a full solid cube; air, slabs, panes, open doorways let it through. */
+    /**
+     * Whether heat and steam can move through a cell.
+     *
+     * <p>Anything with collision holds the climate in — a closed door, a pane, a fence. Doors,
+     * trapdoors and gates are judged by whether they stand open, which is the whole point of
+     * shutting the banya door. Note this is deliberately not "is it a full cube": a closed door is
+     * only three pixels thick, and treating it as open let every room leak straight through it.
+     */
     private static boolean isPassable(LevelReader level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        return state.isAir() || !state.isCollisionShapeFullBlock(level, pos);
+        if (state.isAir()) {
+            return true;
+        }
+        if (state.getBlock() instanceof DoorBlock
+                || state.getBlock() instanceof TrapDoorBlock
+                || state.getBlock() instanceof FenceGateBlock) {
+            return state.getValue(BlockStateProperties.OPEN);
+        }
+        return state.getCollisionShape(level, pos).isEmpty();
     }
 
     private static AABB computeBounds(Set<BlockPos> cells) {

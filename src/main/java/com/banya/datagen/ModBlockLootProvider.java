@@ -19,6 +19,9 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.STOVE.get());
         dropSelf(ModBlocks.THERMOMETER.get());
         dropSelf(ModBlocks.TUB.get());
+        dropSelf(ModBlocks.POLOK.get());
+        // A door occupies two blocks; only the lower half should drop an item.
+        add(ModBlocks.BANYA_DOOR.get(), block -> createDoorTable(ModBlocks.BANYA_DOOR.get()));
     }
 
     @Override

@@ -1,12 +1,16 @@
 package com.banya.registry;
 
 import com.banya.Banya;
+import com.banya.bath.PolokBlock;
 import com.banya.bath.TubBlock;
 import com.banya.stove.StoveBlock;
 import com.banya.stove.ThermometerBlock;
+import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -27,6 +31,27 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE)
                     .lightLevel(state -> state.getValue(StoveBlock.LIT) ? 13 : 0));
+
+    /** Tiered bench. Sitting high in the room warms you fastest. */
+    public static final DeferredBlock<PolokBlock> POLOK = REGISTER.registerBlock(
+            "polok",
+            PolokBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion());
+
+    /** Low banya door with a threshold; holds heat better than a plain wooden one. */
+    public static final DeferredBlock<DoorBlock> BANYA_DOOR = REGISTER.registerBlock(
+            "banya_door",
+            properties -> new DoorBlock(BlockSetType.OAK, properties),
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(3.0F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion()
+                    .pushReaction(PushReaction.DESTROY));
 
     /** Wooden tub of water the parnaya heats; used to steep veniks. */
     public static final DeferredBlock<TubBlock> TUB = REGISTER.registerBlock(

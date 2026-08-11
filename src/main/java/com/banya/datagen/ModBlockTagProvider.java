@@ -30,10 +30,12 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         tag(BlockTags.NEEDS_STONE_TOOL)
                 .add(ModBlocks.STOVE.get());
 
-        // Thick timber holds heat best — the classic banya srub.
+        // Thick timber holds heat best — the classic banya srub. The banya door earns its place
+        // here: a low door with a threshold is exactly what keeps the heat in.
         tag(ModTags.Blocks.INSULATION_HIGH)
                 .addTag(BlockTags.LOGS)
-                .addTag(BlockTags.WOOL);
+                .addTag(BlockTags.WOOL)
+                .add(ModBlocks.BANYA_DOOR.get());
 
         tag(ModTags.Blocks.INSULATION_MID)
                 .addTag(BlockTags.PLANKS)

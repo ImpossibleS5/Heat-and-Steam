@@ -24,6 +24,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.FELT_HAT.get(), "Банная шапка");
             add(ModItems.LADLE.get(), "Ковш");
             add(ModBlocks.TUB.get(), "Ушат");
+            add(ModBlocks.POLOK.get(), "Полок");
+            add(ModBlocks.BANYA_DOOR.get(), "Банная дверь");
             add(ModItems.VENIK_BIRCH.get(), "Берёзовый веник");
             add(ModItems.VENIK_OAK.get(), "Дубовый веник");
             add("tooltip.banya.venik.dry", "Сухой — нужно запарить в ушате");
@@ -49,6 +51,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.FELT_HAT.get(), "Felt Banya Hat");
             add(ModItems.LADLE.get(), "Ladle");
             add(ModBlocks.TUB.get(), "Banya Tub");
+            add(ModBlocks.POLOK.get(), "Polok Bench");
+            add(ModBlocks.BANYA_DOOR.get(), "Banya Door");
             add(ModItems.VENIK_BIRCH.get(), "Birch Venik");
             add(ModItems.VENIK_OAK.get(), "Oak Venik");
             add("tooltip.banya.venik.dry", "Dry — steep it in a tub first");

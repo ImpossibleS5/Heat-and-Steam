@@ -30,6 +30,9 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         venik(ModItems.VENIK_BIRCH.getId().getPath());
         venik(ModItems.VENIK_OAK.getId().getPath());
+
+        // A door's block model cannot be held, so its item is a flat icon.
+        basicItem(ModItems.BANYA_DOOR.getId());
     }
 
     /** A venik shows its steeped state through the same predicate trick as the ladle. */

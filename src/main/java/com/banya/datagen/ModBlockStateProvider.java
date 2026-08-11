@@ -6,6 +6,7 @@ import com.banya.registry.ModBlocks;
 import com.banya.stove.StoveBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.level.block.DoorBlock;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -42,6 +43,15 @@ public class ModBlockStateProvider extends BlockStateProvider {
                         .modelFile(state.getValue(TubBlock.FILLED) ? tubFilled : tubEmpty)
                         .build());
         simpleBlockItem(ModBlocks.TUB.get(), tubEmpty);
+
+        ModelFile polok = models().withExistingParent("polok", mcLoc("block/block"))
+                .texture("texture", mcLoc("block/spruce_planks"))
+                .texture("particle", mcLoc("block/spruce_planks"))
+                .element().from(0, 0, 0).to(16, 6, 16).allFaces((dir, face) -> face.texture("#texture")).end();
+        simpleBlockWithItem(ModBlocks.POLOK.get(), polok);
+
+        doorBlockWithRenderType((DoorBlock) ModBlocks.BANYA_DOOR.get(),
+                modLoc("block/banya_door_bottom"), modLoc("block/banya_door_top"), "cutout");
     }
 
     /** A 12x10x12 open tub matching {@code TubBlock}'s collision shape. */

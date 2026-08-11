@@ -4,8 +4,10 @@ import com.banya.Banya;
 import com.banya.item.LadleItem;
 import com.banya.item.VenikItem;
 import com.banya.player.WarmthHudData;
+import com.banya.registry.ModEntities;
 import com.banya.registry.ModItems;
 import com.banya.registry.ModMenus;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -17,6 +19,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 import java.util.List;
 
@@ -56,6 +59,12 @@ public final class BanyaClient {
     @SubscribeEvent
     static void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, WARMTH_LAYER, new WarmthHudLayer());
+    }
+
+    @SubscribeEvent
+    static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+        // The polok seat is a position the player rides; there is nothing to draw.
+        event.registerEntityRenderer(ModEntities.SEAT.get(), NoopRenderer::new);
     }
 
     @SubscribeEvent

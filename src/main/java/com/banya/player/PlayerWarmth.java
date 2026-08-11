@@ -46,7 +46,7 @@ public final class PlayerWarmth {
 
         if (exposure.heatIndex() >= threshold) {
             warmth += gainFor(exposure.heatIndex(), threshold)
-                    * WarmthModifiers.gainMultiplier(player, warmth);
+                    * WarmthModifiers.gainMultiplier(player, exposure, warmth);
         } else {
             warmth -= Config.WARMTH_DECAY_PER_STEP.get();
         }

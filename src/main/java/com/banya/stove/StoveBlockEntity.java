@@ -228,13 +228,24 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         if (this.room == null) {
             return;
         }
+        double heatIndex = RoomClimate.heatIndex(this.temperature, this.humidity);
         for (Player player : level.getEntitiesOfClass(Player.class, this.room.bounds())) {
             if (this.room.interior().contains(player.blockPosition())) {
                 Exposure current = player.getData(ModAttachments.EXPOSURE);
                 player.setData(ModAttachments.EXPOSURE,
-                        current.merge(RoomClimate.heatIndex(this.temperature, this.humidity)));
+                        current.merge(heatIndex, relativeHeightOf(player)));
             }
         }
+    }
+
+    /** Where the player stands in the room's vertical span, 0 at the floor and 1 at the ceiling. */
+    private double relativeHeightOf(Player player) {
+        double minY = this.room.bounds().minY;
+        double span = this.room.bounds().maxY - minY;
+        if (span <= 1.0) {
+            return 0.0;
+        }
+        return Math.clamp((player.getY() - minY) / span, 0.0, 1.0);
     }
 
     public boolean isBurning() {

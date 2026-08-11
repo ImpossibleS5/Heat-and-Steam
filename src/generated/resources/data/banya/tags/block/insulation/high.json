@@ -1,6 +1,7 @@
 {
   "values": [
     "#minecraft:logs",
-    "#minecraft:wool"
+    "#minecraft:wool",
+    "banya:banya_door"
   ]
 }

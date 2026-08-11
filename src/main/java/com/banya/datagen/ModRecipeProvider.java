@@ -60,6 +60,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_planks", has(ItemTags.PLANKS))
                 .save(output);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.POLOK.get(), 4)
+                .pattern("PPP")
+                .pattern("S S")
+                .define('P', ItemTags.PLANKS)
+                .define('S', Items.STICK)
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.BANYA_DOOR.get(), 2)
+                .pattern("LL")
+                .pattern("LL")
+                .pattern("LL")
+                .define('L', ItemTags.LOGS)
+                .unlockedBy("has_logs", has(ItemTags.LOGS))
+                .save(output);
+
         venik(output, ModItems.VENIK_BIRCH.get(), Blocks.BIRCH_LEAVES);
         venik(output, ModItems.VENIK_OAK.get(), Blocks.OAK_LEAVES);
 
