@@ -36,6 +36,10 @@ import java.util.List;
 public class VenikItem extends Item {
     /** How far ahead to look for the person being whisked. */
     private static final double TARGET_REACH = 3.0;
+    /** Width of a full vanilla item bar, in pixels. */
+    private static final int BAR_SEGMENTS = 13;
+    /** Steam blue, so the steeping bar never reads as durability. */
+    private static final int STEAM_BAR_COLOR = 0x4FC3F7;
 
     private final VenikSpecies species;
 
@@ -130,6 +134,31 @@ public class VenikItem extends Item {
         tooltip.add(isSteeped(stack)
                 ? Component.translatable("tooltip.banya.venik.steeped").withStyle(ChatFormatting.AQUA)
                 : Component.translatable("tooltip.banya.venik.dry").withStyle(ChatFormatting.GRAY));
+    }
+
+    /**
+     * While steeped, the item bar counts down the whisks left before the venik dries out — the
+     * short cycle the bather actually plans around. Once dry it falls back to the vanilla wear bar,
+     * which tracks the venik's whole life.
+     */
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return isSteeped(stack) || super.isBarVisible(stack);
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        if (!isSteeped(stack)) {
+            return super.getBarWidth(stack);
+        }
+        int max = Math.max(1, Config.VENIK_STEEP_USES.get());
+        int charges = Math.min(steepCharges(stack), max);
+        return Math.max(1, Math.round(BAR_SEGMENTS * charges / (float) max));
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        return isSteeped(stack) ? STEAM_BAR_COLOR : super.getBarColor(stack);
     }
 
     public static boolean isSteeped(ItemStack stack) {

@@ -49,14 +49,27 @@ public final class PlayerWarmth {
         double warmth = get(player);
         double threshold = Config.WARMTH_THRESHOLD_TEMPERATURE.get();
 
+        WarmthZone zoneBefore = WarmthZone.of(warmth);
+
         if (exposure.heatIndex() >= threshold) {
-            warmth += gainFor(exposure.heatIndex(), threshold)
+            double gain = gainFor(exposure.heatIndex(), threshold)
                     * WarmthModifiers.gainMultiplier(player, exposure, warmth);
+            if (zoneBefore == WarmthZone.OVERHEAT) {
+                // The last stretch to a blackout is the slowest, so the warning has time to land.
+                gain *= Config.OVERHEAT_GAIN_DAMPING.get();
+            }
+            warmth += gain;
         } else {
             warmth -= Config.WARMTH_DECAY_PER_STEP.get();
         }
 
         warmth = clamp(warmth);
+        warnOnEnteringOverheat(player, zoneBefore, WarmthZone.of(warmth));
+
+        // Cooling right down is what clears the mark a faint leaves behind.
+        if (warmth <= Config.HEAT_RECOVERY_WARMTH.get()) {
+            player.setData(ModAttachments.HEAT_EXHAUSTED, false);
+        }
 
         if (warmth >= MAX_WARMTH) {
             faint(player);
@@ -70,6 +83,14 @@ public final class PlayerWarmth {
         warmth = get(player); // the plunge may have cooled the player as a side effect
 
         syncToClient(player, (float) warmth, exposure.inRoom());
+    }
+
+    /** One clear shout on crossing into the danger band, rather than a message every second. */
+    private static void warnOnEnteringOverheat(ServerPlayer player, WarmthZone before, WarmthZone after) {
+        if (after == WarmthZone.OVERHEAT && before != WarmthZone.OVERHEAT) {
+            player.displayClientMessage(
+                    Component.translatable("message.banya.overheat").withStyle(ChatFormatting.GOLD), true);
+        }
     }
 
     /**
@@ -105,8 +126,13 @@ public final class PlayerWarmth {
                 player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, EFFECT_DURATION_TICKS, 0, true, true));
                 player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, EFFECT_DURATION_TICKS, 1, true, true));
                 player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, EFFECT_DURATION_TICKS, 1, true, true));
-                // The heat wrings you out: hunger drains rather than health.
                 player.causeFoodExhaustion(Config.OVERHEAT_EXHAUSTION.get().floatValue());
+
+                // Once you have already blacked out, staying in the heat stops being survivable.
+                // The first faint is the warning; ignoring it is what costs health.
+                if (player.getData(ModAttachments.HEAT_EXHAUSTED)) {
+                    player.hurt(player.damageSources().onFire(), Config.OVERHEAT_DAMAGE.get().floatValue());
+                }
             }
             case NEUTRAL -> {
             }
@@ -120,6 +146,8 @@ public final class PlayerWarmth {
      */
     private static void faint(ServerPlayer player) {
         player.stopRiding();
+        // From here on the heat bites until they have properly cooled down.
+        player.setData(ModAttachments.HEAT_EXHAUSTED, true);
 
         player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, FAINT_DURATION_TICKS, 0, false, false));
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, FAINT_DURATION_TICKS, 4, false, true));

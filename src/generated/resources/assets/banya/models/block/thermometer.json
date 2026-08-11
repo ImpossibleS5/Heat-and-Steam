@@ -1,6 +1,42 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#front"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        3,
+        2,
+        14
+      ],
+      "to": [
+        13,
+        14,
+        16
+      ]
+    }
+  ],
   "textures": {
-    "all": "minecraft:block/iron_block"
+    "front": "banya:block/thermometer_front",
+    "particle": "banya:block/thermometer_side",
+    "side": "banya:block/thermometer_side"
   }
 }

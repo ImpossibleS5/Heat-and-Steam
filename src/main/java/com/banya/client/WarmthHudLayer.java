@@ -17,10 +17,15 @@ import net.minecraft.network.chat.Component;
  * about. It disappears once warmth reaches zero.
  */
 public class WarmthHudLayer implements LayeredDraw.Layer {
-    private static final int BAR_WIDTH = 80;
+    private static final int BAR_WIDTH = 70;
     private static final int BAR_HEIGHT = 5;
-    /** Distance from the bottom of the screen, clearing the hotbar and its status bars. */
-    private static final int BOTTOM_OFFSET = 58;
+    /** Gap between the label and the bar, which share one row. */
+    private static final int LABEL_GAP = 4;
+    /**
+     * Distance from the bottom of the screen. Deliberately clear of the action bar around 68px,
+     * which is where the overheat and faint messages appear — those used to land on top of this.
+     */
+    private static final int BOTTOM_OFFSET = 88;
 
     private static final int COLOR_BORDER = 0xFF000000;
     private static final int COLOR_EMPTY = 0x80303030;
@@ -41,20 +46,24 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
         if (!WarmthHudData.inBanya() && warmth <= 0.0F) {
             return;
         }
-        int left = (graphics.guiWidth() - BAR_WIDTH) / 2;
+        // Label and bar share a single row, so the widget stays one line tall and cannot collide
+        // with anything vanilla draws above the hotbar.
+        Component label = Component.translatable("hud.banya.warmth", Math.round(warmth));
+        int labelWidth = minecraft.font.width(label);
+        int rowWidth = labelWidth + LABEL_GAP + BAR_WIDTH;
+        int rowLeft = (graphics.guiWidth() - rowWidth) / 2;
         int top = graphics.guiHeight() - BOTTOM_OFFSET;
+        int barLeft = rowLeft + labelWidth + LABEL_GAP;
 
-        graphics.fill(left - 1, top - 1, left + BAR_WIDTH + 1, top + BAR_HEIGHT + 1, COLOR_BORDER);
-        graphics.fill(left, top, left + BAR_WIDTH, top + BAR_HEIGHT, COLOR_EMPTY);
+        graphics.drawString(minecraft.font, label, rowLeft, top - 1, COLOR_LABEL, true);
+
+        graphics.fill(barLeft - 1, top - 1, barLeft + BAR_WIDTH + 1, top + BAR_HEIGHT + 1, COLOR_BORDER);
+        graphics.fill(barLeft, top, barLeft + BAR_WIDTH, top + BAR_HEIGHT, COLOR_EMPTY);
 
         int filled = Math.round(BAR_WIDTH * (warmth / (float) PlayerWarmth.MAX_WARMTH));
         if (filled > 0) {
-            graphics.fill(left, top, left + filled, top + BAR_HEIGHT, colorFor(WarmthZone.of(warmth)));
+            graphics.fill(barLeft, top, barLeft + filled, top + BAR_HEIGHT, colorFor(WarmthZone.of(warmth)));
         }
-
-        Component label = Component.translatable("hud.banya.warmth", Math.round(warmth));
-        graphics.drawString(minecraft.font, label,
-                (graphics.guiWidth() - minecraft.font.width(label)) / 2, top - 10, COLOR_LABEL, true);
     }
 
     private static int colorFor(WarmthZone zone) {

@@ -1,6 +1,7 @@
 package com.banya.datagen;
 
 import com.banya.Banya;
+import com.banya.registry.ModItems;
 import com.banya.registry.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -24,6 +25,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
+        tag(ModTags.Items.FIREWOOD)
+                .add(ModItems.FIREWOOD_BIRCH.get(), ModItems.FIREWOOD_OAK.get(), ModItems.FIREWOOD_SPRUCE.get());
+
         tag(ModTags.Items.STONES_LOW)
                 .add(Blocks.COBBLESTONE.asItem(), Blocks.STONE.asItem(), Blocks.GRANITE.asItem());
 

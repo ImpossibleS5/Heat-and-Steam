@@ -33,6 +33,12 @@ public final class ModTags {
      * KubeJS and other mods can contribute their own rock without a code change.
      */
     public static final class Items {
+        /**
+         * What the stove accepts as fuel. A banya is fired with split firewood, not with coal or
+         * fence posts — but it stays a tag so packs and other mods can qualify their own wood.
+         */
+        public static final TagKey<Item> FIREWOOD = create("firewood");
+
         /** Common rock — heats fast, holds little. */
         public static final TagKey<Item> STONES_LOW = create("stones/low");
         /** Better retention. */

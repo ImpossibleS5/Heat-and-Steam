@@ -26,6 +26,13 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Exposure>> EXPOSURE = REGISTER.register(
             "exposure", () -> AttachmentType.builder(() -> Exposure.NONE).build());
 
+    /**
+     * Set once a player has fainted and cleared only after they have properly cooled off. While it
+     * holds, staying in the overheat band actually hurts — the first faint is the warning.
+     */
+    public static final Supplier<AttachmentType<Boolean>> HEAT_EXHAUSTED = REGISTER.register(
+            "heat_exhausted", () -> AttachmentType.builder(() -> false).build());
+
     /** Last HUD values sent to this player's client, so packets only go out on a real change. */
     public static final Supplier<AttachmentType<WarmthSync>> LAST_SYNC = REGISTER.register(
             "last_sync", () -> AttachmentType.builder(() -> WarmthSync.NONE).build());

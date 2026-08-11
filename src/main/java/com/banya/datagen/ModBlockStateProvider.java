@@ -4,6 +4,7 @@ import com.banya.Banya;
 import com.banya.bath.TubBlock;
 import com.banya.registry.ModBlocks;
 import com.banya.stove.StoveBlock;
+import com.banya.stove.ThermometerBlock;
 import com.banya.wood.ChoppingBlock;
 import com.banya.wood.DryingRackBlock;
 import net.minecraft.core.Direction;
@@ -26,16 +27,38 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        ModelFile stoveOff = models().cubeAll("stove", mcLoc("block/polished_andesite"));
-        ModelFile stoveOn = models().cubeAll("stove_lit", mcLoc("block/magma"));
+        // Vanilla furnace textures until the custom art exists: a real firebox reads far better
+        // than a flat stone cube, and the lit front doubles as the burning indicator.
+        ModelFile stoveOff = models().orientable("stove",
+                mcLoc("block/furnace_side"), mcLoc("block/furnace_front"), mcLoc("block/furnace_top"));
+        ModelFile stoveOn = models().orientable("stove_lit",
+                mcLoc("block/furnace_side"), mcLoc("block/furnace_front_on"), mcLoc("block/furnace_top"));
         getVariantBuilder(ModBlocks.STOVE.get())
                 .forAllStates(state -> ConfiguredModel.builder()
                         .modelFile(state.getValue(StoveBlock.LIT) ? stoveOn : stoveOff)
+                        .rotationY(horizontalAngle(state.getValue(StoveBlock.FACING)))
                         .build());
         simpleBlockItem(ModBlocks.STOVE.get(), stoveOff);
 
-        simpleBlockWithItem(ModBlocks.THERMOMETER.get(),
-                models().cubeAll("thermometer", mcLoc("block/iron_block")));
+        // A gauge on the wall rather than a block of iron.
+        ModelFile thermometer = models().withExistingParent("thermometer", mcLoc("block/block"))
+                .texture("front", modLoc("block/thermometer_front"))
+                .texture("side", modLoc("block/thermometer_side"))
+                .texture("particle", modLoc("block/thermometer_side"))
+                .element().from(3, 2, 14).to(13, 14, 16)
+                .face(Direction.NORTH).texture("#front").end()
+                .face(Direction.SOUTH).texture("#side").end()
+                .face(Direction.UP).texture("#side").end()
+                .face(Direction.DOWN).texture("#side").end()
+                .face(Direction.WEST).texture("#side").end()
+                .face(Direction.EAST).texture("#side").end()
+                .end();
+        getVariantBuilder(ModBlocks.THERMOMETER.get())
+                .forAllStates(state -> ConfiguredModel.builder()
+                        .modelFile(thermometer)
+                        .rotationY(horizontalAngle(state.getValue(ThermometerBlock.FACING)))
+                        .build());
+        simpleBlockItem(ModBlocks.THERMOMETER.get(), thermometer);
 
         // The tub is a short open box, so it gets a bottom-anchored model per water state.
         ModelFile tubEmpty = tubModel("tub", "block/tub_top");
@@ -88,6 +111,16 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .texture("particle", modLoc(texture))
                 .element().from(0, 0, 0).to(16, 12, 16)
                 .allFaces((dir, face) -> face.texture("#all")).end();
+    }
+
+    /** Model Y-rotation for a horizontal facing, given models are authored facing north. */
+    private static int horizontalAngle(Direction facing) {
+        return switch (facing) {
+            case EAST -> 90;
+            case SOUTH -> 180;
+            case WEST -> 270;
+            default -> 0;
+        };
     }
 
     /** A 12x10x12 open tub matching {@code TubBlock}'s collision shape. */

@@ -64,6 +64,23 @@ public final class Config {
             .comment("Hunger exhaustion dealt by a faint. The heat takes it out of you.")
             .defineInRange("faintExhaustion", 6.0, 0.0, 40.0);
 
+    public static final ModConfigSpec.DoubleValue OVERHEAT_GAIN_DAMPING = BUILDER
+            .comment(
+                    "Warmth gain multiplier once inside the overheat band.",
+                    "Well below 1.0 on purpose: the body fights the heat, which buys the bather",
+                    "time to notice the warning and get out instead of blacking out unannounced.")
+            .defineInRange("overheatGainDamping", 0.25, 0.01, 1.0);
+
+    public static final ModConfigSpec.DoubleValue OVERHEAT_DAMAGE = BUILDER
+            .comment(
+                    "Damage per second taken in the overheat band after having already fainted.",
+                    "The first faint is a warning; sitting back down in the heat is what hurts.")
+            .defineInRange("overheatDamage", 1.0, 0.0, 20.0);
+
+    public static final ModConfigSpec.DoubleValue HEAT_RECOVERY_WARMTH = BUILDER
+            .comment("Warmth a fainted player must cool back down to before the heat stops hurting.")
+            .defineInRange("heatRecoveryWarmth", 25.0, 0.0, 100.0);
+
     public static final ModConfigSpec.DoubleValue WARMTH_REFERENCE_TEMPERATURE = BUILDER
             .comment("Room temperature (deg C) at which Warmth is gained at exactly the base rate.")
             .defineInRange("warmthReferenceTemperature", 80.0, 1.0, 300.0);

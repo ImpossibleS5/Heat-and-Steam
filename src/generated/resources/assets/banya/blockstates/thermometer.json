@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "banya:block/thermometer",
+      "y": 90
+    },
+    "facing=north": {
       "model": "banya:block/thermometer"
+    },
+    "facing=south": {
+      "model": "banya:block/thermometer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "banya:block/thermometer",
+      "y": 270
     }
   }
 }

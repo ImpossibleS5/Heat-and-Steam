@@ -47,11 +47,13 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.hardening", "Закалка! Цикл %s");
             add("container.banya.stove", "Печь-каменка");
             add("container.banya.stove.climate", "%s °C · %s%%");
-            add("message.banya.thermometer.reading", "%s °C · влажность %s%% · ощущается как %s");
-            add("message.banya.thermometer.leaking", "(парная не замкнута)");
-            add("message.banya.thermometer.no_stove", "Печь не найдена поблизости");
+            add("message.banya.thermometer.dry", "%s °C");
+            add("message.banya.thermometer.humid", "%s °C · пар %s%% · как %s °C");
+            add("message.banya.thermometer.leaking", "не замкнуто");
+            add("message.banya.thermometer.no_stove", "Печь не найдена");
+            add("message.banya.overheat", "Голова кружится — пора выйти");
             add("message.banya.steam.heavy", "Тяжёлый пар — камни ещё не раскалились");
-            add("hud.banya.warmth", "Прогрев: %s");
+            add("hud.banya.warmth", "Прогрев %s");
         } else {
             add("itemGroup.banya", "Banya");
             add(ModBlocks.STOVE.get(), "Banya Stove");
@@ -82,9 +84,11 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.hardening", "Hardening! Cycle %s");
             add("container.banya.stove", "Banya Stove");
             add("container.banya.stove.climate", "%s °C · %s%%");
-            add("message.banya.thermometer.reading", "%s °C · humidity %s%% · feels like %s");
-            add("message.banya.thermometer.leaking", "(room not sealed)");
+            add("message.banya.thermometer.dry", "%s °C");
+            add("message.banya.thermometer.humid", "%s °C · steam %s%% · like %s °C");
+            add("message.banya.thermometer.leaking", "not sealed");
             add("message.banya.thermometer.no_stove", "No stove nearby");
+            add("message.banya.overheat", "Your head is swimming — time to step out");
             add("message.banya.steam.heavy", "Heavy steam — the stones are not hot enough yet");
             add("hud.banya.warmth", "Warmth: %s");
         }

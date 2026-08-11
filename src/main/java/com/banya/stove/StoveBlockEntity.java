@@ -8,6 +8,7 @@ import com.banya.item.FirewoodItem;
 import com.banya.player.Exposure;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
+import com.banya.registry.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -61,7 +62,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.getBurnTime(null) > 0;
+            // Tag rather than item class, so KubeJS and other mods can register their own firewood.
+            return stack.is(ModTags.Items.FIREWOOD) && stack.getBurnTime(null) > 0;
         }
     };
 
