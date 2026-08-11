@@ -61,6 +61,8 @@ public final class PlayerWarmth {
         }
 
         set(player, warmth);
+        ContrastTracker.tick(player, exposure, warmth);
+        warmth = get(player); // the plunge may have cooled the player as a side effect
 
         // Nothing to draw when the player is cold and outside — skip the packet entirely.
         if (exposure.inRoom() || warmth > 0.0) {

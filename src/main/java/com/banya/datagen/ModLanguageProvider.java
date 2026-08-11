@@ -33,6 +33,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.venik.too_cold", "Париться можно только в жаркой парной");
             add("message.banya.venik.received", "%s парит вас веником");
             add("message.banya.venik.dried_out", "Веник высох — запарь его снова");
+            add("effect.banya.hardening", "Закалка");
+            add("message.banya.hardening", "Закалка! Цикл %s");
             add("container.banya.stove", "Печь-каменка");
             add("container.banya.stove.climate", "%s °C · %s%%");
             add("message.banya.thermometer.reading", "Температура: %s °C, влажность: %s%%");
@@ -56,6 +58,8 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.venik.too_cold", "You can only whisk in a hot parnaya");
             add("message.banya.venik.received", "%s is whisking you with a venik");
             add("message.banya.venik.dried_out", "The venik has dried out — steep it again");
+            add("effect.banya.hardening", "Hardening");
+            add("message.banya.hardening", "Hardening! Cycle %s");
             add("container.banya.stove", "Banya Stove");
             add("container.banya.stove.climate", "%s °C · %s%%");
             add("message.banya.thermometer.reading", "Temperature: %s °C, humidity: %s%%");

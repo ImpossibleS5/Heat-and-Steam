@@ -25,5 +25,17 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Exposure>> EXPOSURE = REGISTER.register(
             "exposure", () -> AttachmentType.builder(() -> Exposure.NONE).build());
 
+    /** Simulation steps left to reach cold water and earn Hardening. Transient by design. */
+    public static final Supplier<AttachmentType<Integer>> CONTRAST_WINDOW = REGISTER.register(
+            "contrast_window", () -> AttachmentType.builder(() -> 0).build());
+
+    /** How many contrast laps the player has strung together, 1-3. */
+    public static final Supplier<AttachmentType<Integer>> HARDENING_CYCLES = REGISTER.register(
+            "hardening_cycles", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
+
+    /** Game time of the last plunge, used to tell a new session from the next lap. */
+    public static final Supplier<AttachmentType<Long>> LAST_PLUNGE = REGISTER.register(
+            "last_plunge", () -> AttachmentType.builder(() -> 0L).serialize(Codec.LONG).build());
+
     private ModAttachments() {}
 }

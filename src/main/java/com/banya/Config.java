@@ -118,6 +118,28 @@ public final class Config {
                     "Above 1.0 this is the mod's nudge towards bathing together.")
             .defineInRange("venikOtherPlayerMultiplier", 1.5, 1.0, 5.0);
 
+    public static final ModConfigSpec.DoubleValue CONTRAST_WARMTH = BUILDER
+            .comment("Warmth a player must carry out of the parnaya for the plunge to count.")
+            .defineInRange("contrastWarmth", 60.0, 0.0, 100.0);
+
+    public static final ModConfigSpec.IntValue CONTRAST_WINDOW_STEPS = BUILDER
+            .comment("Seconds after leaving the heat during which cold water still earns Hardening.")
+            .defineInRange("contrastWindowSeconds", 30, 1, 600);
+
+    public static final ModConfigSpec.IntValue CONTRAST_MAX_CYCLES = BUILDER
+            .comment("How far the hot-cold loop can be stacked in one session.")
+            .defineInRange("contrastMaxCycles", 3, 1, 10);
+
+    public static final ModConfigSpec.IntValue CONTRAST_EFFECT_SECONDS = BUILDER
+            .comment("Hardening duration granted per completed cycle, in seconds.")
+            .defineInRange("contrastEffectSeconds", 60, 5, 3600);
+
+    public static final ModConfigSpec.IntValue CONTRAST_CYCLE_MEMORY_TICKS = BUILDER
+            .comment(
+                    "Ticks after a plunge during which another one counts as the next lap.",
+                    "A longer gap starts the cycle count over.")
+            .defineInRange("contrastCycleMemoryTicks", 12000, 200, 240000);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}
