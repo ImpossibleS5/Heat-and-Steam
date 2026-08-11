@@ -1,6 +1,7 @@
 package com.banya.registry;
 
 import com.banya.Banya;
+import com.banya.bath.TubBlock;
 import com.banya.stove.StoveBlock;
 import com.banya.stove.ThermometerBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -26,6 +27,16 @@ public final class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE)
                     .lightLevel(state -> state.getValue(StoveBlock.LIT) ? 13 : 0));
+
+    /** Wooden tub of water the parnaya heats; used to steep veniks. */
+    public static final DeferredBlock<TubBlock> TUB = REGISTER.registerBlock(
+            "tub",
+            TubBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .noOcclusion());
 
     /** Reads out the microclimate of the nearest stove. */
     public static final DeferredBlock<ThermometerBlock> THERMOMETER = REGISTER.registerBlock(

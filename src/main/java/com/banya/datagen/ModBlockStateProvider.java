@@ -1,8 +1,10 @@
 package com.banya.datagen;
 
 import com.banya.Banya;
+import com.banya.bath.TubBlock;
 import com.banya.registry.ModBlocks;
 import com.banya.stove.StoveBlock;
+import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
@@ -31,5 +33,31 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         simpleBlockWithItem(ModBlocks.THERMOMETER.get(),
                 models().cubeAll("thermometer", mcLoc("block/iron_block")));
+
+        // The tub is a short open box, so it gets a bottom-anchored model per water state.
+        ModelFile tubEmpty = tubModel("tub", "block/tub_top");
+        ModelFile tubFilled = tubModel("tub_filled", "block/tub_top_filled");
+        getVariantBuilder(ModBlocks.TUB.get())
+                .forAllStates(state -> ConfiguredModel.builder()
+                        .modelFile(state.getValue(TubBlock.FILLED) ? tubFilled : tubEmpty)
+                        .build());
+        simpleBlockItem(ModBlocks.TUB.get(), tubEmpty);
+    }
+
+    /** A 12x10x12 open tub matching {@code TubBlock}'s collision shape. */
+    private ModelFile tubModel(String name, String topTexture) {
+        return models().withExistingParent(name, mcLoc("block/block"))
+                .texture("side", modLoc("block/tub_side"))
+                .texture("top", modLoc(topTexture))
+                .texture("particle", modLoc("block/tub_side"))
+                .element()
+                .from(2, 0, 2).to(14, 10, 14)
+                .face(Direction.DOWN).texture("#side").end()
+                .face(Direction.UP).texture("#top").end()
+                .face(Direction.NORTH).texture("#side").end()
+                .face(Direction.SOUTH).texture("#side").end()
+                .face(Direction.WEST).texture("#side").end()
+                .face(Direction.EAST).texture("#side").end()
+                .end();
     }
 }

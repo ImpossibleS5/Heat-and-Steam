@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "filled=false": {
+      "model": "banya:block/tub"
+    },
+    "filled=true": {
+      "model": "banya:block/tub_filled"
+    }
+  }
+}

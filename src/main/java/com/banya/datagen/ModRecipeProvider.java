@@ -10,6 +10,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.concurrent.CompletableFuture;
@@ -52,12 +53,35 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_stone", has(Blocks.STONE))
                 .save(output);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.TUB.get())
+                .pattern("P P")
+                .pattern("PPP")
+                .define('P', ItemTags.PLANKS)
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                .save(output);
+
+        venik(output, ModItems.VENIK_BIRCH.get(), Blocks.BIRCH_LEAVES);
+        venik(output, ModItems.VENIK_OAK.get(), Blocks.OAK_LEAVES);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, ModBlocks.THERMOMETER.get())
                 .pattern("GI")
                 .pattern("GI")
                 .define('G', Blocks.GLASS)
                 .define('I', Items.IRON_NUGGET)
                 .unlockedBy("has_glass", has(Blocks.GLASS))
+                .save(output);
+    }
+
+    /** Six leaves bound to two sticks with string — the standard venik. */
+    private static void venik(RecipeOutput output, ItemLike result, ItemLike leaves) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, result)
+                .pattern("LLL")
+                .pattern("LLL")
+                .pattern("SKS")
+                .define('L', leaves)
+                .define('S', Items.STICK)
+                .define('K', Items.STRING)
+                .unlockedBy("has_leaves", has(leaves))
                 .save(output);
     }
 }

@@ -18,6 +18,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
     protected void generate() {
         dropSelf(ModBlocks.STOVE.get());
         dropSelf(ModBlocks.THERMOMETER.get());
+        dropSelf(ModBlocks.TUB.get());
     }
 
     @Override

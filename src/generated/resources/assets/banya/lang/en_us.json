@@ -1,14 +1,20 @@
 {
   "block.banya.stove": "Banya Stove",
   "block.banya.thermometer": "Thermometer",
+  "block.banya.tub": "Banya Tub",
   "container.banya.stove": "Banya Stove",
   "container.banya.stove.climate": "%s °C · %s%%",
   "hud.banya.warmth": "Warmth: %s",
   "item.banya.felt_hat": "Felt Banya Hat",
   "item.banya.ladle": "Ladle",
+  "item.banya.venik_birch": "Birch Venik",
+  "item.banya.venik_oak": "Oak Venik",
   "itemGroup.banya": "Banya",
   "message.banya.steam.heavy": "Heavy steam — the stones are not hot enough yet",
   "message.banya.thermometer.leaking": "(room not sealed)",
   "message.banya.thermometer.no_stove": "No stove nearby",
-  "message.banya.thermometer.reading": "Temperature: %s °C, humidity: %s%%"
+  "message.banya.thermometer.reading": "Temperature: %s °C, humidity: %s%%",
+  "message.banya.tub.cold": "The tub water is still cold — heat the banya first",
+  "tooltip.banya.venik.dry": "Dry — steep it in a tub first",
+  "tooltip.banya.venik.steeped": "Steeped"
 }

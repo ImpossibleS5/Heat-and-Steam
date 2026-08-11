@@ -94,6 +94,10 @@ public final class Config {
             .comment("Degrees C the stones give back per simulation step after the fire goes out.")
             .defineInRange("stoneReleasePerStep", 1.5, 0.1, 50.0);
 
+    public static final ModConfigSpec.DoubleValue TUB_STEEP_TEMPERATURE = BUILDER
+            .comment("Room temperature (deg C) the tub's water must reach before a venik can be steeped.")
+            .defineInRange("tubSteepTemperature", 60.0, 0.0, 300.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}

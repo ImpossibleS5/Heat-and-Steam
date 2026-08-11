@@ -18,5 +18,11 @@ public final class ModDataComponents {
                     .persistent(Codec.BOOL)
                     .networkSynchronized(ByteBufCodecs.BOOL));
 
+    /** Whether a venik has been steeped in a hot tub and is ready to use. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> STEEPED =
+            REGISTER.registerComponentType("steeped", builder -> builder
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL));
+
     private ModDataComponents() {}
 }

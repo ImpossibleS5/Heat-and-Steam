@@ -2,6 +2,7 @@ package com.banya.client;
 
 import com.banya.Banya;
 import com.banya.item.LadleItem;
+import com.banya.item.VenikItem;
 import com.banya.player.WarmthHudData;
 import com.banya.registry.ModItems;
 import com.banya.registry.ModMenus;
@@ -17,6 +18,8 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 
+import java.util.List;
+
 /**
  * Client-only entry point. Never loaded on a dedicated server, so referencing client classes here is safe.
  * HUD, particles and render code live under this {@code client/} package.
@@ -30,10 +33,18 @@ public final class BanyaClient {
     @SubscribeEvent
     static void onClientSetup(final FMLClientSetupEvent event) {
         // Item properties touch a non-thread-safe map, so they must run on the main thread.
-        event.enqueueWork(() -> ItemProperties.register(
-                ModItems.LADLE.get(),
-                ResourceLocation.fromNamespaceAndPath(Banya.MODID, "filled"),
-                (stack, level, entity, seed) -> LadleItem.isFilled(stack) ? 1.0F : 0.0F));
+        event.enqueueWork(() -> {
+            ItemProperties.register(
+                    ModItems.LADLE.get(),
+                    ResourceLocation.fromNamespaceAndPath(Banya.MODID, "filled"),
+                    (stack, level, entity, seed) -> LadleItem.isFilled(stack) ? 1.0F : 0.0F);
+
+            ResourceLocation steeped = ResourceLocation.fromNamespaceAndPath(Banya.MODID, "steeped");
+            for (var venik : List.of(ModItems.VENIK_BIRCH.get(), ModItems.VENIK_OAK.get())) {
+                ItemProperties.register(venik, steeped,
+                        (stack, level, entity, seed) -> VenikItem.isSteeped(stack) ? 1.0F : 0.0F);
+            }
+        });
         Banya.LOGGER.info("Banya: client setup complete");
     }
 

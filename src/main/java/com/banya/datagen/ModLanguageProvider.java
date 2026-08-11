@@ -23,6 +23,12 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.THERMOMETER.get(), "Термометр");
             add(ModItems.FELT_HAT.get(), "Банная шапка");
             add(ModItems.LADLE.get(), "Ковш");
+            add(ModBlocks.TUB.get(), "Ушат");
+            add(ModItems.VENIK_BIRCH.get(), "Берёзовый веник");
+            add(ModItems.VENIK_OAK.get(), "Дубовый веник");
+            add("tooltip.banya.venik.dry", "Сухой — нужно запарить в ушате");
+            add("tooltip.banya.venik.steeped", "Запаренный");
+            add("message.banya.tub.cold", "Вода в ушате ещё холодная — протопи баню");
             add("container.banya.stove", "Печь-каменка");
             add("container.banya.stove.climate", "%s °C · %s%%");
             add("message.banya.thermometer.reading", "Температура: %s °C, влажность: %s%%");
@@ -36,6 +42,12 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.THERMOMETER.get(), "Thermometer");
             add(ModItems.FELT_HAT.get(), "Felt Banya Hat");
             add(ModItems.LADLE.get(), "Ladle");
+            add(ModBlocks.TUB.get(), "Banya Tub");
+            add(ModItems.VENIK_BIRCH.get(), "Birch Venik");
+            add(ModItems.VENIK_OAK.get(), "Oak Venik");
+            add("tooltip.banya.venik.dry", "Dry — steep it in a tub first");
+            add("tooltip.banya.venik.steeped", "Steeped");
+            add("message.banya.tub.cold", "The tub water is still cold — heat the banya first");
             add("container.banya.stove", "Banya Stove");
             add("container.banya.stove.climate", "%s °C · %s%%");
             add("message.banya.thermometer.reading", "Temperature: %s °C, humidity: %s%%");

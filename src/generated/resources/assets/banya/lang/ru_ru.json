@@ -1,14 +1,20 @@
 {
   "block.banya.stove": "Печь-каменка (T1)",
   "block.banya.thermometer": "Термометр",
+  "block.banya.tub": "Ушат",
   "container.banya.stove": "Печь-каменка",
   "container.banya.stove.climate": "%s °C · %s%%",
   "hud.banya.warmth": "Прогрев: %s",
   "item.banya.felt_hat": "Банная шапка",
   "item.banya.ladle": "Ковш",
+  "item.banya.venik_birch": "Берёзовый веник",
+  "item.banya.venik_oak": "Дубовый веник",
   "itemGroup.banya": "Баня",
   "message.banya.steam.heavy": "Тяжёлый пар — камни ещё не раскалились",
   "message.banya.thermometer.leaking": "(парная не замкнута)",
   "message.banya.thermometer.no_stove": "Печь не найдена поблизости",
-  "message.banya.thermometer.reading": "Температура: %s °C, влажность: %s%%"
+  "message.banya.thermometer.reading": "Температура: %s °C, влажность: %s%%",
+  "message.banya.tub.cold": "Вода в ушате ещё холодная — протопи баню",
+  "tooltip.banya.venik.dry": "Сухой — нужно запарить в ушате",
+  "tooltip.banya.venik.steeped": "Запаренный"
 }

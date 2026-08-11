@@ -27,5 +27,20 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .predicate(ResourceLocation.fromNamespaceAndPath(Banya.MODID, "filled"), 1.0F)
                 .model(filled)
                 .end();
+
+        venik(ModItems.VENIK_BIRCH.getId().getPath());
+        venik(ModItems.VENIK_OAK.getId().getPath());
+    }
+
+    /** A venik shows its steeped state through the same predicate trick as the ladle. */
+    private void venik(String name) {
+        ItemModelBuilder steeped = basicItem(
+                ResourceLocation.fromNamespaceAndPath(Banya.MODID, name + "_steeped"));
+        withExistingParent(name, mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/" + name))
+                .override()
+                .predicate(ResourceLocation.fromNamespaceAndPath(Banya.MODID, "steeped"), 1.0F)
+                .model(steeped)
+                .end();
     }
 }

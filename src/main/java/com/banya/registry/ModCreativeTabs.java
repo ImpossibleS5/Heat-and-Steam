@@ -23,8 +23,11 @@ public final class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.STOVE.get());
                         output.accept(ModItems.THERMOMETER.get());
+                        output.accept(ModItems.TUB.get());
                         output.accept(ModItems.FELT_HAT.get());
                         output.accept(ModItems.LADLE.get());
+                        output.accept(ModItems.VENIK_BIRCH.get());
+                        output.accept(ModItems.VENIK_OAK.get());
                     })
                     .build());
 
