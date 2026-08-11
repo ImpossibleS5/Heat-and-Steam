@@ -103,7 +103,7 @@ public class TubBlock extends Block {
                 return ItemInteractionResult.sidedSuccess(false);
             }
 
-            VenikItem.setSteeped(stack, true);
+            VenikItem.steep(stack);
             level.setBlockAndUpdate(pos, state.setValue(FILLED, false));
             level.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.7F, 1.2F);
         }

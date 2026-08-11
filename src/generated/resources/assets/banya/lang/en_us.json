@@ -15,9 +15,10 @@
   "message.banya.thermometer.no_stove": "No stove nearby",
   "message.banya.thermometer.reading": "Temperature: %s °C, humidity: %s%%",
   "message.banya.tub.cold": "The tub water is still cold — heat the banya first",
+  "message.banya.venik.dried_out": "The venik has dried out — steep it again",
   "message.banya.venik.dry": "A dry venik just crumbles — steep it in a tub",
   "message.banya.venik.received": "%s is whisking you with a venik",
   "message.banya.venik.too_cold": "You can only whisk in a hot parnaya",
   "tooltip.banya.venik.dry": "Dry — steep it in a tub first",
-  "tooltip.banya.venik.steeped": "Steeped"
+  "tooltip.banya.venik.steeped": "Steeped (%s whisks left)"
 }

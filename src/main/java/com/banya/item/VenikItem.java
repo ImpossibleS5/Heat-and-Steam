@@ -77,7 +77,13 @@ public class VenikItem extends Item {
             LivingEntity receiver = target == null ? player : target;
 
             this.species.applyTo(receiver, multiplier);
+            consumeCharge(stack);
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+
+            if (!isSteeped(stack)) {
+                player.displayClientMessage(Component.translatable("message.banya.venik.dried_out")
+                        .withStyle(ChatFormatting.GRAY), true);
+            }
 
             level.playSound(null, receiver.blockPosition(), SoundEvents.GRASS_BREAK,
                     SoundSource.PLAYERS, 0.9F, 1.2F);
@@ -119,17 +125,27 @@ public class VenikItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable(isSteeped(stack)
-                        ? "tooltip.banya.venik.steeped"
-                        : "tooltip.banya.venik.dry")
-                .withStyle(isSteeped(stack) ? ChatFormatting.AQUA : ChatFormatting.GRAY));
+        tooltip.add(isSteeped(stack)
+                ? Component.translatable("tooltip.banya.venik.steeped", steepCharges(stack))
+                        .withStyle(ChatFormatting.AQUA)
+                : Component.translatable("tooltip.banya.venik.dry").withStyle(ChatFormatting.GRAY));
     }
 
     public static boolean isSteeped(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.STEEPED.get(), false);
+        return steepCharges(stack) > 0;
     }
 
-    public static void setSteeped(ItemStack stack, boolean steeped) {
-        stack.set(ModDataComponents.STEEPED.get(), steeped);
+    /** Whisks left before the venik dries out and needs steeping again. */
+    public static int steepCharges(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.STEEP_CHARGES.get(), 0);
+    }
+
+    /** Called by the tub: one steeping is good for several whisks. */
+    public static void steep(ItemStack stack) {
+        stack.set(ModDataComponents.STEEP_CHARGES.get(), Config.VENIK_STEEP_USES.get());
+    }
+
+    private static void consumeCharge(ItemStack stack) {
+        stack.set(ModDataComponents.STEEP_CHARGES.get(), Math.max(0, steepCharges(stack) - 1));
     }
 }

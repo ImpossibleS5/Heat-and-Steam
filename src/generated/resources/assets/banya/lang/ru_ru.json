@@ -15,9 +15,10 @@
   "message.banya.thermometer.no_stove": "Печь не найдена поблизости",
   "message.banya.thermometer.reading": "Температура: %s °C, влажность: %s%%",
   "message.banya.tub.cold": "Вода в ушате ещё холодная — протопи баню",
+  "message.banya.venik.dried_out": "Веник высох — запарь его снова",
   "message.banya.venik.dry": "Сухой веник крошится — запарь его в ушате",
   "message.banya.venik.received": "%s парит вас веником",
   "message.banya.venik.too_cold": "Париться можно только в жаркой парной",
   "tooltip.banya.venik.dry": "Сухой — нужно запарить в ушате",
-  "tooltip.banya.venik.steeped": "Запаренный"
+  "tooltip.banya.venik.steeped": "Запаренный (осталось применений: %s)"
 }

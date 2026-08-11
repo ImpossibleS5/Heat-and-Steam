@@ -98,6 +98,12 @@ public final class Config {
             .comment("Room temperature (deg C) the tub's water must reach before a venik can be steeped.")
             .defineInRange("tubSteepTemperature", 60.0, 0.0, 300.0);
 
+    public static final ModConfigSpec.IntValue VENIK_STEEP_USES = BUILDER
+            .comment(
+                    "How many whisks one steeping is good for.",
+                    "After that the venik dries out and has to go back in the tub.")
+            .defineInRange("venikSteepUses", 4, 1, 64);
+
     public static final ModConfigSpec.DoubleValue VENIK_HEAT_INDEX = BUILDER
             .comment("Perceived heat the room must reach before a venik can be used at all.")
             .defineInRange("venikHeatIndex", 60.0, 0.0, 400.0);

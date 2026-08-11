@@ -18,11 +18,14 @@ public final class ModDataComponents {
                     .persistent(Codec.BOOL)
                     .networkSynchronized(ByteBufCodecs.BOOL));
 
-    /** Whether a venik has been steeped in a hot tub and is ready to use. */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> STEEPED =
-            REGISTER.registerComponentType("steeped", builder -> builder
-                    .persistent(Codec.BOOL)
-                    .networkSynchronized(ByteBufCodecs.BOOL));
+    /**
+     * Whisks left on a steeped venik. A count rather than a flag so one steeping lasts a bathing
+     * session and the tub stays part of the loop instead of being used once.
+     */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STEEP_CHARGES =
+            REGISTER.registerComponentType("steep_charges", builder -> builder
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
 
     private ModDataComponents() {}
 }

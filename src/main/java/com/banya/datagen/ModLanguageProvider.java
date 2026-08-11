@@ -27,11 +27,12 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.VENIK_BIRCH.get(), "Берёзовый веник");
             add(ModItems.VENIK_OAK.get(), "Дубовый веник");
             add("tooltip.banya.venik.dry", "Сухой — нужно запарить в ушате");
-            add("tooltip.banya.venik.steeped", "Запаренный");
+            add("tooltip.banya.venik.steeped", "Запаренный (осталось применений: %s)");
             add("message.banya.tub.cold", "Вода в ушате ещё холодная — протопи баню");
             add("message.banya.venik.dry", "Сухой веник крошится — запарь его в ушате");
             add("message.banya.venik.too_cold", "Париться можно только в жаркой парной");
             add("message.banya.venik.received", "%s парит вас веником");
+            add("message.banya.venik.dried_out", "Веник высох — запарь его снова");
             add("container.banya.stove", "Печь-каменка");
             add("container.banya.stove.climate", "%s °C · %s%%");
             add("message.banya.thermometer.reading", "Температура: %s °C, влажность: %s%%");
@@ -49,11 +50,12 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.VENIK_BIRCH.get(), "Birch Venik");
             add(ModItems.VENIK_OAK.get(), "Oak Venik");
             add("tooltip.banya.venik.dry", "Dry — steep it in a tub first");
-            add("tooltip.banya.venik.steeped", "Steeped");
+            add("tooltip.banya.venik.steeped", "Steeped (%s whisks left)");
             add("message.banya.tub.cold", "The tub water is still cold — heat the banya first");
             add("message.banya.venik.dry", "A dry venik just crumbles — steep it in a tub");
             add("message.banya.venik.too_cold", "You can only whisk in a hot parnaya");
             add("message.banya.venik.received", "%s is whisking you with a venik");
+            add("message.banya.venik.dried_out", "The venik has dried out — steep it again");
             add("container.banya.stove", "Banya Stove");
             add("container.banya.stove.climate", "%s °C · %s%%");
             add("message.banya.thermometer.reading", "Temperature: %s °C, humidity: %s%%");
