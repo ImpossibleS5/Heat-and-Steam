@@ -26,12 +26,12 @@ public final class RoomClimate {
     private RoomClimate() {}
 
     /**
-     * @param current  current room temperature in deg C
-     * @param heating  whether the stove is burning this step
-     * @param room     the enclosing room, or {@code null} when open/leaking
+     * @param current   current room temperature in deg C
+     * @param heatInput degrees C of heat offered this step, from the fire and/or the hot stones
+     * @param room      the enclosing room, or {@code null} when open/leaking
      * @return the temperature after one simulation step
      */
-    public static double nextTemperature(double current, boolean heating,
+    public static double nextTemperature(double current, double heatInput,
                                          @Nullable RoomShape room, LevelReader level) {
         double ambient = Config.AMBIENT_TEMPERATURE.get();
         if (room == null) {
@@ -41,8 +41,7 @@ public final class RoomClimate {
         }
 
         double leak = Config.BASE_LEAK_PER_STEP.get() * (2.0 - averageInsulation(level, room));
-        double heatIn = heating ? Config.HEAT_PER_STEP.get() * volumeFactor(room) : 0.0;
-        return clamp(current + heatIn - leak, ambient, Config.MAX_TEMPERATURE.get());
+        return clamp(current + heatInput * volumeFactor(room) - leak, ambient, Config.MAX_TEMPERATURE.get());
     }
 
     /**

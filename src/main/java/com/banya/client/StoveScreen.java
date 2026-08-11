@@ -16,10 +16,13 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
     private static final ResourceLocation BACKGROUND =
             ResourceLocation.fromNamespaceAndPath(Banya.MODID, "textures/gui/stove.png");
 
-    private static final int GAUGE_X = 80;
-    private static final int GAUGE_Y = 20;
+    /** Burn gauge sits to the right of the fuel slot. */
+    private static final int GAUGE_X = 104;
+    private static final int GAUGE_Y = 48;
     private static final int GAUGE_WIDTH = 16;
     private static final int GAUGE_HEIGHT = 10;
+    /** Climate readout goes between the stone basket and the fuel slot. */
+    private static final int CLIMATE_LABEL_Y = 38;
     private static final int GAUGE_BORDER = 0xFF373737;
     private static final int GAUGE_EMPTY = 0xFF8B8B8B;
     private static final int GAUGE_FLAME = 0xFFFF9A2E;
@@ -70,6 +73,6 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
         Component reading = Component.translatable("container.banya.stove.climate",
                 this.menu.getTemperature(), this.menu.getHumidity());
         graphics.drawString(this.font, reading,
-                (this.imageWidth - this.font.width(reading)) / 2, GAUGE_Y - 12, 0x404040, false);
+                (this.imageWidth - this.font.width(reading)) / 2, CLIMATE_LABEL_Y, 0x404040, false);
     }
 }

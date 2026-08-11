@@ -80,6 +80,20 @@ public final class Config {
                     "so a moderate wet parnaya out-heats a very hot dry sauna — as intended.")
             .defineInRange("humidityHeatWeight", 1.0, 0.0, 4.0);
 
+    public static final ModConfigSpec.DoubleValue STONE_CAPACITY_PER_QUALITY = BUILDER
+            .comment(
+                    "Heat a single stone stores per point of quality (low=1, mid=2, high=3).",
+                    "Stored heat is spent at stoneReleasePerStep once the fire dies down.")
+            .defineInRange("stoneCapacityPerQuality", 60.0, 1.0, 10000.0);
+
+    public static final ModConfigSpec.DoubleValue STONE_CHARGE_PER_STEP = BUILDER
+            .comment("Heat the stones absorb per simulation step while the stove burns.")
+            .defineInRange("stoneChargePerStep", 3.0, 0.1, 100.0);
+
+    public static final ModConfigSpec.DoubleValue STONE_RELEASE_PER_STEP = BUILDER
+            .comment("Degrees C the stones give back per simulation step after the fire goes out.")
+            .defineInRange("stoneReleasePerStep", 1.5, 0.1, 50.0);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {}

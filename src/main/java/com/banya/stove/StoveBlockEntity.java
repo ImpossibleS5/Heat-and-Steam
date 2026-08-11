@@ -45,12 +45,35 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     public static final int DATA_HUMIDITY = 3;
     public static final int DATA_SIZE = 4;
 
+    /** How many stones the T1 basket holds; bigger stoves get bigger baskets in Phase 3. */
+    public static final int STONE_SLOTS = 4;
+
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
         }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return stack.getBurnTime(null) > 0;
+        }
     };
+
+    private final ItemStackHandler stones = new ItemStackHandler(STONE_SLOTS) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return StoveStones.isStone(stack);
+        }
+    };
+
+    /** Heat currently banked in the stones, spent to keep the room warm after the fire dies. */
+    private double stoneCharge;
 
     /** Ticks of burn time left on the current piece of fuel. */
     private int burnTime;
@@ -146,20 +169,48 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             this.needsRescan = true;
         }
 
-        this.temperature = RoomClimate.nextTemperature(this.temperature, isBurning(), this.room, level);
+        this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(), this.room, level);
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
         exposeOccupants(level);
         setChanged();
     }
 
     /**
-     * Throws a ladle of water onto the stones. Cold stones give "heavy steam": the humidity still
-     * rises, but far less, which is the design's nudge to heat the banya properly first.
+     * Heat offered to the room this step. While the fire burns, part of it also charges the stones;
+     * once it goes out the stones pay that heat back, which is what keeps a real каменка warm long
+     * after the wood is gone.
+     */
+    private double heatInputForStep() {
+        double capacity = StoveStones.capacityOf(this.stones);
+
+        if (isBurning()) {
+            this.stoneCharge = Math.min(capacity, this.stoneCharge + Config.STONE_CHARGE_PER_STEP.get());
+            return Config.HEAT_PER_STEP.get();
+        }
+
+        // Stones cannot hold more than the current basket allows (e.g. after some were removed).
+        this.stoneCharge = Math.min(this.stoneCharge, capacity);
+        if (this.stoneCharge <= 0.0) {
+            return 0.0;
+        }
+        double release = Math.min(this.stoneCharge, Config.STONE_RELEASE_PER_STEP.get());
+        this.stoneCharge -= release;
+        return release;
+    }
+
+    /** Whether the basket holds stones hot enough to flash water into light steam. */
+    public boolean hasHotStones() {
+        return StoveStones.capacityOf(this.stones) > 0.0 && this.stoneCharge > 0.0;
+    }
+
+    /**
+     * Throws a ladle of water onto the stones. Without hot stones you get "heavy steam": the
+     * humidity still rises, but far less — the design's nudge to load the basket and heat it first.
      *
      * @return whether the steam was proper light steam
      */
     public boolean pourWater() {
-        boolean lightSteam = this.temperature >= Config.STEAM_TEMPERATURE.get();
+        boolean lightSteam = hasHotStones() && this.temperature >= Config.STEAM_TEMPERATURE.get();
         double gain = Config.HUMIDITY_PER_LADLE.get();
         if (!lightSteam) {
             gain *= Config.HEAVY_STEAM_MULTIPLIER.get();
@@ -213,8 +264,15 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         return this.fuel;
     }
 
+    public ItemStackHandler getStoneHandler() {
+        return this.stones;
+    }
+
     public void dropContents(Level level, BlockPos pos) {
         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), this.fuel.getStackInSlot(0));
+        for (int slot = 0; slot < this.stones.getSlots(); slot++) {
+            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), this.stones.getStackInSlot(slot));
+        }
     }
 
     @Override
@@ -224,7 +282,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new StoveMenu(containerId, playerInventory, this.fuel, this.data,
+        return new StoveMenu(containerId, playerInventory, this.fuel, this.stones, this.data,
                 ContainerLevelAccess.create(this.level, this.worldPosition));
     }
 
@@ -232,6 +290,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.put("Fuel", this.fuel.serializeNBT(registries));
+        tag.put("Stones", this.stones.serializeNBT(registries));
+        tag.putDouble("StoneCharge", this.stoneCharge);
         tag.putInt("BurnTime", this.burnTime);
         tag.putInt("BurnTimeTotal", this.burnTimeTotal);
         tag.putDouble("Temperature", this.temperature);
@@ -244,6 +304,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         if (tag.contains("Fuel")) {
             this.fuel.deserializeNBT(registries, tag.getCompound("Fuel"));
         }
+        if (tag.contains("Stones")) {
+            this.stones.deserializeNBT(registries, tag.getCompound("Stones"));
+        }
+        this.stoneCharge = tag.getDouble("StoneCharge");
         this.burnTime = tag.getInt("BurnTime");
         this.burnTimeTotal = tag.getInt("BurnTimeTotal");
         this.temperature = tag.contains("Temperature")

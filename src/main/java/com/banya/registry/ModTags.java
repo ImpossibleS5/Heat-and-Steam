@@ -4,6 +4,7 @@ import com.banya.Banya;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 /**
@@ -25,6 +26,25 @@ public final class ModTags {
         }
 
         private Blocks() {}
+    }
+
+    /**
+     * Stones the каменка accepts, by how well they hold heat. Tags rather than dedicated items so
+     * KubeJS and other mods can contribute their own rock without a code change.
+     */
+    public static final class Items {
+        /** Common rock — heats fast, holds little. */
+        public static final TagKey<Item> STONES_LOW = create("stones/low");
+        /** Better retention. */
+        public static final TagKey<Item> STONES_MID = create("stones/mid");
+        /** Dense volcanic rock — the good stuff until soapstone arrives. */
+        public static final TagKey<Item> STONES_HIGH = create("stones/high");
+
+        private static TagKey<Item> create(String path) {
+            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(Banya.MODID, path));
+        }
+
+        private Items() {}
     }
 
     private ModTags() {}

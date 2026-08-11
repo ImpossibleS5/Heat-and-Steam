@@ -27,7 +27,11 @@ public final class ModDataGenerator {
         generator.addProvider(event.includeClient(), new ModLanguageProvider(output, "ru_ru"));
 
         // Server data
-        generator.addProvider(event.includeServer(), new ModBlockTagProvider(output, lookup, existingFileHelper));
+        // Item tags need the block tag contents, so keep the provider to hand it over.
+        ModBlockTagProvider blockTags = new ModBlockTagProvider(output, lookup, existingFileHelper);
+        generator.addProvider(event.includeServer(), blockTags);
+        generator.addProvider(event.includeServer(),
+                new ModItemTagProvider(output, lookup, blockTags.contentsGetter(), existingFileHelper));
         generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
         generator.addProvider(event.includeServer(), ModLootTableProvider.create(output, lookup));
     }

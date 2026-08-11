@@ -20,10 +20,15 @@ import net.neoforged.neoforge.items.SlotItemHandler;
  */
 public class StoveMenu extends AbstractContainerMenu {
     public static final int FUEL_SLOT_X = 80;
-    public static final int FUEL_SLOT_Y = 35;
+    public static final int FUEL_SLOT_Y = 45;
+    /** Left edge of the stone row; four slots sit side by side from here. */
+    public static final int STONE_SLOT_X = 52;
+    public static final int STONE_SLOT_Y = 17;
 
     private static final int FUEL_SLOTS = 1;
-    private static final int PLAYER_INVENTORY_START = FUEL_SLOTS;
+    private static final int STONE_SLOTS = StoveBlockEntity.STONE_SLOTS;
+    private static final int CONTAINER_SLOTS = FUEL_SLOTS + STONE_SLOTS;
+    private static final int PLAYER_INVENTORY_START = CONTAINER_SLOTS;
     private static final int PLAYER_INVENTORY_END = PLAYER_INVENTORY_START + 27;
     private static final int HOTBAR_END = PLAYER_INVENTORY_END + 9;
 
@@ -32,17 +37,20 @@ public class StoveMenu extends AbstractContainerMenu {
 
     /** Client-side constructor used by the {@code MenuType} factory; validity is enforced server-side. */
     public StoveMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new ItemStackHandler(FUEL_SLOTS),
+        this(containerId, playerInventory, new ItemStackHandler(FUEL_SLOTS), new ItemStackHandler(STONE_SLOTS),
                 new SimpleContainerData(StoveBlockEntity.DATA_SIZE), ContainerLevelAccess.NULL);
     }
 
-    public StoveMenu(int containerId, Inventory playerInventory, IItemHandler fuel, ContainerData data,
-                     ContainerLevelAccess access) {
+    public StoveMenu(int containerId, Inventory playerInventory, IItemHandler fuel, IItemHandler stones,
+                     ContainerData data, ContainerLevelAccess access) {
         super(ModMenus.STOVE.get(), containerId);
         this.data = data;
         this.access = access;
 
         this.addSlot(new SlotItemHandler(fuel, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
+        for (int slot = 0; slot < STONE_SLOTS; slot++) {
+            this.addSlot(new SlotItemHandler(stones, slot, STONE_SLOT_X + slot * 18, STONE_SLOT_Y));
+        }
         addPlayerInventory(playerInventory);
         this.addDataSlots(data);
     }
@@ -89,18 +97,24 @@ public class StoveMenu extends AbstractContainerMenu {
         ItemStack original = stack.copy();
 
         if (index < PLAYER_INVENTORY_START) {
-            // Fuel slot -> player inventory
+            // Stove -> player inventory
             if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_START, HOTBAR_END, true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!this.moveItemStackTo(stack, 0, FUEL_SLOTS, false)) {
-            // Player inventory -> fuel slot, else swap between inventory and hotbar
-            if (index < PLAYER_INVENTORY_END) {
-                if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_END, HOTBAR_END, false)) {
+        } else {
+            // Player inventory -> whichever part of the stove accepts this item
+            boolean stowed = StoveStones.isStone(stack)
+                    ? this.moveItemStackTo(stack, FUEL_SLOTS, CONTAINER_SLOTS, false)
+                    : this.moveItemStackTo(stack, 0, FUEL_SLOTS, false);
+            if (!stowed) {
+                // Nothing took it, so fall back to the usual inventory <-> hotbar swap
+                if (index < PLAYER_INVENTORY_END) {
+                    if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_END, HOTBAR_END, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, false)) {
-                return ItemStack.EMPTY;
             }
         }
 
