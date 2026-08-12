@@ -64,6 +64,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("container.banya.stove.t2", "Кирпичная каменка");
             add("container.banya.stove.t3", "Массивная печь");
             add("effect.banya.smoke_poisoning", "Угар");
+            add("death.attack.banya.smoke_poisoning", "%1$s угорел в бане");
             add("container.banya.thermometer", "Термометр");
             add("gui.banya.thermometer.temperature", "Температура");
             add("gui.banya.thermometer.humidity", "Влажность");
@@ -124,6 +125,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("container.banya.stove.t2", "Brick Kamenka");
             add("container.banya.stove.t3", "Massive Stove");
             add("effect.banya.smoke_poisoning", "Smoke Poisoning");
+            add("death.attack.banya.smoke_poisoning", "%1$s suffocated in the banya's smoke");
             add("container.banya.thermometer", "Thermometer");
             add("gui.banya.thermometer.temperature", "Temperature");
             add("gui.banya.thermometer.humidity", "Humidity");

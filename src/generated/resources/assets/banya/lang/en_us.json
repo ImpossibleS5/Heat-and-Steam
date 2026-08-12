@@ -16,6 +16,7 @@
   "container.banya.stove.t2": "Brick Kamenka",
   "container.banya.stove.t3": "Massive Stove",
   "container.banya.thermometer": "Thermometer",
+  "death.attack.banya.smoke_poisoning": "%1$s suffocated in the banya's smoke",
   "effect.banya.hardening": "Hardening",
   "effect.banya.smoke_poisoning": "Smoke Poisoning",
   "gui.banya.thermometer.degrees": "%s °C",

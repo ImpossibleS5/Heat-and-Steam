@@ -196,6 +196,18 @@ public final class Config {
             .comment("Smoke (%) at which breathing it starts to do harm.")
             .defineInRange("smokeChokeLevel", 60.0, 0.0, 100.0);
 
+    public static final ModConfigSpec.DoubleValue SMOKE_DAMAGE = BUILDER
+            .comment(
+                    "Damage one hit of Угар deals at level I, in half-hearts.",
+                    "Levels multiply this rather than shortening the interval: a thicker room hits",
+                    "harder on the same beat, which reads clearly. It bypasses armour, Resistance",
+                    "and Protection — nothing you wear helps against carbon monoxide.")
+            .defineInRange("smokeDamage", 1.0, 0.0, 100.0);
+
+    public static final ModConfigSpec.IntValue SMOKE_DAMAGE_INTERVAL_TICKS = BUILDER
+            .comment("Ticks between hits of Угар, the same at every level.")
+            .defineInRange("smokeDamageIntervalTicks", 40, 1, 1200);
+
     public static final ModConfigSpec.IntValue CHIMNEY_MAX_HEIGHT = BUILDER
             .comment(
                     "How far above the stove the flue is followed looking for open sky.",

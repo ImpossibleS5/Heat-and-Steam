@@ -16,6 +16,7 @@
   "container.banya.stove.t2": "Кирпичная каменка",
   "container.banya.stove.t3": "Массивная печь",
   "container.banya.thermometer": "Термометр",
+  "death.attack.banya.smoke_poisoning": "%1$s угорел в бане",
   "effect.banya.hardening": "Закалка",
   "effect.banya.smoke_poisoning": "Угар",
   "gui.banya.thermometer.degrees": "%s °C",
