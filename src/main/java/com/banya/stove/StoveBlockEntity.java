@@ -492,7 +492,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
         return new StoveMenu(containerId, playerInventory, this.fuel, this.stones, this.data,
-                ContainerLevelAccess.create(this.level, this.worldPosition));
+                ContainerLevelAccess.create(this.level, this.worldPosition), this.tier);
+    }
+
+    public StoveTier getTier() {
+        return this.tier;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.banya.stove;
 
 import com.banya.registry.ModBlocks;
 import com.banya.registry.ModMenus;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,41 +23,65 @@ public class StoveMenu extends AbstractContainerMenu {
     /** Fuel sits on the left of its row, with the flame gauge beside it and the readout to the right. */
     public static final int FUEL_SLOT_X = 44;
     public static final int FUEL_SLOT_Y = 54;
-    /** Stone basket: two rows of four, the top row filled first. */
-    public static final int STONE_SLOT_X = 52;
+    /** Stone basket: up to two rows of four, each row centred on the panel. */
     public static final int STONE_SLOT_Y = 16;
     public static final int STONE_COLUMNS = 4;
+    /** Vanilla slot spacing, and the panel width the rows are centred in. */
+    public static final int SLOT_PITCH = 18;
+    public static final int PANEL_WIDTH = 176;
 
     private static final int FUEL_SLOTS = 1;
-    private static final int STONE_SLOTS = StoveBlockEntity.STONE_SLOTS;
-    private static final int CONTAINER_SLOTS = FUEL_SLOTS + STONE_SLOTS;
-    private static final int PLAYER_INVENTORY_START = CONTAINER_SLOTS;
-    private static final int PLAYER_INVENTORY_END = PLAYER_INVENTORY_START + 27;
-    private static final int HOTBAR_END = PLAYER_INVENTORY_END + 9;
 
     private final ContainerData data;
     private final ContainerLevelAccess access;
+    private final int stoneSlotCount;
+    // Slot index boundaries depend on how many basket slots this stove has, so they are per-menu.
+    private final int playerInventoryStart;
+    private final int playerInventoryEnd;
+    private final int hotbarEnd;
 
-    /** Client-side constructor used by the {@code MenuType} factory; validity is enforced server-side. */
-    public StoveMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new ItemStackHandler(FUEL_SLOTS), new ItemStackHandler(STONE_SLOTS),
-                new SimpleContainerData(StoveBlockEntity.DATA_SIZE), ContainerLevelAccess.NULL);
+    /** Client-side constructor; the stove's tier arrives in the extra data written on opening. */
+    public StoveMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf data) {
+        this(containerId, playerInventory, new ItemStackHandler(FUEL_SLOTS),
+                new ItemStackHandler(StoveTier.MAX_STONE_SLOTS),
+                new SimpleContainerData(StoveBlockEntity.DATA_SIZE), ContainerLevelAccess.NULL,
+                StoveTier.values()[Math.clamp(data.readByte(), 0, StoveTier.values().length - 1)]);
     }
 
     public StoveMenu(int containerId, Inventory playerInventory, IItemHandler fuel, IItemHandler stones,
-                     ContainerData data, ContainerLevelAccess access) {
+                     ContainerData data, ContainerLevelAccess access, StoveTier tier) {
         super(ModMenus.STOVE.get(), containerId);
         this.data = data;
         this.access = access;
+        this.stoneSlotCount = tier.stoneSlots();
+        this.playerInventoryStart = FUEL_SLOTS + this.stoneSlotCount;
+        this.playerInventoryEnd = this.playerInventoryStart + 27;
+        this.hotbarEnd = this.playerInventoryEnd + 9;
 
         this.addSlot(new SlotItemHandler(fuel, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
-        for (int slot = 0; slot < STONE_SLOTS; slot++) {
+        // Only the slots this stove has. An unbuilt stove shows four, not eight with half crossed out.
+        for (int slot = 0; slot < this.stoneSlotCount; slot++) {
             this.addSlot(new SlotItemHandler(stones, slot,
-                    STONE_SLOT_X + (slot % STONE_COLUMNS) * 18,
-                    STONE_SLOT_Y + (slot / STONE_COLUMNS) * 18));
+                    stoneSlotX(slot, this.stoneSlotCount), stoneSlotY(slot)));
         }
         addPlayerInventory(playerInventory);
         this.addDataSlots(data);
+    }
+
+    /** Rows are centred on the panel, so four, six and eight slots all sit square. */
+    public static int stoneSlotX(int slot, int total) {
+        int row = slot / STONE_COLUMNS;
+        int inRow = slot % STONE_COLUMNS;
+        int rowCount = Math.min(STONE_COLUMNS, total - row * STONE_COLUMNS);
+        return (PANEL_WIDTH - rowCount * SLOT_PITCH) / 2 + inRow * SLOT_PITCH + 1;
+    }
+
+    public static int stoneSlotY(int slot) {
+        return STONE_SLOT_Y + (slot / STONE_COLUMNS) * SLOT_PITCH;
+    }
+
+    public int getStoneSlotCount() {
+        return this.stoneSlotCount;
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
@@ -95,12 +120,6 @@ public class StoveMenu extends AbstractContainerMenu {
         return this.data.get(StoveBlockEntity.DATA_SMOKE);
     }
 
-    /** How much stove has been built, so the screen can show which basket slots are open. */
-    public StoveTier getTier() {
-        int ordinal = Math.clamp(this.data.get(StoveBlockEntity.DATA_TIER), 0, StoveTier.values().length - 1);
-        return StoveTier.values()[ordinal];
-    }
-
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = this.slots.get(index);
@@ -111,23 +130,23 @@ public class StoveMenu extends AbstractContainerMenu {
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
 
-        if (index < PLAYER_INVENTORY_START) {
+        if (index < this.playerInventoryStart) {
             // Stove -> player inventory
-            if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_START, HOTBAR_END, true)) {
+            if (!this.moveItemStackTo(stack, this.playerInventoryStart, this.hotbarEnd, true)) {
                 return ItemStack.EMPTY;
             }
         } else {
             // Player inventory -> whichever part of the stove accepts this item
             boolean stowed = StoveStones.isStone(stack)
-                    ? this.moveItemStackTo(stack, FUEL_SLOTS, CONTAINER_SLOTS, false)
+                    ? this.moveItemStackTo(stack, FUEL_SLOTS, this.playerInventoryStart, false)
                     : this.moveItemStackTo(stack, 0, FUEL_SLOTS, false);
             if (!stowed) {
                 // Nothing took it, so fall back to the usual inventory <-> hotbar swap
-                if (index < PLAYER_INVENTORY_END) {
-                    if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_END, HOTBAR_END, false)) {
+                if (index < this.playerInventoryEnd) {
+                    if (!this.moveItemStackTo(stack, this.playerInventoryEnd, this.hotbarEnd, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, false)) {
+                } else if (!this.moveItemStackTo(stack, this.playerInventoryStart, this.playerInventoryEnd, false)) {
                     return ItemStack.EMPTY;
                 }
             }

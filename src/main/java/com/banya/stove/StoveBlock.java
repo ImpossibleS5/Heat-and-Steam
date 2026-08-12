@@ -131,7 +131,8 @@ public class StoveBlock extends Block implements EntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
         if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StoveBlockEntity stove) {
-            player.openMenu(stove);
+            // The tier travels with the open packet so the screen can lay out the right basket.
+            player.openMenu(stove, buf -> buf.writeByte(stove.getTier().ordinal()));
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
