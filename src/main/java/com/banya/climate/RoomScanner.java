@@ -1,5 +1,6 @@
 package com.banya.climate;
 
+import com.banya.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
@@ -25,6 +26,8 @@ import java.util.Set;
  */
 public final class RoomScanner {
     private static final Direction[] DIRECTIONS = Direction.values();
+    /** Enough for a massive stove and a tall flue, small enough that a stray casing wall cannot sprawl. */
+    private static final int MAX_STRUCTURE_CELLS = 64;
 
     private RoomScanner() {}
 
@@ -38,22 +41,31 @@ public final class RoomScanner {
         Set<BlockPos> walls = new HashSet<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
 
-        // Seed the fill from the stove's passable neighbours.
-        for (Direction dir : DIRECTIONS) {
-            BlockPos seed = stovePos.relative(dir);
-            if (isPassable(level, seed) && interior.add(seed)) {
-                queue.add(seed);
+        // Seed from everything the stove is made of, not just its core. A stove with masonry round
+        // it and a flue on top has no passable neighbour at all, and seeding from the core alone
+        // reported every built-up stove as "encased" — which killed the room outright.
+        Set<BlockPos> structure = collectStructure(level, stovePos);
+        for (BlockPos cell : structure) {
+            for (Direction dir : DIRECTIONS) {
+                BlockPos seed = cell.relative(dir);
+                if (!structure.contains(seed) && isPassable(level, seed) && interior.add(seed)) {
+                    queue.add(seed);
+                }
             }
         }
         if (interior.isEmpty()) {
-            return null; // stove fully encased — no room to heat
+            return null; // walled in on every side — no room to heat
         }
 
         while (!queue.isEmpty()) {
             BlockPos pos = queue.poll();
             for (Direction dir : DIRECTIONS) {
                 BlockPos next = pos.relative(dir);
-                if (next.equals(stovePos) || interior.contains(next)) {
+                if (interior.contains(next)) {
+                    continue;
+                }
+                if (structure.contains(next)) {
+                    walls.add(next);
                     continue;
                 }
                 if (isPassable(level, next)) {
@@ -69,6 +81,39 @@ public final class RoomScanner {
         }
 
         return new RoomShape(Set.copyOf(interior), Set.copyOf(walls), computeBounds(interior));
+    }
+
+    /**
+     * The blocks that make up the stove itself: the firebox, any masonry built onto it, and the
+     * flue. Gathered so the room can be found from around the whole thing.
+     */
+    private static Set<BlockPos> collectStructure(LevelReader level, BlockPos stovePos) {
+        Set<BlockPos> structure = new HashSet<>();
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        structure.add(stovePos);
+        queue.add(stovePos);
+
+        while (!queue.isEmpty() && structure.size() < MAX_STRUCTURE_CELLS) {
+            BlockPos pos = queue.poll();
+            for (Direction dir : DIRECTIONS) {
+                BlockPos next = pos.relative(dir);
+                if (structure.size() >= MAX_STRUCTURE_CELLS) {
+                    break;
+                }
+                if (!structure.contains(next) && isStovePart(level, next)) {
+                    structure.add(next);
+                    queue.add(next);
+                }
+            }
+        }
+        return structure;
+    }
+
+    private static boolean isStovePart(LevelReader level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        return state.is(ModBlocks.STOVE_CASING.get())
+                || state.is(ModBlocks.CHIMNEY.get())
+                || state.is(ModBlocks.DAMPER.get());
     }
 
     /**
