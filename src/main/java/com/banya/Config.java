@@ -90,6 +90,13 @@ public final class Config {
                     "Only cooling down clears it: neither fainting nor waiting it out in the heat will.")
             .defineInRange("strainRecoveryPerStep", 5.0, 0.1, 100.0);
 
+    public static final ModConfigSpec.DoubleValue COLD_STRAIN_RECOVERY = BUILDER
+            .comment(
+                    "How much faster heat strain sheds while the bather is in cold water or snow.",
+                    "The plunge already halves Warmth; this makes it clear the lingering danger too,",
+                    "so the contrast ritual pays off twice.")
+            .defineInRange("coldStrainRecoveryMultiplier", 3.0, 1.0, 20.0);
+
     public static final ModConfigSpec.DoubleValue STRAIN_FAINT = BUILDER
             .comment("Heat strain at which the bather blacks out, and past which the heat starts to hurt.")
             .defineInRange("strainFaintThreshold", 100.0, 1.0, 1000.0);

@@ -47,7 +47,7 @@ public final class ContrastTracker {
     }
 
     /** Cold water, an ice hole, powder snow or fresh snow all count as the plunge. */
-    private static boolean isInCold(ServerPlayer player) {
+    public static boolean isInCold(ServerPlayer player) {
         if (player.isInWater() || player.isInPowderSnow) {
             return true;
         }

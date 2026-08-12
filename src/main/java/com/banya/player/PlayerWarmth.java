@@ -69,6 +69,7 @@ public final class PlayerWarmth {
         set(player, warmth);
 
         boolean inHeat = exposure.heatIndex() >= threshold;
+        boolean strainRising = inHeat && warmth >= WarmthZone.OVERHEAT_START;
         double strain = updateStrain(player, warmth, inHeat);
         applyZoneEffects(player, WarmthZone.of(warmth), strain);
         applyOverheatDamage(player, strain, inHeat);
@@ -76,7 +77,7 @@ public final class PlayerWarmth {
         ContrastTracker.tick(player, exposure, warmth);
         warmth = get(player); // the plunge cools the bather, which is the way out of the danger
 
-        syncToClient(player, (float) warmth, strainFraction(strain), exposure.inRoom());
+        syncToClient(player, (float) warmth, strainFraction(strain), strainRising, exposure.inRoom());
     }
 
     /**
@@ -100,7 +101,12 @@ public final class PlayerWarmth {
                     / (MAX_WARMTH - WarmthZone.OVERHEAT_START);
             strain = Math.min(Config.STRAIN_MAX.get(), strain + Config.STRAIN_GAIN.get() * intensity);
         } else {
-            strain = Math.max(0.0, strain - Config.STRAIN_RECOVERY.get());
+            double recovery = Config.STRAIN_RECOVERY.get();
+            if (ContrastTracker.isInCold(player)) {
+                // Cold water does what standing about cannot: it flushes the strain out fast.
+                recovery *= Config.COLD_STRAIN_RECOVERY.get();
+            }
+            strain = Math.max(0.0, strain - recovery);
         }
         player.setData(ModAttachments.HEAT_STRAIN, strain);
 
@@ -131,13 +137,14 @@ public final class PlayerWarmth {
      * to "not in the banya": skipping that packet used to leave the bar stuck on screen at 0 after
      * stepping out of a cold room.
      */
-    private static void syncToClient(ServerPlayer player, float warmth, float strain, boolean inBanya) {
+    private static void syncToClient(ServerPlayer player, float warmth, float strain,
+                                     boolean rising, boolean inBanya) {
         WarmthSync last = player.getData(ModAttachments.LAST_SYNC);
-        if (!last.differsFrom(warmth, strain, inBanya)) {
+        if (!last.differsFrom(warmth, strain, rising, inBanya)) {
             return;
         }
-        player.setData(ModAttachments.LAST_SYNC, new WarmthSync(warmth, strain, inBanya));
-        PacketDistributor.sendToPlayer(player, new WarmthSyncPayload(warmth, strain, inBanya));
+        player.setData(ModAttachments.LAST_SYNC, new WarmthSync(warmth, strain, rising, inBanya));
+        PacketDistributor.sendToPlayer(player, new WarmthSyncPayload(warmth, strain, rising, inBanya));
     }
 
     /** Hotter rooms heat proportionally faster, scaled around the reference heat index. */

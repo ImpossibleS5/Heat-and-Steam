@@ -34,6 +34,8 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
     private static final int COLOR_DEEP_WARMTH = 0xFFF2A33C;
     private static final int COLOR_OVERHEAT = 0xFFE04B3A;
     private static final int COLOR_STRAIN = 0xFFC1272D;
+    /** Muted while it wears off, so "cooling down" never looks like "still burning". */
+    private static final int COLOR_STRAIN_FADING = 0x997A4A4A;
     /** Strain rides as a thinner line beneath the warmth bar. */
     private static final int STRAIN_HEIGHT = 2;
 
@@ -79,7 +81,10 @@ public class WarmthHudLayer implements LayeredDraw.Layer {
         int width = Math.max(1, Math.round(BAR_WIDTH * Math.min(1.0F, strain)));
         graphics.fill(barLeft - 1, top - 1, barLeft + BAR_WIDTH + 1, top + STRAIN_HEIGHT + 1, COLOR_BORDER);
         graphics.fill(barLeft, top, barLeft + BAR_WIDTH, top + STRAIN_HEIGHT, COLOR_EMPTY);
-        graphics.fill(barLeft, top, barLeft + width, top + STRAIN_HEIGHT, COLOR_STRAIN);
+        // Building strain is alarming; strain wearing off is just something to wait out, and the
+        // two need to be told apart at a glance or a draining bar reads as a stuck one.
+        graphics.fill(barLeft, top, barLeft + width, top + STRAIN_HEIGHT,
+                WarmthHudData.strainRising() ? COLOR_STRAIN : COLOR_STRAIN_FADING);
     }
 
     private static int colorFor(WarmthZone zone) {

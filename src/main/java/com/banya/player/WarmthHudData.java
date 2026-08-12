@@ -10,14 +10,21 @@ package com.banya.player;
 public final class WarmthHudData {
     private static float warmth;
     private static float strain;
+    private static boolean strainRising;
     private static boolean inBanya;
 
     private WarmthHudData() {}
 
-    public static void set(float warmth, float strain, boolean inBanya) {
+    public static void set(float warmth, float strain, boolean strainRising, boolean inBanya) {
         WarmthHudData.warmth = warmth;
         WarmthHudData.strain = strain;
+        WarmthHudData.strainRising = strainRising;
         WarmthHudData.inBanya = inBanya;
+    }
+
+    /** Whether the strain is still building, as opposed to wearing off. */
+    public static boolean strainRising() {
+        return strainRising;
     }
 
     public static float warmth() {
@@ -37,6 +44,7 @@ public final class WarmthHudData {
     public static void reset() {
         warmth = 0.0F;
         strain = 0.0F;
+        strainRising = false;
         inBanya = false;
     }
 }

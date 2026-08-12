@@ -16,7 +16,7 @@ public final class ModNetwork {
                 WarmthSyncPayload.TYPE,
                 WarmthSyncPayload.STREAM_CODEC,
                 // Runs on the client main thread; it only caches values for the HUD to read.
-                (payload, context) ->
-                        WarmthHudData.set(payload.warmth(), payload.strain(), payload.inBanya()));
+                (payload, context) -> WarmthHudData.set(
+                        payload.warmth(), payload.strain(), payload.strainRising(), payload.inBanya()));
     }
 }
