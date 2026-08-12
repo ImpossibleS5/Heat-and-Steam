@@ -294,6 +294,14 @@ public final class Config {
                     "Above 1.0 this is the mod's nudge towards bathing together.")
             .defineInRange("venikOtherPlayerMultiplier", 1.5, 1.0, 5.0);
 
+    public static final ModConfigSpec.IntValue VENIK_MAX_EFFECT_SECONDS = BUILDER
+            .comment(
+                    "Ceiling on a venik effect, in seconds, however many rounds are stacked onto it.",
+                    "Repeat whisking now adds to the running timer instead of replacing it, which is",
+                    "what a real session feels like; without a ceiling a tub of veniks would bank an",
+                    "afternoon of Regeneration in one sitting.")
+            .defineInRange("venikMaxEffectSeconds", 120, 1, 100000);
+
     public static final ModConfigSpec.DoubleValue CONTRAST_WARMTH = BUILDER
             .comment("Warmth a player must carry out of the parnaya for the plunge to count.")
             .defineInRange("contrastWarmth", 60.0, 0.0, 100.0);
