@@ -2,7 +2,7 @@ package com.banya.registry;
 
 import com.banya.Banya;
 import com.banya.item.FirewoodItem;
-import com.banya.item.VenikItem;
+import com.banya.stove.StoveStones;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -36,10 +36,14 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.POLOK.get());
                         output.accept(ModItems.BANYA_DOOR.get());
                         output.accept(ModItems.SOAPSTONE_ORE.get());
-                        output.accept(ModItems.RIVER_STONE.get());
-                        output.accept(ModItems.ANDESITE_STONE.get());
-                        output.accept(ModItems.BASALT_STONE.get());
-                        output.accept(ModItems.SOAPSTONE.get());
+                        // Every cracking stage, so the wear can be looked at without pouring a
+                        // hundred ladles to reach it.
+                        for (var stone : List.of(ModItems.RIVER_STONE, ModItems.ANDESITE_STONE,
+                                ModItems.BASALT_STONE, ModItems.SOAPSTONE)) {
+                            for (int cracks = 0; cracks < StoveStones.MAX_CRACKS; cracks++) {
+                                output.accept(cracked(stone.get(), cracks));
+                            }
+                        }
                         output.accept(ModItems.CHOPPING_BLOCK.get());
                         output.accept(ModItems.DRYING_RACK.get());
                         // Both states of a stateful item, the way vanilla lists potion variants:
@@ -51,10 +55,11 @@ public final class ModCreativeTabs {
                         }
                         output.accept(ModItems.FELT_HAT.get());
                         output.accept(ModItems.LADLE.get());
-                        for (var venik : List.of(ModItems.VENIK_BIRCH, ModItems.VENIK_OAK)) {
-                            output.accept(venik.get());
-                            output.accept(steeped(venik.get()));
-                        }
+                        // Only the dry venik is listed. A steeped one is something you earn at the
+                        // tub, not something you pick off a shelf — the steeping is the whole
+                        // ritual. The item and its charges are untouched either way.
+                        output.accept(ModItems.VENIK_BIRCH.get());
+                        output.accept(ModItems.VENIK_OAK.get());
                     })
                     .build());
 
@@ -64,9 +69,11 @@ public final class ModCreativeTabs {
         return stack;
     }
 
-    private static ItemStack steeped(ItemLike item) {
+    private static ItemStack cracked(ItemLike item, int cracks) {
         ItemStack stack = new ItemStack(item);
-        VenikItem.steep(stack);
+        if (cracks > 0) {
+            stack.set(ModDataComponents.CRACKS.get(), cracks);
+        }
         return stack;
     }
 

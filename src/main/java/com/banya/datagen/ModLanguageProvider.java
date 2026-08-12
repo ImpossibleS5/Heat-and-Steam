@@ -78,7 +78,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.thermometer.no_stove", "Печь не найдена");
             add("message.banya.overheat", "Голова кружится — пора выйти");
             add("message.banya.steam.heavy", "Тяжёлый пар — камни ещё не раскалились");
-            add("hud.banya.warmth", "Прогрев %s");
+            add("entity.banya.seat", "Сиденье");
         } else {
             add("itemGroup.banya", "Banya");
             add(ModBlocks.STOVE.get(), "Banya Stove");
@@ -140,7 +140,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.thermometer.no_stove", "No stove nearby");
             add("message.banya.overheat", "Your head is swimming — time to step out");
             add("message.banya.steam.heavy", "Heavy steam — the stones are not hot enough yet");
-            add("hud.banya.warmth", "Warmth: %s");
+            add("entity.banya.seat", "Seat");
         }
     }
 }
