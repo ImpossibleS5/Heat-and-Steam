@@ -22,14 +22,6 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
     private static final int GAUGE_Y = 57;
     private static final int GAUGE_WIDTH = 16;
     private static final int GAUGE_HEIGHT = 10;
-    /**
-     * Readout occupies the right half of the fuel row. Two lines is all that fits once the basket
-     * takes two rows; smoke lives on the thermometer, which is the room's instrument anyway.
-     */
-    private static final int READOUT_X = 92;
-    private static final int READOUT_TEMPERATURE_Y = 54;
-    private static final int READOUT_HUMIDITY_Y = 63;
-    private static final int READOUT_COLOR = 0x404040;
     /** Vanilla slot bevel, matching the boxes baked into the panel texture. */
     private static final int SLOT_SHADOW = 0xFF373737;
     private static final int SLOT_HIGHLIGHT = 0xFFFFFFFF;
@@ -97,14 +89,6 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
         }
     }
 
-    @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
-        graphics.drawString(this.font,
-                Component.translatable("container.banya.stove.temperature", this.menu.getTemperature()),
-                READOUT_X, READOUT_TEMPERATURE_Y, READOUT_COLOR, false);
-        graphics.drawString(this.font,
-                Component.translatable("container.banya.stove.humidity", this.menu.getHumidity()),
-                READOUT_X, READOUT_HUMIDITY_Y, READOUT_COLOR, false);
-    }
+    // The stove screen is about the fire: fuel and how long it will last. Temperature, humidity and
+    // smoke belong to the room, and the thermometer reads those.
 }

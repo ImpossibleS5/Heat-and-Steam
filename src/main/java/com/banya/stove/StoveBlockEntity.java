@@ -57,8 +57,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     public static final int DATA_TEMPERATURE = 2;
     public static final int DATA_HUMIDITY = 3;
     public static final int DATA_SMOKE = 4;
-    public static final int DATA_TIER = 5;
-    public static final int DATA_SIZE = 6;
+    /** Perceived heat, so the thermometer need not know the server's humidity weighting. */
+    public static final int DATA_HEAT_INDEX = 5;
+    /** 1 when the room is sealed, 0 when the climate is leaking away. */
+    public static final int DATA_SEALED = 6;
+    public static final int DATA_SIZE = 7;
 
     /** The basket is sized for the biggest stove; smaller tiers simply refuse the extra slots. */
     public static final int STONE_SLOTS = StoveTier.MAX_STONE_SLOTS;
@@ -144,7 +147,9 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_TEMPERATURE -> (int) Math.round(temperature);
                 case DATA_HUMIDITY -> (int) Math.round(humidity);
                 case DATA_SMOKE -> (int) Math.round(smoke);
-                case DATA_TIER -> tier.ordinal();
+                case DATA_HEAT_INDEX -> (int) Math.round(
+                        RoomClimate.heatIndex(temperature, humidity) * steamQuality());
+                case DATA_SEALED -> room == null ? 0 : 1;
                 default -> 0;
             };
         }
@@ -157,8 +162,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_TEMPERATURE -> temperature = value;
                 case DATA_HUMIDITY -> humidity = value;
                 case DATA_SMOKE -> smoke = value;
-                case DATA_TIER -> tier = StoveTier.values()[Math.clamp(value, 0, StoveTier.values().length - 1)];
                 default -> {
+                    // Heat index and seal state are derived; the client only ever reads them.
                 }
             }
         }
@@ -223,6 +228,9 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 : 1.0;
         this.fuelSparks = stack.getItem() instanceof FirewoodItem firewood2 && firewood2.species().sparks();
         this.fuelWasWet = stack.getItem() instanceof FirewoodItem && !FirewoodItem.isDry(stack);
+        // Fresh flames supersede the old coals; without this the stove reported burning and
+        // smouldering at once.
+        this.emberTicks = 0;
         stack.shrink(1);
         setChanged();
     }
@@ -238,8 +246,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             this.needsRescan = true;
         }
 
-        this.tier = StoveStructure.detect(level, this.worldPosition);
-        ChimneyState chimney = Chimney.detect(level, this.worldPosition);
+        Direction facing = getBlockState().getValue(StoveBlock.FACING);
+        this.tier = StoveStructure.detect(level, this.worldPosition, facing);
+        ChimneyState chimney = Chimney.detect(level,
+                StoveStructure.chimneyBase(this.worldPosition, facing, this.tier));
         this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(),
                 this.room, level, RoomClimate.leakMultiplier(chimney));
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
@@ -497,6 +507,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     public StoveTier getTier() {
         return this.tier;
+    }
+
+    /** The synced climate values, shared with any thermometer reading this stove's room. */
+    public ContainerData getClimateData() {
+        return this.data;
     }
 
     @Override

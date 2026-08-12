@@ -70,6 +70,7 @@ public final class BanyaClient {
     @SubscribeEvent
     static void onRegisterScreens(final RegisterMenuScreensEvent event) {
         event.register(ModMenus.STOVE.get(), StoveScreen::new);
+        event.register(ModMenus.THERMOMETER.get(), ThermometerScreen::new);
     }
 
     @SubscribeEvent

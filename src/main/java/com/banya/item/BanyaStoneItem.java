@@ -46,7 +46,10 @@ public class BanyaStoneItem extends Item {
     @Override
     public int getBarWidth(ItemStack stack) {
         int capacity = Math.max(1, StoveStones.capacityOf(stack));
-        return Math.max(1, Math.round(BAR_SEGMENTS * StoveStones.heatOf(stack) / (float) capacity));
+        // A big stove banks more into a stone than the stone holds on its own, so a freshly pulled
+        // one can read over full. Clamp, or the bar runs off the end of the icon.
+        float filled = Math.min(1.0F, StoveStones.heatOf(stack) / (float) capacity);
+        return Math.clamp(Math.round(BAR_SEGMENTS * filled), 1, BAR_SEGMENTS);
     }
 
     @Override

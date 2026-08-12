@@ -105,20 +105,7 @@ public class StoveMenu extends AbstractContainerMenu {
         return this.data.get(StoveBlockEntity.DATA_BURN_TIME_TOTAL);
     }
 
-    /** Room temperature in whole degrees C. */
-    public int getTemperature() {
-        return this.data.get(StoveBlockEntity.DATA_TEMPERATURE);
-    }
-
-    /** Room humidity, 0-100. */
-    public int getHumidity() {
-        return this.data.get(StoveBlockEntity.DATA_HUMIDITY);
-    }
-
-    /** Room smoke, 0-100. */
-    public int getSmoke() {
-        return this.data.get(StoveBlockEntity.DATA_SMOKE);
-    }
+    // The room's climate is not this screen's business — the thermometer reads that.
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {

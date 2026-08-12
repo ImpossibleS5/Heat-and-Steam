@@ -18,11 +18,15 @@ public final class Chimney {
 
     private Chimney() {}
 
-    public static ChimneyState detect(Level level, BlockPos stovePos) {
+    /**
+     * @param base where the flue starts — above a bare firebox, or above the middle of a built-up
+     *             stove body
+     */
+    public static ChimneyState detect(Level level, BlockPos base) {
         boolean damperClosed = false;
 
-        for (int offset = 1; offset <= MAX_HEIGHT; offset++) {
-            BlockPos pos = stovePos.above(offset);
+        for (int offset = 0; offset < MAX_HEIGHT; offset++) {
+            BlockPos pos = base.above(offset);
             BlockState state = level.getBlockState(pos);
 
             if (state.getBlock() instanceof DamperBlock) {

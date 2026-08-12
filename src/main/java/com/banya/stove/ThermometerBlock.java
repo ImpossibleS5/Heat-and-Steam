@@ -1,12 +1,12 @@
 package com.banya.stove;
 
-import com.banya.climate.RoomClimate;
 import com.banya.climate.StoveLocator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -18,14 +18,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 /**
- * Reads out the microclimate of the nearest stove. Until humidity and smoke exist (Phase 2/3) this
- * shows temperature and whether the room is sealed.
+ * Wall gauge for the room's microclimate. Opening it shows a proper readout screen rather than a
+ * line of text over the hotbar: temperature, humidity, smoke and the perceived heat that actually
+ * drives Warmth all belong together, and a one-line message could never hold them.
  */
 public class ThermometerBlock extends Block {
     /** The wall the gauge hangs on; the dial faces the opposite way. */
@@ -66,6 +67,29 @@ public class ThermometerBlock extends Block {
     }
 
     @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
+        StoveBlockEntity stove = StoveLocator.findNearest(level, pos);
+        if (stove == null) {
+            // Nothing to read: say so rather than opening an empty instrument.
+            player.displayClientMessage(
+                    Component.translatable("message.banya.thermometer.no_stove").withStyle(ChatFormatting.GRAY),
+                    true);
+            return InteractionResult.CONSUME;
+        }
+
+        player.openMenu(new SimpleMenuProvider(
+                (containerId, inventory, opener) -> new ThermometerMenu(
+                        containerId, stove.getClimateData(), ContainerLevelAccess.create(level, pos)),
+                Component.translatable("container.banya.thermometer")));
+        return InteractionResult.CONSUME;
+    }
+
+    @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
@@ -74,47 +98,4 @@ public class ThermometerBlock extends Block {
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
-                                               Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            player.displayClientMessage(describe(StoveLocator.findNearest(level, pos)), true);
-        }
-        return InteractionResult.sidedSuccess(level.isClientSide());
-    }
-
-    private static Component describe(@Nullable StoveBlockEntity stove) {
-        if (stove == null) {
-            return Component.translatable("message.banya.thermometer.no_stove")
-                    .withStyle(ChatFormatting.GRAY);
-        }
-        // Temperature and humidity always show. The perceived-heat figure only joins them when
-        // there is steam: in dry air it equals the temperature, and printing the same number twice
-        // is the clutter, not the information.
-        long temperature = Math.round(stove.getTemperature());
-        long humidity = Math.round(stove.getHumidity());
-        Component reading = RoomClimate.isHumid(stove.getHumidity())
-                ? Component.translatable("message.banya.thermometer.humid", temperature, humidity,
-                        Math.round(RoomClimate.heatIndex(stove.getTemperature(), stove.getHumidity())))
-                : Component.translatable("message.banya.thermometer.dry", temperature, humidity);
-
-        // Smoke is worth shouting about, so it gets appended rather than replacing the reading.
-        if (stove.getSmoke() >= 1.0) {
-            reading = Component.empty()
-                    .append(reading)
-                    .append(Component.literal(" "))
-                    .append(Component.translatable("message.banya.thermometer.smoke",
-                            Math.round(stove.getSmoke())).withStyle(ChatFormatting.DARK_RED));
-        }
-        if (stove.getRoom() == null) {
-            return Component.empty()
-                    .append(reading.copy().withStyle(ChatFormatting.AQUA))
-                    .append(Component.literal(" "))
-                    .append(Component.translatable("message.banya.thermometer.leaking")
-                            .withStyle(ChatFormatting.RED));
-        }
-        return reading.copy().withStyle(ChatFormatting.GOLD);
-    }
-
 }

@@ -2,6 +2,7 @@ package com.banya.registry;
 
 import com.banya.Banya;
 import com.banya.stove.StoveMenu;
+import com.banya.stove.ThermometerMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -20,6 +21,10 @@ public final class ModMenus {
      */
     public static final Supplier<MenuType<StoveMenu>> STOVE = REGISTER.register(
             "stove", () -> IMenuTypeExtension.create(StoveMenu::new));
+
+    /** The thermometer's readout screen; it has no slots, only synced climate values. */
+    public static final Supplier<MenuType<ThermometerMenu>> THERMOMETER = REGISTER.register(
+            "thermometer", () -> IMenuTypeExtension.create(ThermometerMenu::new));
 
     private ModMenus() {}
 }
