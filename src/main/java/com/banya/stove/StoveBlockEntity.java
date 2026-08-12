@@ -37,6 +37,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Owns the room microclimate for its enclosing parnaya: burns fuel, tracks the room temperature,
@@ -56,7 +57,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     public static final int DATA_TEMPERATURE = 2;
     public static final int DATA_HUMIDITY = 3;
     public static final int DATA_SMOKE = 4;
-    public static final int DATA_SIZE = 5;
+    public static final int DATA_TIER = 5;
+    public static final int DATA_SIZE = 6;
 
     /** The basket is sized for the biggest stove; smaller tiers simply refuse the extra slots. */
     public static final int STONE_SLOTS = StoveTier.MAX_STONE_SLOTS;
@@ -142,6 +144,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_TEMPERATURE -> (int) Math.round(temperature);
                 case DATA_HUMIDITY -> (int) Math.round(humidity);
                 case DATA_SMOKE -> (int) Math.round(smoke);
+                case DATA_TIER -> tier.ordinal();
                 default -> 0;
             };
         }
@@ -154,6 +157,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_TEMPERATURE -> temperature = value;
                 case DATA_HUMIDITY -> humidity = value;
                 case DATA_SMOKE -> smoke = value;
+                case DATA_TIER -> tier = StoveTier.values()[Math.clamp(value, 0, StoveTier.values().length - 1)];
                 default -> {
                 }
             }
@@ -479,9 +483,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
+    /** The screen is titled after what has actually been built, so the tier is never a guess. */
     @Override
     public Component getDisplayName() {
-        return Component.translatable("container.banya.stove");
+        return Component.translatable("container.banya.stove." + this.tier.name().toLowerCase(Locale.ROOT));
     }
 
     @Override

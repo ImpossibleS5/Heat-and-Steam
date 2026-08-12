@@ -95,6 +95,12 @@ public class StoveMenu extends AbstractContainerMenu {
         return this.data.get(StoveBlockEntity.DATA_SMOKE);
     }
 
+    /** How much stove has been built, so the screen can show which basket slots are open. */
+    public StoveTier getTier() {
+        int ordinal = Math.clamp(this.data.get(StoveBlockEntity.DATA_TIER), 0, StoveTier.values().length - 1);
+        return StoveTier.values()[ordinal];
+    }
+
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = this.slots.get(index);

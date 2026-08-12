@@ -60,7 +60,9 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.venik.dried_out", "Веник высох — запарь его снова");
             add("effect.banya.hardening", "Закалка");
             add("message.banya.hardening", "Закалка!");
-            add("container.banya.stove", "Печь-каменка");
+            add("container.banya.stove.t1", "Печь-каменка");
+            add("container.banya.stove.t2", "Кирпичная каменка");
+            add("container.banya.stove.t3", "Массивная печь");
             add("container.banya.stove.temperature", "%s °C");
             add("container.banya.stove.humidity", "влажность %s%%");
             add("container.banya.stove.smoke", "дым %s%%");
@@ -116,7 +118,9 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.venik.dried_out", "The venik has dried out — steep it again");
             add("effect.banya.hardening", "Hardening");
             add("message.banya.hardening", "Hardening!");
-            add("container.banya.stove", "Banya Stove");
+            add("container.banya.stove.t1", "Banya Stove");
+            add("container.banya.stove.t2", "Brick Kamenka");
+            add("container.banya.stove.t3", "Massive Stove");
             add("container.banya.stove.temperature", "%s °C");
             add("container.banya.stove.humidity", "humidity %s%%");
             add("container.banya.stove.smoke", "smoke %s%%");
