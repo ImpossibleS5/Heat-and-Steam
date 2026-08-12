@@ -28,12 +28,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        // Vanilla furnace textures until the custom art exists: a real firebox reads far better
-        // than a flat stone cube, and the lit front doubles as the burning indicator.
+        // Fired brick with an iron plate on top and an arched firebox mouth at the front; the lit
+        // front doubles as the burning indicator.
         ModelFile stoveOff = models().orientable("stove",
-                mcLoc("block/furnace_side"), mcLoc("block/furnace_front"), mcLoc("block/furnace_top"));
+                modLoc("block/stove_side"), modLoc("block/stove_front"), modLoc("block/stove_top"));
         ModelFile stoveOn = models().orientable("stove_lit",
-                mcLoc("block/furnace_side"), mcLoc("block/furnace_front_on"), mcLoc("block/furnace_top"));
+                modLoc("block/stove_side"), modLoc("block/stove_front_on"), modLoc("block/stove_top"));
         getVariantBuilder(ModBlocks.STOVE.get())
                 .forAllStates(state -> ConfiguredModel.builder()
                         .modelFile(state.getValue(StoveBlock.LIT) ? stoveOn : stoveOff)
@@ -42,9 +42,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockItem(ModBlocks.STOVE.get(), stoveOff);
 
         simpleBlockWithItem(ModBlocks.CHIMNEY.get(),
-                models().cubeAll("chimney", mcLoc("block/bricks")));
+                models().cubeAll("chimney", modLoc("block/chimney")));
         simpleBlockWithItem(ModBlocks.STOVE_CASING.get(),
-                models().cubeAll("stove_casing", mcLoc("block/deepslate_bricks")));
+                models().cubeAll("stove_casing", modLoc("block/stove_casing")));
 
         simpleBlockWithItem(ModBlocks.SOOTY_PLANKS.get(),
                 models().cubeAll("sooty_planks", modLoc("block/sooty_planks")));
@@ -54,9 +54,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         // The damper reads open or shut at a glance from outside the flue.
         ModelFile damperOpen = models().cubeBottomTop("damper",
-                mcLoc("block/bricks"), mcLoc("block/bricks"), mcLoc("block/iron_block"));
+                modLoc("block/damper_side"), modLoc("block/damper_side"), modLoc("block/damper_top"));
         ModelFile damperShut = models().cubeBottomTop("damper_closed",
-                mcLoc("block/bricks"), mcLoc("block/bricks"), mcLoc("block/iron_trapdoor"));
+                modLoc("block/damper_side"), modLoc("block/damper_side"),
+                modLoc("block/damper_top_closed"));
         getVariantBuilder(ModBlocks.DAMPER.get())
                 .forAllStates(state -> ConfiguredModel.builder()
                         .modelFile(state.getValue(DamperBlock.OPEN) ? damperOpen : damperShut)
@@ -93,8 +94,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockItem(ModBlocks.TUB.get(), tubEmpty);
 
         ModelFile polok = models().withExistingParent("polok", mcLoc("block/block"))
-                .texture("texture", mcLoc("block/spruce_planks"))
-                .texture("particle", mcLoc("block/spruce_planks"))
+                .texture("texture", modLoc("block/polok"))
+                .texture("particle", modLoc("block/polok"))
                 .element().from(0, 0, 0).to(16, 6, 16).allFaces((dir, face) -> face.texture("#texture")).end();
         simpleBlockWithItem(ModBlocks.POLOK.get(), polok);
 
@@ -106,9 +107,11 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         // The chopping block shows whether a log is waiting on it.
         ModelFile choppingEmpty = models().cubeBottomTop("chopping_block",
-                mcLoc("block/oak_log"), mcLoc("block/oak_log_top"), modLoc("block/chopping_block_top"));
+                modLoc("block/chopping_block_side"), modLoc("block/chopping_block_bottom"),
+                modLoc("block/chopping_block_top"));
         ModelFile choppingLoaded = models().cubeBottomTop("chopping_block_loaded",
-                mcLoc("block/oak_log"), mcLoc("block/oak_log_top"), mcLoc("block/oak_log_top"));
+                modLoc("block/chopping_block_side"), modLoc("block/chopping_block_bottom"),
+                modLoc("block/chopping_block_top_loaded"));
         getVariantBuilder(ModBlocks.CHOPPING_BLOCK.get())
                 .forAllStates(state -> ConfiguredModel.builder()
                         .modelFile(state.getValue(ChoppingBlock.LOADED) ? choppingLoaded : choppingEmpty)
