@@ -19,7 +19,7 @@ public class ModLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         if (locale.equals("ru_ru")) {
             add("itemGroup.banya", "Баня");
-            add(ModBlocks.STOVE.get(), "Печь-каменка (T1)");
+            add(ModBlocks.STOVE.get(), "Печь-каменка");
             add(ModBlocks.THERMOMETER.get(), "Термометр");
             add(ModItems.FELT_HAT.get(), "Банная шапка");
             add(ModItems.LADLE.get(), "Ковш");
