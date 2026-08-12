@@ -84,8 +84,13 @@ public final class RoomScanner {
     }
 
     /**
-     * The blocks that make up the stove itself: the firebox, any masonry built onto it, and the
-     * flue. Gathered so the room can be found from around the whole thing.
+     * The parts of the stove that always stand inside the room: the firebox and any masonry built
+     * onto it. The room is sought from around these.
+     *
+     * <p>The flue is deliberately excluded. It leaves the building, so seeding from it started the
+     * fill in the open air outside, which promptly overflowed the volume cap and reported a
+     * perfectly sealed banya as leaking. The chimney still walls the climate in — it simply does so
+     * as an ordinary solid block, like the roof it passes through.
      */
     private static Set<BlockPos> collectStructure(LevelReader level, BlockPos stovePos) {
         Set<BlockPos> structure = new HashSet<>();
@@ -110,10 +115,7 @@ public final class RoomScanner {
     }
 
     private static boolean isStovePart(LevelReader level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
-        return state.is(ModBlocks.STOVE_CASING.get())
-                || state.is(ModBlocks.CHIMNEY.get())
-                || state.is(ModBlocks.DAMPER.get());
+        return level.getBlockState(pos).is(ModBlocks.STOVE_CASING.get());
     }
 
     /**

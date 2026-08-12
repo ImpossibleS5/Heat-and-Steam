@@ -18,14 +18,20 @@ public class ThermometerScreen extends AbstractContainerScreen<ThermometerMenu> 
             ResourceLocation.fromNamespaceAndPath(Banya.MODID, "textures/gui/thermometer.png");
 
     private static final int PANEL_WIDTH = 176;
-    private static final int PANEL_HEIGHT = 108;
+    private static final int PANEL_HEIGHT = 132;
 
-    private static final int ROW_START_Y = 24;
-    private static final int ROW_HEIGHT = 18;
-    private static final int LABEL_X = 12;
-    private static final int BAR_X = 78;
-    private static final int BAR_WIDTH = 86;
+    /**
+     * Label and value share a line, with the bar beneath spanning the panel. Putting the label
+     * beside the bar looked fine in English and ran straight through it in Russian, where
+     * "Задымлённость" is half again as wide.
+     */
+    private static final int ROW_START_Y = 26;
+    private static final int ROW_HEIGHT = 22;
+    private static final int MARGIN_X = 12;
+    private static final int BAR_WIDTH = PANEL_WIDTH - 2 * MARGIN_X;
+    private static final int BAR_OFFSET_Y = 10;
     private static final int BAR_HEIGHT = 6;
+    private static final int SEAL_Y = ROW_START_Y + 4 * ROW_HEIGHT + 6;
 
     private static final int LABEL_COLOR = 0x404040;
     private static final int BAR_BORDER = 0xFF373737;
@@ -89,24 +95,23 @@ public class ThermometerScreen extends AbstractContainerScreen<ThermometerMenu> 
                 ? Component.translatable("gui.banya.thermometer.sealed").withStyle(ChatFormatting.DARK_GREEN)
                 : Component.translatable("gui.banya.thermometer.leaking").withStyle(ChatFormatting.DARK_RED);
         graphics.drawString(this.font, seal,
-                (this.imageWidth - this.font.width(seal)) / 2,
-                ROW_START_Y + 4 * ROW_HEIGHT + 2, LABEL_COLOR, false);
+                (this.imageWidth - this.font.width(seal)) / 2, SEAL_Y, LABEL_COLOR, false);
     }
 
     private void row(GuiGraphics graphics, int index, String key, Component value, float fill, int color) {
         int y = ROW_START_Y + index * ROW_HEIGHT;
-        graphics.drawString(this.font, Component.translatable("gui.banya.thermometer." + key),
-                LABEL_X, y, LABEL_COLOR, false);
+        Component label = Component.translatable("gui.banya.thermometer." + key);
 
-        int barY = y + 1;
-        graphics.fill(BAR_X - 1, barY - 1, BAR_X + BAR_WIDTH + 1, barY + BAR_HEIGHT + 1, BAR_BORDER);
-        graphics.fill(BAR_X, barY, BAR_X + BAR_WIDTH, barY + BAR_HEIGHT, BAR_EMPTY);
+        graphics.drawString(this.font, label, MARGIN_X, y, LABEL_COLOR, false);
+        graphics.drawString(this.font, value,
+                MARGIN_X + BAR_WIDTH - this.font.width(value), y, LABEL_COLOR, false);
+
+        int barY = y + BAR_OFFSET_Y;
+        graphics.fill(MARGIN_X - 1, barY - 1, MARGIN_X + BAR_WIDTH + 1, barY + BAR_HEIGHT + 1, BAR_BORDER);
+        graphics.fill(MARGIN_X, barY, MARGIN_X + BAR_WIDTH, barY + BAR_HEIGHT, BAR_EMPTY);
         int filled = Math.round(BAR_WIDTH * Math.clamp(fill, 0.0F, 1.0F));
         if (filled > 0) {
-            graphics.fill(BAR_X, barY, BAR_X + filled, barY + BAR_HEIGHT, color);
+            graphics.fill(MARGIN_X, barY, MARGIN_X + filled, barY + BAR_HEIGHT, color);
         }
-
-        graphics.drawString(this.font, value,
-                BAR_X + BAR_WIDTH - this.font.width(value), y + BAR_HEIGHT + 2, LABEL_COLOR, false);
     }
 }

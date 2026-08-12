@@ -31,8 +31,8 @@ public class BanyaStoneItem extends Item {
         if (level.isClientSide() || level.getGameTime() % COOL_INTERVAL_TICKS != 0) {
             return;
         }
-        int heat = StoveStones.heatOf(stack);
-        if (heat > 0) {
+        float heat = StoveStones.heatOf(stack);
+        if (heat > 0.0F) {
             // Out of the stove it gives its warmth up to the room, slowly enough to be carried.
             StoveStones.setHeat(stack, heat - Config.STONE_COOLING_PER_STEP.get());
         }
@@ -40,15 +40,15 @@ public class BanyaStoneItem extends Item {
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        return StoveStones.heatOf(stack) > 0;
+        return StoveStones.heatOf(stack) > 0.0F;
     }
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        int capacity = Math.max(1, StoveStones.capacityOf(stack));
+        float capacity = Math.max(1, StoveStones.capacityOf(stack));
         // A big stove banks more into a stone than the stone holds on its own, so a freshly pulled
         // one can read over full. Clamp, or the bar runs off the end of the icon.
-        float filled = Math.min(1.0F, StoveStones.heatOf(stack) / (float) capacity);
+        float filled = Math.min(1.0F, StoveStones.heatOf(stack) / capacity);
         return Math.clamp(Math.round(BAR_SEGMENTS * filled), 1, BAR_SEGMENTS);
     }
 

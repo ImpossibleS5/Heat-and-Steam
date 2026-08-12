@@ -62,12 +62,17 @@ public final class StoveStones {
         return (int) Math.round(qualityOf(stack) * Config.STONE_CAPACITY_PER_QUALITY.get() * tierFactor);
     }
 
-    public static int heatOf(ItemStack stack) {
-        return Math.max(0, stack.getOrDefault(ModDataComponents.HEAT.get(), 0));
+    /**
+     * Heat is a float on purpose. With whole numbers a three-a-second fire could not be shared
+     * between eight stones, so it went to one stone at a time and the basket appeared to heat in
+     * turn rather than together.
+     */
+    public static float heatOf(ItemStack stack) {
+        return Math.max(0.0F, stack.getOrDefault(ModDataComponents.HEAT.get(), 0.0F));
     }
 
-    public static void setHeat(ItemStack stack, int heat) {
-        stack.set(ModDataComponents.HEAT.get(), Math.max(0, heat));
+    public static void setHeat(ItemStack stack, float heat) {
+        stack.set(ModDataComponents.HEAT.get(), Math.max(0.0F, heat));
     }
 
     public static int cracksOf(ItemStack stack) {
@@ -75,48 +80,67 @@ public final class StoveStones {
     }
 
     /** Heat banked across the whole basket. */
-    public static int totalHeat(IItemHandler stones) {
-        int total = 0;
+    public static float totalHeat(IItemHandler stones) {
+        float total = 0.0F;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
             total += heatOf(stones.getStackInSlot(slot));
         }
         return total;
     }
 
-    /** Spreads heat over the basket, filling the coolest stones first. */
+    /** The fire heats the whole basket at once, so every stone takes an equal share. */
     public static void charge(IItemHandler stones, double amount, double tierFactor) {
-        int remaining = (int) Math.round(amount);
-        while (remaining > 0) {
-            int target = coolestChargeableSlot(stones, tierFactor);
-            if (target < 0) {
-                return;
+        int sharing = 0;
+        for (int slot = 0; slot < stones.getSlots(); slot++) {
+            ItemStack stack = stones.getStackInSlot(slot);
+            if (!stack.isEmpty() && heatOf(stack) < capacityOf(stack, tierFactor)) {
+                sharing++;
             }
-            ItemStack stack = stones.getStackInSlot(target);
-            int room = capacityOf(stack, tierFactor) - heatOf(stack);
-            int given = Math.min(remaining, Math.min(room, 1 + remaining / 4));
-            setHeat(stack, heatOf(stack) + given);
-            remaining -= given;
+        }
+        if (sharing == 0) {
+            return;
+        }
+
+        float share = (float) (amount / sharing);
+        for (int slot = 0; slot < stones.getSlots(); slot++) {
+            ItemStack stack = stones.getStackInSlot(slot);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            float capacity = capacityOf(stack, tierFactor);
+            if (heatOf(stack) < capacity) {
+                setHeat(stack, Math.min(capacity, heatOf(stack) + share));
+            }
         }
     }
 
     /**
-     * Draws heat back out of the basket, hottest stone first.
+     * Draws heat back out of the basket, evenly, the way it went in.
      *
      * @return how much was actually available
      */
     public static double release(IItemHandler stones, double amount) {
-        int remaining = (int) Math.round(amount);
-        int drawn = 0;
-        while (remaining > 0) {
-            int target = hottestSlot(stones);
-            if (target < 0) {
-                break;
+        int sharing = 0;
+        for (int slot = 0; slot < stones.getSlots(); slot++) {
+            if (heatOf(stones.getStackInSlot(slot)) > 0.0F) {
+                sharing++;
             }
-            ItemStack stack = stones.getStackInSlot(target);
-            int taken = Math.min(remaining, heatOf(stack));
-            setHeat(stack, heatOf(stack) - taken);
+        }
+        if (sharing == 0) {
+            return 0.0;
+        }
+
+        float share = (float) (amount / sharing);
+        float drawn = 0.0F;
+        for (int slot = 0; slot < stones.getSlots(); slot++) {
+            ItemStack stack = stones.getStackInSlot(slot);
+            float heat = heatOf(stack);
+            if (heat <= 0.0F) {
+                continue;
+            }
+            float taken = Math.min(share, heat);
+            setHeat(stack, heat - taken);
             drawn += taken;
-            remaining -= taken;
         }
         return drawn;
     }
@@ -146,36 +170,6 @@ public final class StoveStones {
         }
         stack.set(ModDataComponents.CRACKS.get(), cracks);
         return false;
-    }
-
-    private static int coolestChargeableSlot(IItemHandler stones, double tierFactor) {
-        int best = -1;
-        int lowest = Integer.MAX_VALUE;
-        for (int slot = 0; slot < stones.getSlots(); slot++) {
-            ItemStack stack = stones.getStackInSlot(slot);
-            if (stack.isEmpty()) {
-                continue;
-            }
-            int heat = heatOf(stack);
-            if (heat < capacityOf(stack, tierFactor) && heat < lowest) {
-                lowest = heat;
-                best = slot;
-            }
-        }
-        return best;
-    }
-
-    private static int hottestSlot(IItemHandler stones) {
-        int best = -1;
-        int highest = 0;
-        for (int slot = 0; slot < stones.getSlots(); slot++) {
-            int heat = heatOf(stones.getStackInSlot(slot));
-            if (heat > highest) {
-                highest = heat;
-                best = slot;
-            }
-        }
-        return best;
     }
 
     private static int randomLoadedSlot(IItemHandler stones, RandomSource random) {
