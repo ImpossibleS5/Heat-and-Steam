@@ -53,6 +53,7 @@
   "message.banya.overheat": "Your head is swimming — time to step out",
   "message.banya.steam.heavy": "Heavy steam — the stones are not hot enough yet",
   "message.banya.stone.cracked": "A stone cracked",
+  "message.banya.stone.too_hot": "The stone is scalding — you cannot hold it",
   "message.banya.thermometer.no_stove": "No stove nearby",
   "message.banya.tub.cold": "The tub water is still cold — heat the banya first",
   "message.banya.venik.dried_out": "The venik has dried out — steep it again",

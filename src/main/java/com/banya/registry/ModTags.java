@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 
 /**
  * Tag keys owned by this mod. Insulation is expressed as tiers so KubeJS and third-party mods can
@@ -53,6 +54,20 @@ public final class ModTags {
         }
 
         private Items() {}
+    }
+
+    public static final class Fluids {
+        /**
+         * What a hot stone can be quenched in. Water by default; lava deliberately is not in it, and
+         * a tag rather than a hardcoded check so a pack or another mod can qualify its own coolant.
+         */
+        public static final TagKey<Fluid> COOLS_STONES = create("cools_stones");
+
+        private static TagKey<Fluid> create(String path) {
+            return TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(Banya.MODID, path));
+        }
+
+        private Fluids() {}
     }
 
     private ModTags() {}

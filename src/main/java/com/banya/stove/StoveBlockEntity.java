@@ -246,6 +246,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             this.needsRescan = true;
         }
 
+        // The basket is modelled here, so its stones must not also be charged the background
+        // cooling they would otherwise owe for the time spent sitting in it.
+        StoveStones.stampAll(this.stones, level.getGameTime());
+
         Direction facing = getBlockState().getValue(StoveBlock.FACING);
         this.tier = StoveStructure.detect(level, this.worldPosition, facing);
         ChimneyState chimney = Chimney.detect(level,

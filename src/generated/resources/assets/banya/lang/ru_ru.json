@@ -53,6 +53,7 @@
   "message.banya.overheat": "Голова кружится — пора выйти",
   "message.banya.steam.heavy": "Тяжёлый пар — камни ещё не раскалились",
   "message.banya.stone.cracked": "Камень треснул",
+  "message.banya.stone.too_hot": "Камень раскалён — его не удержать",
   "message.banya.thermometer.no_stove": "Печь не найдена",
   "message.banya.tub.cold": "Вода в ушате ещё холодная — протопи баню",
   "message.banya.venik.dried_out": "Веник высох — запарь его снова",

@@ -233,10 +233,30 @@ public final class Config {
 
     public static final ModConfigSpec.IntValue STONE_COOLING_PER_STEP = BUILDER
             .comment(
-                    "Heat a stone loses per second while out of a stove.",
-                    "Slow enough that a hot stone can be carried to another banya, not so slow that",
-                    "it stays warm forever in a chest.")
+                    "Heat a stone loses per second once it is out of a stove.",
+                    "Applies wherever the stone is — carried, dropped, or shut in a chest. Chests",
+                    "used to be perfect thermoses because items in them never tick; cooling is now",
+                    "worked out from a timestamp on read, so storage buys no time.")
             .defineInRange("stoneCoolingPerStep", 2, 0, 1000);
+
+    public static final ModConfigSpec.DoubleValue STONE_WATER_COOLING_MULTIPLIER = BUILDER
+            .comment(
+                    "How much faster a stone gives up its heat while sitting in a cooling fluid.",
+                    "Which fluids count is the banya:cools_stones tag — water by default. Lava is",
+                    "deliberately not in it: dropping a stone in lava does not quench it.")
+            .defineInRange("stoneWaterCoolingMultiplier", 20.0, 1.0, 1000.0);
+
+    public static final ModConfigSpec.DoubleValue STONE_BURN_FRACTION = BUILDER
+            .comment(
+                    "Share of its capacity past which a stone is too hot to carry at all.",
+                    "It burns whoever picks it up and drops on the floor, and cannot be picked back",
+                    "up until it cools. A fraction rather than a flat number, so a humble river",
+                    "stone at full glow is every bit as dangerous as soapstone.")
+            .defineInRange("stoneBurnFraction", 0.8, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue STONE_BURN_SECONDS = BUILDER
+            .comment("Seconds of fire from grabbing a scalding stone.")
+            .defineInRange("stoneBurnSeconds", 3.0, 0.0, 60.0);
 
     public static final ModConfigSpec.DoubleValue STONE_POURS_PER_CRACK = BUILDER
             .comment(

@@ -24,6 +24,9 @@ public final class StoveStones {
     /** Cracking stages a stone passes through before it falls apart. */
     public static final int MAX_CRACKS = 3;
 
+    /** Cooling rates are quoted per second, which is also one simulation step. */
+    private static final double SECOND_IN_TICKS = 20.0;
+
     private StoveStones() {}
 
     /** Quality points for one stone, or 0 if this item is not a banya stone. */
@@ -63,16 +66,86 @@ public final class StoveStones {
     }
 
     /**
-     * Heat is a float on purpose. With whole numbers a three-a-second fire could not be shared
+     * Heat as last written down, with no cooling applied for the time since. This is the stove's own
+     * working value and what the item's gauge draws; anything outside a stove wants
+     * {@link #heatAt} instead.
+     *
+     * <p>Heat is a float on purpose. With whole numbers a three-a-second fire could not be shared
      * between eight stones, so it went to one stone at a time and the basket appeared to heat in
      * turn rather than together.
      */
-    public static float heatOf(ItemStack stack) {
+    public static float storedHeat(ItemStack stack) {
         return Math.max(0.0F, stack.getOrDefault(ModDataComponents.HEAT.get(), 0.0F));
     }
 
     public static void setHeat(ItemStack stack, float heat) {
         stack.set(ModDataComponents.HEAT.get(), Math.max(0.0F, heat));
+    }
+
+    /**
+     * Heat right now: what was stored, less the cooling owed for the time since it was written.
+     *
+     * <p>Cooling is worked out on read rather than ticked down because items in a chest never tick,
+     * which made a chest a perfect thermos. A stone now goes cold wherever it is left — in a
+     * backpack, in a barrel, lying in the grass, even in an unloaded chunk — and it costs nothing
+     * per tick to do it.
+     */
+    public static float heatAt(ItemStack stack, long gameTime) {
+        return heatAt(stack, gameTime, 1.0);
+    }
+
+    private static float heatAt(ItemStack stack, long gameTime, double multiplier) {
+        float stored = storedHeat(stack);
+        Long written = stack.get(ModDataComponents.HEAT_TIME.get());
+        if (stored <= 0.0F || written == null) {
+            // Never stamped: a stone straight from the creative menu or a recipe. Put it on the
+            // clock at its first settle rather than charging it for all the time since the world
+            // began, which would read as "hot stones arrive cold".
+            return stored;
+        }
+        long elapsed = Math.max(0L, gameTime - written);
+        double cooling = Config.STONE_COOLING_PER_STEP.get() * multiplier
+                * elapsed / SECOND_IN_TICKS;
+        return (float) Math.max(0.0, stored - cooling);
+    }
+
+    /**
+     * Applies the cooling owed since the last write and puts the stone back on the clock.
+     *
+     * @param multiplier how much faster than usual it is losing heat — see
+     *                   {@link com.banya.registry.ModTags.Fluids#COOLS_STONES}
+     * @return the heat it is left with
+     */
+    public static float settle(ItemStack stack, long gameTime, double multiplier) {
+        float heat = heatAt(stack, gameTime, multiplier);
+        setHeat(stack, heat);
+        stamp(stack, gameTime);
+        return heat;
+    }
+
+    /** Puts a stone on the clock without cooling it, for heat that is being modelled elsewhere. */
+    public static void stamp(ItemStack stack, long gameTime) {
+        stack.set(ModDataComponents.HEAT_TIME.get(), gameTime);
+    }
+
+    /**
+     * Keeps every stone in a basket on the clock. The stove models its own stones, so they must not
+     * also be charged for the time they spend sitting in it.
+     */
+    public static void stampAll(IItemHandler stones, long gameTime) {
+        for (int slot = 0; slot < stones.getSlots(); slot++) {
+            ItemStack stack = stones.getStackInSlot(slot);
+            if (!stack.isEmpty()) {
+                stamp(stack, gameTime);
+            }
+        }
+    }
+
+    /** Heat past which a stone is too hot to keep hold of, as a share of what it can hold. */
+    public static boolean isScalding(ItemStack stack, long gameTime) {
+        float capacity = capacityOf(stack);
+        return capacity > 0.0F
+                && heatAt(stack, gameTime) >= capacity * Config.STONE_BURN_FRACTION.get();
     }
 
     public static int cracksOf(ItemStack stack) {
@@ -83,7 +156,7 @@ public final class StoveStones {
     public static float totalHeat(IItemHandler stones) {
         float total = 0.0F;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
-            total += heatOf(stones.getStackInSlot(slot));
+            total += storedHeat(stones.getStackInSlot(slot));
         }
         return total;
     }
@@ -93,7 +166,7 @@ public final class StoveStones {
         int sharing = 0;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
             ItemStack stack = stones.getStackInSlot(slot);
-            if (!stack.isEmpty() && heatOf(stack) < capacityOf(stack, tierFactor)) {
+            if (!stack.isEmpty() && storedHeat(stack) < capacityOf(stack, tierFactor)) {
                 sharing++;
             }
         }
@@ -108,8 +181,8 @@ public final class StoveStones {
                 continue;
             }
             float capacity = capacityOf(stack, tierFactor);
-            if (heatOf(stack) < capacity) {
-                setHeat(stack, Math.min(capacity, heatOf(stack) + share));
+            if (storedHeat(stack) < capacity) {
+                setHeat(stack, Math.min(capacity, storedHeat(stack) + share));
             }
         }
     }
@@ -122,7 +195,7 @@ public final class StoveStones {
     public static double release(IItemHandler stones, double amount) {
         int sharing = 0;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
-            if (heatOf(stones.getStackInSlot(slot)) > 0.0F) {
+            if (storedHeat(stones.getStackInSlot(slot)) > 0.0F) {
                 sharing++;
             }
         }
@@ -134,7 +207,7 @@ public final class StoveStones {
         float drawn = 0.0F;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
             ItemStack stack = stones.getStackInSlot(slot);
-            float heat = heatOf(stack);
+            float heat = storedHeat(stack);
             if (heat <= 0.0F) {
                 continue;
             }

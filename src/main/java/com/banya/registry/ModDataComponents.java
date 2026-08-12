@@ -42,6 +42,18 @@ public final class ModDataComponents {
                     .persistent(Codec.FLOAT)
                     .networkSynchronized(ByteBufCodecs.FLOAT));
 
+    /**
+     * Game time at which {@link #HEAT} was last accounted for.
+     *
+     * <p>Cooling is worked out from this on read rather than ticked down, because items in chests do
+     * not tick at all — a chest was a perfect thermos. With a timestamp a stone cools correctly
+     * wherever it sits, including in an unloaded chunk, at the cost of nothing per tick.
+     */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> HEAT_TIME =
+            REGISTER.registerComponentType("heat_time", builder -> builder
+                    .persistent(Codec.LONG)
+                    .networkSynchronized(ByteBufCodecs.VAR_LONG));
+
     /** How far a stone has cracked. Visible on the texture; at the limit the stone is lost. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CRACKS =
             REGISTER.registerComponentType("cracks", builder -> builder

@@ -32,6 +32,8 @@ public final class ModDataGenerator {
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(),
                 new ModItemTagProvider(output, lookup, blockTags.contentsGetter(), existingFileHelper));
+        generator.addProvider(event.includeServer(),
+                new ModFluidTagProvider(output, lookup, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
         // Damage type tags reference entries this provider defines, so they have to be validated
         // against its enriched lookup rather than the vanilla one — otherwise the tag build fails

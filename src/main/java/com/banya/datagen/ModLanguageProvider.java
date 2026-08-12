@@ -37,6 +37,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.BASALT_STONE.get(), "Базальтовые камни");
             add(ModItems.SOAPSTONE.get(), "Талькохлорит");
             add("message.banya.stone.cracked", "Камень треснул");
+            add("message.banya.stone.too_hot", "Камень раскалён — его не удержать");
             add(ModBlocks.CHOPPING_BLOCK.get(), "Колода для колки");
             add(ModBlocks.DRYING_RACK.get(), "Дровница");
             add(ModItems.FIREWOOD_BIRCH.get(), "Берёзовые поленья");
@@ -98,6 +99,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.BASALT_STONE.get(), "Basalt Stones");
             add(ModItems.SOAPSTONE.get(), "Soapstone");
             add("message.banya.stone.cracked", "A stone cracked");
+            add("message.banya.stone.too_hot", "The stone is scalding — you cannot hold it");
             add(ModBlocks.CHOPPING_BLOCK.get(), "Chopping Block");
             add(ModBlocks.DRYING_RACK.get(), "Drying Rack");
             add(ModItems.FIREWOOD_BIRCH.get(), "Birch Firewood");
