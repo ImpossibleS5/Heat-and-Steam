@@ -196,6 +196,12 @@ public final class Config {
             .comment("Smoke (%) at which breathing it starts to do harm.")
             .defineInRange("smokeChokeLevel", 60.0, 0.0, 100.0);
 
+    public static final ModConfigSpec.IntValue CHIMNEY_MAX_HEIGHT = BUILDER
+            .comment(
+                    "How far above the stove the flue is followed looking for open sky.",
+                    "Tall enough for any sensible bathhouse, short enough that the check stays trivial.")
+            .defineInRange("chimneyMaxHeight", 32, 1, 320);
+
     public static final ModConfigSpec.DoubleValue HUMIDITY_HEAT_WEIGHT = BUILDER
             .comment(
                     "How strongly humidity amplifies perceived heat.",
