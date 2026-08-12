@@ -343,6 +343,15 @@ public final class Config {
             .comment("Seconds a rack takes to dry its load of firewood.")
             .defineInRange("firewoodDrySteps", 300, 5, 100000);
 
+    public static final ModConfigSpec.DoubleValue FIREWOOD_SUN_DRY_MULTIPLIER = BUILDER
+            .comment(
+                    "How much faster a rack dries standing in full daylight rather than in shade.",
+                    "Judged by sky light, so a glass roof still counts as sun — a glazed drying shed",
+                    "is the sensible thing to build, and glass is not a blanket. Rain resets the",
+                    "timer outright, which is what makes putting a roof on worth the trouble.",
+                    "Rounded to a whole step, since drying progress is counted in seconds.")
+            .defineInRange("firewoodSunDryMultiplier", 2.0, 1.0, 10.0);
+
     public static final ModConfigSpec.DoubleValue SPARK_IGNITE_CHANCE = BUILDER
             .comment(
                     "Chance per second that burning spruce sets a fire next to the stove.",

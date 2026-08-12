@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,6 +23,8 @@ public class DryingRackBlockEntity extends BlockEntity {
     private static final int TICK_INTERVAL = 20;
     /** One stack of split wood is a sensible rack load. */
     public static final int CAPACITY = 16;
+    /** Sky light with nothing but air — or glass — between the rack and the sun. */
+    private static final int FULL_SKY_LIGHT = 15;
 
     private ItemStack contents = ItemStack.EMPTY;
     private int dryProgress;
@@ -40,13 +43,41 @@ public class DryingRackBlockEntity extends BlockEntity {
         if (this.contents.isEmpty() || isDry()) {
             return;
         }
-        if (++this.dryProgress < Config.FIREWOOD_DRY_STEPS.get()) {
+
+        if (level.isRainingAt(pos.above())) {
+            // A soaking undoes the whole drying, as it does in a real yard. isRainingAt already
+            // accounts for a roof overhead and for biomes where it does not rain.
+            if (this.dryProgress > 0) {
+                this.dryProgress = 0;
+                setChanged();
+            }
+            return;
+        }
+
+        this.dryProgress += dryingRate(level, pos);
+        if (this.dryProgress < Config.FIREWOOD_DRY_STEPS.get()) {
             return;
         }
         FirewoodItem.setDry(this.contents, true);
         this.dryProgress = 0;
         setChanged();
         level.setBlockAndUpdate(pos, state.setValue(DryingRackBlock.STATE, RackState.DRY));
+    }
+
+    /**
+     * Seconds of drying credited per real second: more in full sun, the plain rate in shade.
+     *
+     * <p>Sunlight is judged by sky <em>light</em>, not by {@code canSeeSky}. Glass blocks the sky
+     * heightmap but has no light opacity, so a rack under a glass roof would otherwise dry as slowly
+     * as one in a cellar — and a glazed drying shed is precisely the sensible thing to build. This
+     * also gives the roof its due: under boards the rate is plain, and at night it is plain
+     * everywhere.
+     */
+    private static int dryingRate(Level level, BlockPos pos) {
+        boolean fullSun = level.isDay()
+                && level.getBrightness(LightLayer.SKY, pos.above()) >= FULL_SKY_LIGHT;
+        // Kept whole so dryProgress stays an int and old racks load unchanged.
+        return fullSun ? Math.max(1, (int) Math.round(Config.FIREWOOD_SUN_DRY_MULTIPLIER.get())) : 1;
     }
 
     /** @return whether anything was taken from the player's stack */
