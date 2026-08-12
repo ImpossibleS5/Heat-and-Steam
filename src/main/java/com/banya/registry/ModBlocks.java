@@ -8,6 +8,7 @@ import com.banya.wood.DryingRackBlock;
 import com.banya.stove.ChimneyBlock;
 import com.banya.stove.DamperBlock;
 import com.banya.stove.StoveBlock;
+import com.banya.stove.StoveCasingBlock;
 import com.banya.stove.ThermometerBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
@@ -62,8 +63,9 @@ public final class ModBlocks {
                     .ignitedByLava());
 
     /** Masonry built around the firebox to make a bigger stove. */
-    public static final DeferredBlock<Block> STOVE_CASING = REGISTER.registerSimpleBlock(
+    public static final DeferredBlock<StoveCasingBlock> STOVE_CASING = REGISTER.registerBlock(
             "stove_casing",
+            StoveCasingBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_RED)
                     .strength(2.5F, 6.0F)

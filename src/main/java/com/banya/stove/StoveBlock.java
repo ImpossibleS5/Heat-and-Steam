@@ -96,13 +96,37 @@ public class StoveBlock extends Block implements EntityBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemInteractionResult poured = pourOnto(stack, level, pos, player);
+        return poured == ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+                ? super.useItemOn(stack, state, level, pos, player, hand, hitResult)
+                : poured;
+    }
+
+    /**
+     * Throws a filled ladle onto the stove standing at {@code stovePos}.
+     *
+     * <p>Takes the stove's position rather than reading it off the clicked block, so the masonry
+     * around a built-up stove can hand the same interaction through — see {@link StoveCasingBlock}.
+     *
+     * @return {@code PASS_TO_DEFAULT_BLOCK_INTERACTION} when the held stack is not a filled ladle
+     */
+    static ItemInteractionResult pourOnto(ItemStack stack, Level level, BlockPos stovePos, Player player) {
         if (!(stack.getItem() instanceof LadleItem) || !LadleItem.isFilled(stack)) {
-            return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StoveBlockEntity stove) {
-            pourLadle(level, pos, player, stack, stove);
+        if (!level.isClientSide() && level.getBlockEntity(stovePos) instanceof StoveBlockEntity stove) {
+            pourLadle(level, stovePos, player, stack, stove);
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    /** Opens the fuel screen of the stove standing at {@code stovePos}. */
+    static InteractionResult openScreen(Level level, BlockPos stovePos, Player player) {
+        if (!level.isClientSide() && level.getBlockEntity(stovePos) instanceof StoveBlockEntity stove) {
+            // The tier travels with the open packet so the screen can lay out the right basket.
+            player.openMenu(stove, buf -> buf.writeByte(stove.getTier().ordinal()));
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
     private static void pourLadle(Level level, BlockPos pos, Player player, ItemStack stack,
@@ -130,11 +154,7 @@ public class StoveBlock extends Block implements EntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
                                                Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof StoveBlockEntity stove) {
-            // The tier travels with the open packet so the screen can lay out the right basket.
-            player.openMenu(stove, buf -> buf.writeByte(stove.getTier().ordinal()));
-        }
-        return InteractionResult.sidedSuccess(level.isClientSide());
+        return openScreen(level, pos, player);
     }
 
     @Override
