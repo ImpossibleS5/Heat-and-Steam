@@ -28,6 +28,7 @@ public final class ModCreativeTabs {
                     .icon(() -> ModItems.STOVE.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.STOVE.get());
+                        output.accept(ModItems.STOVE_CASING.get());
                         output.accept(ModItems.CHIMNEY.get());
                         output.accept(ModItems.DAMPER.get());
                         output.accept(ModItems.THERMOMETER.get());

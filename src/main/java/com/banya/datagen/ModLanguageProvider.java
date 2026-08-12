@@ -29,6 +29,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.SOAPSTONE_ORE.get(), "Талькохлоритовая руда");
             add(ModBlocks.SOOTY_PLANKS.get(), "Закопчённые доски");
             add(ModBlocks.SOOTY_LOG.get(), "Закопчённое бревно");
+            add(ModBlocks.STOVE_CASING.get(), "Печная кладка");
             add(ModBlocks.CHIMNEY.get(), "Дымоход");
             add(ModBlocks.DAMPER.get(), "Заслонка");
             add(ModItems.RIVER_STONE.get(), "Речные голыши");
@@ -84,6 +85,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModBlocks.SOAPSTONE_ORE.get(), "Soapstone Ore");
             add(ModBlocks.SOOTY_PLANKS.get(), "Sooty Planks");
             add(ModBlocks.SOOTY_LOG.get(), "Sooty Log");
+            add(ModBlocks.STOVE_CASING.get(), "Stove Casing");
             add(ModBlocks.CHIMNEY.get(), "Chimney");
             add(ModBlocks.DAMPER.get(), "Damper");
             add(ModItems.RIVER_STONE.get(), "River Stones");

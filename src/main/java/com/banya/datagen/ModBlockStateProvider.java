@@ -43,6 +43,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         simpleBlockWithItem(ModBlocks.CHIMNEY.get(),
                 models().cubeAll("chimney", mcLoc("block/bricks")));
+        simpleBlockWithItem(ModBlocks.STOVE_CASING.get(),
+                models().cubeAll("stove_casing", mcLoc("block/deepslate_bricks")));
 
         simpleBlockWithItem(ModBlocks.SOOTY_PLANKS.get(),
                 models().cubeAll("sooty_planks", modLoc("block/sooty_planks")));

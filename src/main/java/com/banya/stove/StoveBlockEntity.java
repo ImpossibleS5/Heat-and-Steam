@@ -58,8 +58,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     public static final int DATA_SMOKE = 4;
     public static final int DATA_SIZE = 5;
 
-    /** How many stones the T1 basket holds; bigger stoves get bigger baskets in Phase 3. */
-    public static final int STONE_SLOTS = 4;
+    /** The basket is sized for the biggest stove; smaller tiers simply refuse the extra slots. */
+    public static final int STONE_SLOTS = StoveTier.MAX_STONE_SLOTS;
     /** Smoke effects are refreshed every step, so they need only outlive one interval. */
     private static final int SMOKE_EFFECT_TICKS = 60;
 
@@ -84,7 +84,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return StoveStones.isStone(stack);
+            // Slots past the tier's basket size stay shut until the stove is built up.
+            return slot < StoveBlockEntity.this.tier.stoneSlots() && StoveStones.isStone(stack);
         }
 
         /**
@@ -110,6 +111,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private double sootFraction;
     /** What was above the stove on the last step, cached for readouts between scans. */
     private ChimneyState chimneyState = ChimneyState.NONE;
+    /** How much stove is built around the firebox. Derived each step, never stored. */
+    private StoveTier tier = StoveTier.T1;
     /** Set when a pour just cracked a stone, read once by the block to tell the player. */
     private boolean crackedThisPour;
 
@@ -206,6 +209,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         if (burn <= 0) {
             return; // not a fuel item; leave it for the player to take back out
         }
+        // A bigger stove wrings far more out of the same log.
+        burn = (int) Math.round(burn * this.tier.fuelFactor());
         this.burnTime = burn;
         this.burnTimeTotal = burn;
         // Species and dryness decide how hard this piece drives the room.
@@ -229,6 +234,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             this.needsRescan = true;
         }
 
+        this.tier = StoveStructure.detect(level, this.worldPosition);
         ChimneyState chimney = Chimney.detect(level, this.worldPosition);
         this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(),
                 this.room, level, RoomClimate.leakMultiplier(chimney));
@@ -248,8 +254,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
      */
     private double heatInputForStep() {
         if (isBurning()) {
-            StoveStones.charge(this.stones, Config.STONE_CHARGE_PER_STEP.get());
-            return Config.HEAT_PER_STEP.get() * this.fuelHeatFactor;
+            StoveStones.charge(this.stones, Config.STONE_CHARGE_PER_STEP.get(), this.tier.capacityFactor());
+            return Config.HEAT_PER_STEP.get() * this.fuelHeatFactor * this.tier.heatFactor();
         }
         // The stones pay their heat back, which is what keeps a каменка warm after the wood is gone.
         return StoveStones.release(this.stones, Config.STONE_RELEASE_PER_STEP.get());

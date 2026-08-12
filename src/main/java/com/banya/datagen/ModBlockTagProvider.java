@@ -27,7 +27,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.STOVE.get(), ModBlocks.THERMOMETER.get(), ModBlocks.SOAPSTONE_ORE.get(),
-                        ModBlocks.CHIMNEY.get(), ModBlocks.DAMPER.get());
+                        ModBlocks.CHIMNEY.get(), ModBlocks.DAMPER.get(), ModBlocks.STOVE_CASING.get());
         tag(BlockTags.NEEDS_STONE_TOOL)
                 .add(ModBlocks.STOVE.get(), ModBlocks.SOAPSTONE_ORE.get());
 

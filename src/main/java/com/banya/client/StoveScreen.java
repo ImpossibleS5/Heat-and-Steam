@@ -18,20 +18,17 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
 
     /** Burn gauge sits immediately right of the fuel slot. */
     private static final int GAUGE_X = 68;
-    private static final int GAUGE_Y = 48;
+    private static final int GAUGE_Y = 57;
     private static final int GAUGE_WIDTH = 16;
     private static final int GAUGE_HEIGHT = 10;
     /**
-     * Readout occupies the right half of the fuel row, on two short lines. Centring it over the row
-     * put it straight through the fuel slot and the flame.
+     * Readout occupies the right half of the fuel row. Two lines is all that fits once the basket
+     * takes two rows; smoke lives on the thermometer, which is the room's instrument anyway.
      */
     private static final int READOUT_X = 92;
-    private static final int READOUT_TEMPERATURE_Y = 43;
-    private static final int READOUT_HUMIDITY_Y = 54;
-    /** Third line, in the gap above the inventory label. */
-    private static final int READOUT_SMOKE_Y = 64;
+    private static final int READOUT_TEMPERATURE_Y = 54;
+    private static final int READOUT_HUMIDITY_Y = 63;
     private static final int READOUT_COLOR = 0x404040;
-    private static final int READOUT_SMOKE_COLOR = 0x8A5A2B;
     private static final int GAUGE_BORDER = 0xFF373737;
     private static final int GAUGE_EMPTY = 0xFF8B8B8B;
     private static final int GAUGE_FLAME = 0xFFFF9A2E;
@@ -85,11 +82,5 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
         graphics.drawString(this.font,
                 Component.translatable("container.banya.stove.humidity", this.menu.getHumidity()),
                 READOUT_X, READOUT_HUMIDITY_Y, READOUT_COLOR, false);
-        // Smoke only earns a line once there is some; a permanent "smoke 0%" is just noise.
-        if (this.menu.getSmoke() > 0) {
-            graphics.drawString(this.font,
-                    Component.translatable("container.banya.stove.smoke", this.menu.getSmoke()),
-                    READOUT_X, READOUT_SMOKE_Y, READOUT_SMOKE_COLOR, false);
-        }
     }
 }

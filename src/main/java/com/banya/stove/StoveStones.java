@@ -47,17 +47,27 @@ public final class StoveStones {
         return qualityOf(stack) > 0;
     }
 
-    /** Heat one stone can hold, scaled by how good the rock is. */
+    /**
+     * Heat one stone can hold, scaled by how good the rock is.
+     *
+     * <p>The stove it sits in scales this further: a massive stove banks several times as much in
+     * the same stone, which is what lets it hold a banya warm past a game day. Out of a stove the
+     * plain capacity applies, so a stone carried away cannot hold more than it earned.
+     */
     public static int capacityOf(ItemStack stack) {
-        return (int) Math.round(qualityOf(stack) * Config.STONE_CAPACITY_PER_QUALITY.get());
+        return capacityOf(stack, 1.0);
+    }
+
+    public static int capacityOf(ItemStack stack, double tierFactor) {
+        return (int) Math.round(qualityOf(stack) * Config.STONE_CAPACITY_PER_QUALITY.get() * tierFactor);
     }
 
     public static int heatOf(ItemStack stack) {
-        return Math.min(stack.getOrDefault(ModDataComponents.HEAT.get(), 0), capacityOf(stack));
+        return Math.max(0, stack.getOrDefault(ModDataComponents.HEAT.get(), 0));
     }
 
     public static void setHeat(ItemStack stack, int heat) {
-        stack.set(ModDataComponents.HEAT.get(), Math.clamp(heat, 0, capacityOf(stack)));
+        stack.set(ModDataComponents.HEAT.get(), Math.max(0, heat));
     }
 
     public static int cracksOf(ItemStack stack) {
@@ -74,15 +84,15 @@ public final class StoveStones {
     }
 
     /** Spreads heat over the basket, filling the coolest stones first. */
-    public static void charge(IItemHandler stones, double amount) {
+    public static void charge(IItemHandler stones, double amount, double tierFactor) {
         int remaining = (int) Math.round(amount);
         while (remaining > 0) {
-            int target = coolestChargeableSlot(stones);
+            int target = coolestChargeableSlot(stones, tierFactor);
             if (target < 0) {
                 return;
             }
             ItemStack stack = stones.getStackInSlot(target);
-            int room = capacityOf(stack) - heatOf(stack);
+            int room = capacityOf(stack, tierFactor) - heatOf(stack);
             int given = Math.min(remaining, Math.min(room, 1 + remaining / 4));
             setHeat(stack, heatOf(stack) + given);
             remaining -= given;
@@ -138,7 +148,7 @@ public final class StoveStones {
         return false;
     }
 
-    private static int coolestChargeableSlot(IItemHandler stones) {
+    private static int coolestChargeableSlot(IItemHandler stones, double tierFactor) {
         int best = -1;
         int lowest = Integer.MAX_VALUE;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
@@ -147,7 +157,7 @@ public final class StoveStones {
                 continue;
             }
             int heat = heatOf(stack);
-            if (heat < capacityOf(stack) && heat < lowest) {
+            if (heat < capacityOf(stack, tierFactor) && heat < lowest) {
                 lowest = heat;
                 best = slot;
             }

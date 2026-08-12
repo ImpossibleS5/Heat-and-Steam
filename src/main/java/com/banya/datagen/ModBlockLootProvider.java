@@ -26,6 +26,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                 block -> createOreDrop(block, ModItems.SOAPSTONE.get()));
         dropSelf(ModBlocks.SOOTY_PLANKS.get());
         dropSelf(ModBlocks.SOOTY_LOG.get());
+        dropSelf(ModBlocks.STOVE_CASING.get());
         dropSelf(ModBlocks.CHIMNEY.get());
         dropSelf(ModBlocks.DAMPER.get());
         dropSelf(ModBlocks.CHOPPING_BLOCK.get());

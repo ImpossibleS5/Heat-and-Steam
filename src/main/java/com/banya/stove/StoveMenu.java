@@ -21,10 +21,11 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 public class StoveMenu extends AbstractContainerMenu {
     /** Fuel sits on the left of its row, with the flame gauge beside it and the readout to the right. */
     public static final int FUEL_SLOT_X = 44;
-    public static final int FUEL_SLOT_Y = 45;
-    /** Left edge of the stone row; four slots sit side by side from here. */
+    public static final int FUEL_SLOT_Y = 54;
+    /** Stone basket: two rows of four, the top row filled first. */
     public static final int STONE_SLOT_X = 52;
-    public static final int STONE_SLOT_Y = 17;
+    public static final int STONE_SLOT_Y = 16;
+    public static final int STONE_COLUMNS = 4;
 
     private static final int FUEL_SLOTS = 1;
     private static final int STONE_SLOTS = StoveBlockEntity.STONE_SLOTS;
@@ -50,7 +51,9 @@ public class StoveMenu extends AbstractContainerMenu {
 
         this.addSlot(new SlotItemHandler(fuel, 0, FUEL_SLOT_X, FUEL_SLOT_Y));
         for (int slot = 0; slot < STONE_SLOTS; slot++) {
-            this.addSlot(new SlotItemHandler(stones, slot, STONE_SLOT_X + slot * 18, STONE_SLOT_Y));
+            this.addSlot(new SlotItemHandler(stones, slot,
+                    STONE_SLOT_X + (slot % STONE_COLUMNS) * 18,
+                    STONE_SLOT_Y + (slot / STONE_COLUMNS) * 18));
         }
         addPlayerInventory(playerInventory);
         this.addDataSlots(data);

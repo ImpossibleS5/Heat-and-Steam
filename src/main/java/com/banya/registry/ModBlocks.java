@@ -61,6 +61,15 @@ public final class ModBlocks {
                     .sound(SoundType.WOOD)
                     .ignitedByLava());
 
+    /** Masonry built around the firebox to make a bigger stove. */
+    public static final DeferredBlock<Block> STOVE_CASING = REGISTER.registerSimpleBlock(
+            "stove_casing",
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_RED)
+                    .strength(2.5F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE));
+
     /** A length of flue; stack it from the stove up to open sky. */
     public static final DeferredBlock<ChimneyBlock> CHIMNEY = REGISTER.registerBlock(
             "chimney",
