@@ -59,5 +59,20 @@
   "message.banya.venik.dried_out": "The venik has dried out — steep it again",
   "message.banya.venik.dry": "A dry venik just crumbles — steep it in a tub",
   "message.banya.venik.received": "%s is whisking you with a venik",
-  "message.banya.venik.too_cold": "You can only whisk in a hot parnaya"
+  "message.banya.venik.too_cold": "You can only whisk in a hot parnaya",
+  "subtitles.banya.chop": "Log splits",
+  "subtitles.banya.damper_close": "Damper closes",
+  "subtitles.banya.damper_open": "Damper opens",
+  "subtitles.banya.felt_hat_equip": "Hat put on",
+  "subtitles.banya.hardening": "Biting cold",
+  "subtitles.banya.ladle_fill": "Ladle scoops",
+  "subtitles.banya.steam_hiss": "Water hisses on stones",
+  "subtitles.banya.stone_crack": "Stone cracks",
+  "subtitles.banya.stone_quench": "Stone quenches",
+  "subtitles.banya.stone_scald": "Stone scalds",
+  "subtitles.banya.stove_crackle": "Stove crackles",
+  "subtitles.banya.tub_fill": "Tub fills",
+  "subtitles.banya.venik_steep": "Venik steeps",
+  "subtitles.banya.venik_whisk": "Venik swishes",
+  "subtitles.banya.wood_load": "Firewood stacked"
 }

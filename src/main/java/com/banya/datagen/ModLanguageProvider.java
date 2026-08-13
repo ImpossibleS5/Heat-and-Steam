@@ -79,6 +79,21 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.overheat", "Голова кружится — пора выйти");
             add("message.banya.steam.heavy", "Тяжёлый пар — камни ещё не раскалились");
             add("entity.banya.seat", "Сиденье");
+            add("subtitles.banya.steam_hiss", "Вода шипит на камнях");
+            add("subtitles.banya.stone_crack", "Камень трескается");
+            add("subtitles.banya.stove_crackle", "Печь потрескивает");
+            add("subtitles.banya.damper_open", "Заслонка открывается");
+            add("subtitles.banya.damper_close", "Заслонка закрывается");
+            add("subtitles.banya.venik_whisk", "Свист веника");
+            add("subtitles.banya.venik_steep", "Веник запаривается");
+            add("subtitles.banya.tub_fill", "Ушат наполняется");
+            add("subtitles.banya.ladle_fill", "Ковш зачерпывает");
+            add("subtitles.banya.stone_scald", "Камень обжигает");
+            add("subtitles.banya.stone_quench", "Камень остывает в воде");
+            add("subtitles.banya.hardening", "Обжигающий холод");
+            add("subtitles.banya.felt_hat_equip", "Шапка надета");
+            add("subtitles.banya.chop", "Полено раскалывается");
+            add("subtitles.banya.wood_load", "Дрова укладываются");
         } else {
             add("itemGroup.banya", "Banya");
             add(ModBlocks.STOVE.get(), "Banya Stove");
@@ -141,6 +156,21 @@ public class ModLanguageProvider extends LanguageProvider {
             add("message.banya.overheat", "Your head is swimming — time to step out");
             add("message.banya.steam.heavy", "Heavy steam — the stones are not hot enough yet");
             add("entity.banya.seat", "Seat");
+            add("subtitles.banya.steam_hiss", "Water hisses on stones");
+            add("subtitles.banya.stone_crack", "Stone cracks");
+            add("subtitles.banya.stove_crackle", "Stove crackles");
+            add("subtitles.banya.damper_open", "Damper opens");
+            add("subtitles.banya.damper_close", "Damper closes");
+            add("subtitles.banya.venik_whisk", "Venik swishes");
+            add("subtitles.banya.venik_steep", "Venik steeps");
+            add("subtitles.banya.tub_fill", "Tub fills");
+            add("subtitles.banya.ladle_fill", "Ladle scoops");
+            add("subtitles.banya.stone_scald", "Stone scalds");
+            add("subtitles.banya.stone_quench", "Stone quenches");
+            add("subtitles.banya.hardening", "Biting cold");
+            add("subtitles.banya.felt_hat_equip", "Hat put on");
+            add("subtitles.banya.chop", "Log splits");
+            add("subtitles.banya.wood_load", "Firewood stacked");
         }
     }
 }

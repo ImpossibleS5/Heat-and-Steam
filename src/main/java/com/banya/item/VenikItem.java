@@ -3,11 +3,11 @@ package com.banya.item;
 import com.banya.Config;
 import com.banya.climate.StoveLocator;
 import com.banya.registry.ModDataComponents;
+import com.banya.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -88,7 +88,7 @@ public class VenikItem extends Item {
                         .withStyle(ChatFormatting.GRAY), true);
             }
 
-            level.playSound(null, receiver.blockPosition(), SoundEvents.GRASS_BREAK,
+            level.playSound(null, receiver.blockPosition(), ModSounds.VENIK_WHISK.get(),
                     SoundSource.PLAYERS, 0.9F, 1.2F);
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.COMPOSTER,

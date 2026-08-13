@@ -1,0 +1,137 @@
+{
+  "chop": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.wood.break"
+      }
+    ],
+    "subtitle": "subtitles.banya.chop"
+  },
+  "damper_close": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.iron_trapdoor.close"
+      }
+    ],
+    "subtitle": "subtitles.banya.damper_close"
+  },
+  "damper_open": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.iron_trapdoor.open"
+      }
+    ],
+    "subtitle": "subtitles.banya.damper_open"
+  },
+  "felt_hat_equip": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.armor.equip_leather"
+      }
+    ],
+    "subtitle": "subtitles.banya.felt_hat_equip"
+  },
+  "hardening": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.player.splash.high_speed"
+      }
+    ],
+    "subtitle": "subtitles.banya.hardening"
+  },
+  "ladle_fill": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.bucket.fill"
+      }
+    ],
+    "subtitle": "subtitles.banya.ladle_fill"
+  },
+  "steam_hiss": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.fire.extinguish"
+      }
+    ],
+    "subtitle": "subtitles.banya.steam_hiss"
+  },
+  "stone_crack": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.stone.break"
+      }
+    ],
+    "subtitle": "subtitles.banya.stone_crack"
+  },
+  "stone_quench": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.fire.extinguish"
+      }
+    ],
+    "subtitle": "subtitles.banya.stone_quench"
+  },
+  "stone_scald": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.fire.extinguish"
+      }
+    ],
+    "subtitle": "subtitles.banya.stone_scald"
+  },
+  "stove_crackle": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.campfire.crackle"
+      }
+    ],
+    "subtitle": "subtitles.banya.stove_crackle"
+  },
+  "tub_fill": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.bucket.empty"
+      }
+    ],
+    "subtitle": "subtitles.banya.tub_fill"
+  },
+  "venik_steep": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.brewing_stand.brew"
+      }
+    ],
+    "subtitle": "subtitles.banya.venik_steep"
+  },
+  "venik_whisk": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.grass.break"
+      }
+    ],
+    "subtitle": "subtitles.banya.venik_whisk"
+  },
+  "wood_load": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.wood.place"
+      }
+    ],
+    "subtitle": "subtitles.banya.wood_load"
+  }
+}

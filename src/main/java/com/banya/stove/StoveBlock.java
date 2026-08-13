@@ -2,13 +2,13 @@ package com.banya.stove;
 
 import com.banya.item.LadleItem;
 import com.banya.registry.ModBlockEntities;
+import com.banya.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -47,6 +47,9 @@ public class StoveBlock extends Block implements EntityBlock {
     /** Which way the firebox faces, so the stove reads like a real one. */
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    /** Odds of the fire being heard on a given client tick — a stove should mutter, not chatter. */
+    private static final int CRACKLE_ONE_IN = 40;
+
     public StoveBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
@@ -62,6 +65,12 @@ public class StoveBlock extends Block implements EntityBlock {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (state.getValue(LIT) && random.nextInt(CRACKLE_ONE_IN) == 0) {
+            // Local, like a vanilla campfire: an ambient noise nobody else needs sent to them.
+            level.playLocalSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                    ModSounds.STOVE_CRACKLE.get(), SoundSource.BLOCKS,
+                    0.7F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.2F, false);
+        }
         if (!state.getValue(EMBERS)) {
             return;
         }
@@ -134,7 +143,7 @@ public class StoveBlock extends Block implements EntityBlock {
         boolean lightSteam = stove.pourWater();
         LadleItem.setFilled(stack, false);
 
-        level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS,
+        level.playSound(null, pos, ModSounds.STEAM_HISS.get(), SoundSource.BLOCKS,
                 0.8F, lightSteam ? 1.6F : 1.1F);
         if (level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(ParticleTypes.CLOUD,
@@ -145,7 +154,7 @@ public class StoveBlock extends Block implements EntityBlock {
             player.displayClientMessage(
                     Component.translatable("message.banya.steam.heavy").withStyle(ChatFormatting.GRAY), true);
         } else if (stove.consumeCrackedFlag()) {
-            level.playSound(null, pos, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.7F, 1.3F);
+            level.playSound(null, pos, ModSounds.STONE_CRACK.get(), SoundSource.BLOCKS, 0.7F, 1.3F);
             player.displayClientMessage(
                     Component.translatable("message.banya.stone.cracked").withStyle(ChatFormatting.GRAY), true);
         }

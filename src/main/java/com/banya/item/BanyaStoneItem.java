@@ -1,12 +1,12 @@
 package com.banya.item;
 
 import com.banya.Config;
+import com.banya.registry.ModSounds;
 import com.banya.registry.ModTags;
 import com.banya.stove.StoveStones;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -59,7 +59,7 @@ public class BanyaStoneItem extends Item {
 
         player.igniteForSeconds(Config.STONE_BURN_SECONDS.get().floatValue());
         player.drop(dropped, false);
-        player.level().playSound(null, player.blockPosition(), SoundEvents.FIRE_EXTINGUISH,
+        player.level().playSound(null, player.blockPosition(), ModSounds.STONE_SCALD.get(),
                 SoundSource.PLAYERS, 0.6F, 1.8F);
         player.displayClientMessage(
                 Component.translatable("message.banya.stone.too_hot").withStyle(ChatFormatting.RED), true);
@@ -79,7 +79,7 @@ public class BanyaStoneItem extends Item {
                     coolingMultiplier(level, entity.blockPosition()));
             if (before > 0.0F && after <= 0.0F) {
                 // The hiss that tells the player it is safe to pick up again.
-                level.playSound(null, entity.blockPosition(), SoundEvents.FIRE_EXTINGUISH,
+                level.playSound(null, entity.blockPosition(), ModSounds.STONE_QUENCH.get(),
                         SoundSource.BLOCKS, 0.4F, 2.0F);
             }
         }

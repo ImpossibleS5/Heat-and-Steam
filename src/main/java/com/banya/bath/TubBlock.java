@@ -4,11 +4,11 @@ import com.banya.Config;
 import com.banya.climate.StoveLocator;
 import com.banya.item.LadleItem;
 import com.banya.item.VenikItem;
+import com.banya.registry.ModSounds;
 import com.banya.stove.StoveBlockEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -84,7 +84,7 @@ public class TubBlock extends Block {
                 LadleItem.setFilled(stack, false);
             }
             level.setBlockAndUpdate(pos, state.setValue(FILLED, true));
-            level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 0.8F, 1.0F);
+            level.playSound(null, pos, ModSounds.TUB_FILL.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
     }
@@ -105,7 +105,7 @@ public class TubBlock extends Block {
 
             VenikItem.steep(stack);
             level.setBlockAndUpdate(pos, state.setValue(FILLED, false));
-            level.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.7F, 1.2F);
+            level.playSound(null, pos, ModSounds.VENIK_STEEP.get(), SoundSource.BLOCKS, 0.7F, 1.2F);
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
     }

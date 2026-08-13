@@ -59,5 +59,20 @@
   "message.banya.venik.dried_out": "Веник высох — запарь его снова",
   "message.banya.venik.dry": "Сухой веник крошится — запарь его в ушате",
   "message.banya.venik.received": "%s парит вас веником",
-  "message.banya.venik.too_cold": "Париться можно только в жаркой парной"
+  "message.banya.venik.too_cold": "Париться можно только в жаркой парной",
+  "subtitles.banya.chop": "Полено раскалывается",
+  "subtitles.banya.damper_close": "Заслонка закрывается",
+  "subtitles.banya.damper_open": "Заслонка открывается",
+  "subtitles.banya.felt_hat_equip": "Шапка надета",
+  "subtitles.banya.hardening": "Обжигающий холод",
+  "subtitles.banya.ladle_fill": "Ковш зачерпывает",
+  "subtitles.banya.steam_hiss": "Вода шипит на камнях",
+  "subtitles.banya.stone_crack": "Камень трескается",
+  "subtitles.banya.stone_quench": "Камень остывает в воде",
+  "subtitles.banya.stone_scald": "Камень обжигает",
+  "subtitles.banya.stove_crackle": "Печь потрескивает",
+  "subtitles.banya.tub_fill": "Ушат наполняется",
+  "subtitles.banya.venik_steep": "Веник запаривается",
+  "subtitles.banya.venik_whisk": "Свист веника",
+  "subtitles.banya.wood_load": "Дрова укладываются"
 }

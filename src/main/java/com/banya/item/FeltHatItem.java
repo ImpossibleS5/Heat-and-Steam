@@ -1,8 +1,8 @@
 package com.banya.item;
 
+import com.banya.registry.ModSounds;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -36,6 +36,6 @@ public class FeltHatItem extends Item implements Equipable {
 
     @Override
     public Holder<SoundEvent> getEquipSound() {
-        return SoundEvents.ARMOR_EQUIP_LEATHER;
+        return ModSounds.FELT_HAT_EQUIP;
     }
 }

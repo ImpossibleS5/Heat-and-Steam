@@ -1,8 +1,8 @@
 package com.banya.item;
 
 import com.banya.registry.ModDataComponents;
+import com.banya.registry.ModSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -52,7 +52,7 @@ public class LadleItem extends Item {
         if (!level.isClientSide()) {
             setFilled(stack, true);
         }
-        level.playSound(player, pos, SoundEvents.BUCKET_FILL, SoundSource.PLAYERS, 0.6F, 1.4F);
+        level.playSound(player, pos, ModSounds.LADLE_FILL.get(), SoundSource.PLAYERS, 0.6F, 1.4F);
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 

@@ -1,11 +1,11 @@
 package com.banya.wood;
 
 import com.banya.registry.ModBlockEntities;
+import com.banya.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
@@ -77,7 +77,7 @@ public class ChoppingBlock extends Block implements EntityBlock {
                 stack.shrink(1);
             }
             level.setBlockAndUpdate(pos, state.setValue(LOADED, true));
-            level.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 0.8F, 0.9F);
+            level.playSound(null, pos, ModSounds.WOOD_LOAD.get(), SoundSource.BLOCKS, 0.8F, 0.9F);
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
     }
@@ -93,7 +93,7 @@ public class ChoppingBlock extends Block implements EntityBlock {
                 popResource(level, pos.above(), firewood);
             }
             axe.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
-            level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS, 1.0F, 0.8F);
+            level.playSound(null, pos, ModSounds.CHOP.get(), SoundSource.BLOCKS, 1.0F, 0.8F);
             if (level instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(
                         new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()),

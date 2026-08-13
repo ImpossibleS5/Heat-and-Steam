@@ -1,7 +1,7 @@
 package com.banya.stove;
 
+import com.banya.registry.ModSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +39,7 @@ public class DamperBlock extends Block {
         boolean open = !state.getValue(OPEN);
         if (!level.isClientSide()) {
             level.setBlockAndUpdate(pos, state.setValue(OPEN, open));
-            level.playSound(null, pos, open ? SoundEvents.IRON_TRAPDOOR_OPEN : SoundEvents.IRON_TRAPDOOR_CLOSE,
+            level.playSound(null, pos, open ? ModSounds.DAMPER_OPEN.get() : ModSounds.DAMPER_CLOSE.get(),
                     SoundSource.BLOCKS, 0.8F, 1.2F);
         }
         return InteractionResult.sidedSuccess(level.isClientSide());

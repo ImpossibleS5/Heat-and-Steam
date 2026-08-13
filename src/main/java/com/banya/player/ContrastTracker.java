@@ -3,6 +3,7 @@ package com.banya.player;
 import com.banya.Config;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModEffects;
+import com.banya.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -10,7 +11,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -76,7 +76,7 @@ public final class ContrastTracker {
         player.addEffect(new MobEffectInstance(hardening, duration, cycles - 1, false, true));
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, duration, cycles - 1, false, true));
 
-        player.playNotifySound(SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 0.8F, 1.4F);
+        player.playNotifySound(ModSounds.HARDENING.get(), SoundSource.PLAYERS, 0.8F, 1.4F);
         // The cycle count drives the effect strength; the player does not need it read out to them.
         player.displayClientMessage(
                 Component.translatable("message.banya.hardening").withStyle(ChatFormatting.AQUA), true);

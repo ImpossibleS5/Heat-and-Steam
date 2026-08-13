@@ -1,7 +1,6 @@
 package com.banya.wood;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +23,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import com.banya.registry.ModBlockEntities;
+import com.banya.registry.ModSounds;
 
 /**
  * The woodshed rack (дровница). Stack damp firewood on it and it dries over time; take it back with
@@ -71,7 +71,7 @@ public class DryingRackBlock extends Block implements EntityBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide() && rack.insert(stack)) {
-            level.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 0.7F, 1.1F);
+            level.playSound(null, pos, ModSounds.WOOD_LOAD.get(), SoundSource.BLOCKS, 0.7F, 1.1F);
             return ItemInteractionResult.SUCCESS;
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
