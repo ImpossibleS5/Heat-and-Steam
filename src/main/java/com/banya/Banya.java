@@ -49,6 +49,7 @@ public final class Banya {
         ModCreativeTabs.REGISTER.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(Config::onLoad);
         modEventBus.addListener(ModDataGenerator::onGatherData);
         modEventBus.addListener(ModNetwork::register);
 

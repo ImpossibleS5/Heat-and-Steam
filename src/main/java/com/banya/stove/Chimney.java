@@ -1,6 +1,5 @@
 package com.banya.stove;
 
-import com.banya.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -17,6 +16,14 @@ import java.util.List;
  * block lookups and caching it would mean invalidating on every block change nearby.
  */
 public final class Chimney {
+    /**
+     * How far above the stove the column is followed before giving up. A bound on the walk rather
+     * than a balance dial — tall enough for any sensible bathhouse, and low enough that the check
+     * stays trivial. It was a config value once; all a player could do with it was set it too low
+     * and silently break their own chimney.
+     */
+    private static final int MAX_HEIGHT = 32;
+
     private Chimney() {}
 
     /**
@@ -54,7 +61,7 @@ public final class Chimney {
     public static BlockPos ventOutlet(Level level, List<BlockPos> bases) {
         for (BlockPos base : bases) {
             BlockPos outlet = null;
-            for (int offset = 0; offset < Config.CHIMNEY_MAX_HEIGHT.get(); offset++) {
+            for (int offset = 0; offset < MAX_HEIGHT; offset++) {
                 BlockPos pos = base.above(offset);
                 BlockState state = level.getBlockState(pos);
                 if (state.getBlock() instanceof ChimneyBlock || state.getBlock() instanceof DamperBlock) {
@@ -85,7 +92,7 @@ public final class Chimney {
     private static ChimneyState detectOne(Level level, BlockPos base) {
         boolean damperClosed = false;
 
-        for (int offset = 0; offset < Config.CHIMNEY_MAX_HEIGHT.get(); offset++) {
+        for (int offset = 0; offset < MAX_HEIGHT; offset++) {
             BlockPos pos = base.above(offset);
             BlockState state = level.getBlockState(pos);
 

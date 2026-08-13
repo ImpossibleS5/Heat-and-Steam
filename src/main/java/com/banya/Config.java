@@ -1,13 +1,23 @@
 package com.banya;
 
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Common config. Gameplay constants live here (and in the KubeJS layer) rather than as hardcoded
  * Java values — see the design notes.
+ *
+ * <p>Grouped into sections, because sixty-odd knobs in one flat namespace is a list nobody can read.
+ * The {@code push}/{@code pop} calls sit in static blocks between the fields on purpose: the builder
+ * has to be told which section it is in <em>while</em> the next field initialiser runs, and field
+ * initialisers run in declaration order. Everything here is a balance dial; anything that is really
+ * a bound on an algorithm belongs in the code that walks it, not in a player-facing file.
  */
 public final class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+
+    // The room the stove is trying to heat.
+    static { BUILDER.push("climate"); }
 
     public static final ModConfigSpec.IntValue MAX_ROOM_VOLUME = BUILDER
             .comment(
@@ -41,6 +51,11 @@ public final class Config {
                     "Larger rooms warm up proportionally slower.")
             .defineInRange("referenceVolume", 64, 1, 32768);
 
+    static { BUILDER.pop(); }
+
+    // The bather: how the heat gets into them, and what it costs.
+    static { BUILDER.push("warmth"); }
+
     public static final ModConfigSpec.DoubleValue WARMTH_THRESHOLD_TEMPERATURE = BUILDER
             .comment("Room temperature (deg C) at or above which a player starts gaining Warmth.")
             .defineInRange("warmthThresholdTemperature", 50.0, 0.0, 300.0);
@@ -55,6 +70,21 @@ public final class Config {
     public static final ModConfigSpec.DoubleValue WARMTH_DECAY_PER_STEP = BUILDER
             .comment("Warmth lost per simulation step while out of the heat.")
             .defineInRange("warmthDecayPerStep", 1.0, 0.05, 50.0);
+
+    public static final ModConfigSpec.DoubleValue WARMTH_REFERENCE_TEMPERATURE = BUILDER
+            .comment("Room temperature (deg C) at which Warmth is gained at exactly the base rate.")
+            .defineInRange("warmthReferenceTemperature", 80.0, 1.0, 300.0);
+
+    public static final ModConfigSpec.DoubleValue HEIGHT_BONUS = BUILDER
+            .comment(
+                    "Extra Warmth gain at the very top of the room, as a fraction.",
+                    "0.3 means the ceiling warms you 30% faster than the floor — heat rises,",
+                    "which is what makes a tiered polok worth building.")
+            .defineInRange("heightBonus", 0.3, 0.0, 3.0);
+
+    public static final ModConfigSpec.DoubleValue POLOK_BONUS = BUILDER
+            .comment("Warmth gain multiplier while sitting on the polok.")
+            .defineInRange("polokBonus", 1.15, 1.0, 3.0);
 
     public static final ModConfigSpec.DoubleValue OVERHEAT_EXHAUSTION = BUILDER
             .comment("Hunger exhaustion added each second spent in the overheat band.")
@@ -105,9 +135,10 @@ public final class Config {
             .comment("Ceiling on heat strain, which also caps how fast the damage ramps.")
             .defineInRange("strainMax", 200.0, 1.0, 2000.0);
 
-    public static final ModConfigSpec.DoubleValue WARMTH_REFERENCE_TEMPERATURE = BUILDER
-            .comment("Room temperature (deg C) at which Warmth is gained at exactly the base rate.")
-            .defineInRange("warmthReferenceTemperature", 80.0, 1.0, 300.0);
+    static { BUILDER.pop(); }
+
+    // Humidity, and the поддача that makes it.
+    static { BUILDER.push("steam"); }
 
     public static final ModConfigSpec.DoubleValue HUMIDITY_DECAY_PER_STEP = BUILDER
             .comment(
@@ -120,6 +151,13 @@ public final class Config {
             .comment("Humidity (%) added by one ladle of water thrown onto hot stones.")
             .defineInRange("humidityPerLadle", 25.0, 1.0, 100.0);
 
+    public static final ModConfigSpec.DoubleValue HUMIDITY_HEAT_WEIGHT = BUILDER
+            .comment(
+                    "How strongly humidity amplifies perceived heat.",
+                    "At 1.0, 100% humidity makes a room feel twice as hot as its dry temperature,",
+                    "so a moderate wet parnaya out-heats a very hot dry sauna — as intended.")
+            .defineInRange("humidityHeatWeight", 1.0, 0.0, 4.0);
+
     public static final ModConfigSpec.DoubleValue STEAM_TEMPERATURE = BUILDER
             .comment(
                     "Room temperature (deg C) the stove must reach for a proper light steam.",
@@ -129,6 +167,11 @@ public final class Config {
     public static final ModConfigSpec.DoubleValue HEAVY_STEAM_MULTIPLIER = BUILDER
             .comment("Fraction of the normal humidity gained when the stones are too cold.")
             .defineInRange("heavySteamMultiplier", 0.4, 0.0, 1.0);
+
+    static { BUILDER.pop(); }
+
+    // Smoke, the flue, and the soot a chimneyless banya earns.
+    static { BUILDER.push("smoke"); }
 
     public static final ModConfigSpec.DoubleValue SMOKE_PER_STEP = BUILDER
             .comment("Smoke (%) the fire adds per simulation step while burning.")
@@ -208,18 +251,10 @@ public final class Config {
             .comment("Ticks between hits of Угар, the same at every level.")
             .defineInRange("smokeDamageIntervalTicks", 40, 1, 1200);
 
-    public static final ModConfigSpec.IntValue CHIMNEY_MAX_HEIGHT = BUILDER
-            .comment(
-                    "How far above the stove the flue is followed looking for open sky.",
-                    "Tall enough for any sensible bathhouse, short enough that the check stays trivial.")
-            .defineInRange("chimneyMaxHeight", 32, 1, 320);
+    static { BUILDER.pop(); }
 
-    public static final ModConfigSpec.DoubleValue HUMIDITY_HEAT_WEIGHT = BUILDER
-            .comment(
-                    "How strongly humidity amplifies perceived heat.",
-                    "At 1.0, 100% humidity makes a room feel twice as hot as its dry temperature,",
-                    "so a moderate wet parnaya out-heats a very hot dry sauna — as intended.")
-            .defineInRange("humidityHeatWeight", 1.0, 0.0, 4.0);
+    // The basket: what it banks and how it gives it back.
+    static { BUILDER.push("stones"); }
 
     public static final ModConfigSpec.DoubleValue STONE_CAPACITY_PER_QUALITY = BUILDER
             .comment(
@@ -270,6 +305,11 @@ public final class Config {
             .comment("Degrees C the stones give back per simulation step after the fire goes out.")
             .defineInRange("stoneReleasePerStep", 1.5, 0.1, 50.0);
 
+    static { BUILDER.pop(); }
+
+    // Ушат and veniks.
+    static { BUILDER.push("bath"); }
+
     public static final ModConfigSpec.DoubleValue TUB_STEEP_TEMPERATURE = BUILDER
             .comment("Room temperature (deg C) the tub's water must reach before a venik can be steeped.")
             .defineInRange("tubSteepTemperature", 60.0, 0.0, 300.0);
@@ -302,6 +342,11 @@ public final class Config {
                     "afternoon of Regeneration in one sitting.")
             .defineInRange("venikMaxEffectSeconds", 120, 1, 100000);
 
+    static { BUILDER.pop(); }
+
+    // Hot to cold, and the Закалка it earns.
+    static { BUILDER.push("contrast"); }
+
     public static final ModConfigSpec.DoubleValue CONTRAST_WARMTH = BUILDER
             .comment("Warmth a player must carry out of the parnaya for the plunge to count.")
             .defineInRange("contrastWarmth", 60.0, 0.0, 100.0);
@@ -324,31 +369,10 @@ public final class Config {
                     "A longer gap starts the cycle count over.")
             .defineInRange("contrastCycleMemoryTicks", 12000, 200, 240000);
 
-    public static final ModConfigSpec.DoubleValue HARDENING_FREEZING_POINT_DROP = BUILDER
-            .comment(
-                    "How far one Hardening level lowers Cold Sweat's freezing point, in its MC units.",
-                    "1 unit is about 23 °C, so 0.15 buys roughly three and a half degrees per cycle",
-                    "and a full three-cycle session lets you stand about ten degrees more cold.",
-                    "Ignored when Cold Sweat is not installed. 0 turns the hook off.")
-            .defineInRange("hardeningFreezingPointDrop", 0.15, 0.0, 2.0);
+    static { BUILDER.pop(); }
 
-    public static final ModConfigSpec.DoubleValue HARDENING_COLD_RESISTANCE = BUILDER
-            .comment(
-                    "Share of incoming cold damage one Hardening level blocks in Cold Sweat, 0-1.",
-                    "Kept well under 1 on purpose: the banya is a head start against the cold,",
-                    "not a replacement for a coat. Ignored when Cold Sweat is not installed.")
-            .defineInRange("hardeningColdResistance", 0.15, 0.0, 1.0);
-
-    public static final ModConfigSpec.DoubleValue HEIGHT_BONUS = BUILDER
-            .comment(
-                    "Extra Warmth gain at the very top of the room, as a fraction.",
-                    "0.3 means the ceiling warms you 30% faster than the floor — heat rises,",
-                    "which is what makes a tiered polok worth building.")
-            .defineInRange("heightBonus", 0.3, 0.0, 3.0);
-
-    public static final ModConfigSpec.DoubleValue POLOK_BONUS = BUILDER
-            .comment("Warmth gain multiplier while sitting on the polok.")
-            .defineInRange("polokBonus", 1.15, 1.0, 3.0);
+    // Firewood, from log to dry.
+    static { BUILDER.push("wood"); }
 
     public static final ModConfigSpec.IntValue FIREWOOD_PER_LOG = BUILDER
             .comment("How many pieces of firewood one log splits into.")
@@ -374,7 +398,47 @@ public final class Config {
                     "the sparks still show as particles either way.")
             .defineInRange("sparkIgniteChance", 0.002, 0.0, 1.0);
 
+    static { BUILDER.pop(); }
+
+    // What Закалка is worth to a third-party temperature mod.
+    static { BUILDER.push("compat"); }
+
+    public static final ModConfigSpec.DoubleValue HARDENING_FREEZING_POINT_DROP = BUILDER
+            .comment(
+                    "How far one Hardening level lowers Cold Sweat's freezing point, in its MC units.",
+                    "1 unit is about 23 °C, so 0.15 buys roughly three and a half degrees per cycle",
+                    "and a full three-cycle session lets you stand about ten degrees more cold.",
+                    "Ignored when Cold Sweat is not installed. 0 turns the hook off.")
+            .defineInRange("hardeningFreezingPointDrop", 0.15, 0.0, 2.0);
+
+    public static final ModConfigSpec.DoubleValue HARDENING_COLD_RESISTANCE = BUILDER
+            .comment(
+                    "Share of incoming cold damage one Hardening level blocks in Cold Sweat, 0-1.",
+                    "Kept well under 1 on purpose: the banya is a head start against the cold,",
+                    "not a replacement for a coat. Ignored when Cold Sweat is not installed.")
+            .defineInRange("hardeningColdResistance", 0.15, 0.0, 1.0);
+
+    static { BUILDER.pop(); }
+
     public static final ModConfigSpec SPEC = BUILDER.build();
+
+    /**
+     * Cross-checks the one pair the spec cannot judge on its own.
+     *
+     * <p>{@code ModConfigSpec} validates each value in isolation, so nothing stops a strain ceiling
+     * set below the fainting point — and then the HUD bar reads full long before the blackout it is
+     * there to warn about. Said out loud rather than silently corrected: it is the player's file.
+     */
+    public static void onLoad(final ModConfigEvent event) {
+        if (event.getConfig().getSpec() != SPEC) {
+            return;
+        }
+        if (STRAIN_FAINT.get() > STRAIN_MAX.get()) {
+            Banya.LOGGER.warn("Banya config: warmth.strainFaintThreshold ({}) is above warmth.strainMax"
+                            + " ({}), so the strain bar will read full before anyone faints",
+                    STRAIN_FAINT.get(), STRAIN_MAX.get());
+        }
+    }
 
     private Config() {}
 }
