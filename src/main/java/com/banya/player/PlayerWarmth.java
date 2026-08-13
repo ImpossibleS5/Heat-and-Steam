@@ -3,6 +3,8 @@ package com.banya.player;
 import com.banya.Config;
 import com.banya.network.WarmthSyncPayload;
 import com.banya.registry.ModAttachments;
+import com.banya.registry.ModEffects;
+import com.banya.registry.ModTriggers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -65,8 +67,13 @@ public final class PlayerWarmth {
         }
 
         warmth = clamp(warmth);
-        warnOnEnteringOverheat(player, zoneBefore, WarmthZone.of(warmth));
+        WarmthZone zoneAfter = WarmthZone.of(warmth);
+        warnOnEnteringOverheat(player, zoneBefore, zoneAfter);
         set(player, warmth);
+
+        if (zoneBefore == WarmthZone.NEUTRAL && zoneAfter != WarmthZone.NEUTRAL) {
+            ModTriggers.FIRST_STEAM.get().trigger(player);
+        }
 
         boolean inHeat = exposure.heatIndex() >= threshold;
         boolean strainRising = inHeat && warmth >= WarmthZone.OVERHEAT_START;
@@ -207,6 +214,11 @@ public final class PlayerWarmth {
 
         player.displayClientMessage(
                 Component.translatable("message.banya.faint").withStyle(ChatFormatting.RED), true);
+
+        // Blacking out is one thing; blacking out in a room full of fumes is the story worth telling.
+        if (player.hasEffect(ModEffects.SMOKE_POISONING.getDelegate())) {
+            ModTriggers.CHOKED.get().trigger(player);
+        }
     }
 
     private static double clamp(double warmth) {

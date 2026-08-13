@@ -14,6 +14,7 @@ import com.banya.registry.ModItems;
 import com.banya.registry.ModMenus;
 import com.banya.registry.ModParticles;
 import com.banya.registry.ModSounds;
+import com.banya.registry.ModTriggers;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -44,6 +45,7 @@ public final class Banya {
         ModEntities.REGISTER.register(modEventBus);
         ModSounds.REGISTER.register(modEventBus);
         ModParticles.REGISTER.register(modEventBus);
+        ModTriggers.REGISTER.register(modEventBus);
         ModCreativeTabs.REGISTER.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);

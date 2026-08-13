@@ -12,6 +12,7 @@ import com.banya.registry.ModBlockEntities;
 import com.banya.registry.ModEffects;
 import com.banya.registry.ModParticles;
 import com.banya.registry.ModTags;
+import com.banya.registry.ModTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -439,13 +440,18 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
         // Steam quality rides on the heat index: better steam simply warms you better.
-        double heatIndex = RoomClimate.heatIndex(this.temperature, this.humidity) * steamQuality();
+        double quality = steamQuality();
+        double heatIndex = RoomClimate.heatIndex(this.temperature, this.humidity) * quality;
         for (Player player : level.getEntitiesOfClass(Player.class, this.room.bounds())) {
             if (isInside(player)) {
                 Exposure current = player.getData(ModAttachments.EXPOSURE);
                 player.setData(ModAttachments.EXPOSURE,
                         current.merge(heatIndex, relativeHeightOf(player)));
                 applySmokeTo(player);
+                // Standing in steam the soot has actually improved, not merely in a sooty room.
+                if (quality > 1.0 && player instanceof ServerPlayer served) {
+                    ModTriggers.BLACK_BANYA.get().trigger(served);
+                }
             }
         }
     }

@@ -94,6 +94,17 @@ public class ModLanguageProvider extends LanguageProvider {
             add("subtitles.banya.felt_hat_equip", "Шапка надета");
             add("subtitles.banya.chop", "Полено раскалывается");
             add("subtitles.banya.wood_load", "Дрова укладываются");
+            add("advancements.banya.root.title", "Первый пар");
+            add("advancements.banya.root.description", "Протопить баню и прогреться в ней");
+            add("advancements.banya.light_steam.title", "С лёгким паром!");
+            add("advancements.banya.light_steam.description", "Попариться веником, как положено");
+            add("advancements.banya.black_banya.title", "По-чёрному");
+            add("advancements.banya.black_banya.description",
+                    "Париться там, где копоть на стенах делает пар мягче");
+            add("advancements.banya.walrus.title", "Морж");
+            add("advancements.banya.walrus.description", "Три захода из парной в холодную воду подряд");
+            add("advancements.banya.choked.title", "Угорел…");
+            add("advancements.banya.choked.description", "Остаться в дыму до потери сознания");
         } else {
             add("itemGroup.banya", "Banya");
             add(ModBlocks.STOVE.get(), "Banya Stove");
@@ -171,6 +182,17 @@ public class ModLanguageProvider extends LanguageProvider {
             add("subtitles.banya.felt_hat_equip", "Hat put on");
             add("subtitles.banya.chop", "Log splits");
             add("subtitles.banya.wood_load", "Firewood stacked");
+            add("advancements.banya.root.title", "First Steam");
+            add("advancements.banya.root.description", "Fire the banya up and warm through in it");
+            add("advancements.banya.light_steam.title", "S lyogkim parom!");
+            add("advancements.banya.light_steam.description", "Take a proper venik round");
+            add("advancements.banya.black_banya.title", "Po-Chornomu");
+            add("advancements.banya.black_banya.description",
+                    "Steam where the soot on the walls makes the steam softer");
+            add("advancements.banya.walrus.title", "Walrus");
+            add("advancements.banya.walrus.description", "Three runs from the heat into cold water");
+            add("advancements.banya.choked.title", "Ugorel...");
+            add("advancements.banya.choked.description", "Stay in the smoke until you pass out");
         }
     }
 }

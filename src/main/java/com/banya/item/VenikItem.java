@@ -2,12 +2,16 @@ package com.banya.item;
 
 import com.banya.Config;
 import com.banya.climate.StoveLocator;
+import com.banya.player.PlayerWarmth;
+import com.banya.player.WarmthZone;
 import com.banya.registry.ModDataComponents;
 import com.banya.registry.ModSounds;
+import com.banya.registry.ModTriggers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -80,6 +84,12 @@ public class VenikItem extends Item {
             LivingEntity receiver = target == null ? player : target;
 
             this.species.applyTo(receiver, multiplier);
+            // The whole ritual, not just the swing: a venik used on someone who is properly warmed
+            // through is what "с лёгким паром" actually means.
+            if (receiver instanceof ServerPlayer served
+                    && WarmthZone.of(PlayerWarmth.get(served)) != WarmthZone.NEUTRAL) {
+                ModTriggers.LIGHT_STEAM.get().trigger(served);
+            }
             consumeCharge(stack);
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
 

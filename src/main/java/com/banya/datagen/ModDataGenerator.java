@@ -3,9 +3,11 @@ package com.banya.datagen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -44,6 +46,8 @@ public final class ModDataGenerator {
         generator.addProvider(event.includeServer(),
                 new ModDamageTypeTagProvider(output, datapack.getRegistryProvider(), existingFileHelper));
         generator.addProvider(event.includeServer(), ModLootTableProvider.create(output, lookup));
+        generator.addProvider(event.includeServer(), new AdvancementProvider(output, lookup,
+                existingFileHelper, List.of(new ModAdvancementProvider())));
     }
 
     private ModDataGenerator() {}
