@@ -29,3 +29,13 @@ created by a stone stove and shaped by the player, with a Warmth stat, venik ste
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+# Hardening feeds Cold Sweat's freezing point and cold resistance when it is installed.
+# No version range on purpose: the hook only looks attributes up by id, so it cannot break on a
+# version we have not seen, and pinning a range would reject the 2.4 betas people still run.
+# Verified against Cold Sweat 2.4.2.
+[[dependencies.${mod_id}]]
+    modId="cold_sweat"
+    type="optional"
+    ordering="AFTER"
+    side="BOTH"

@@ -1,5 +1,6 @@
 package com.banya;
 
+import com.banya.compat.ColdSweatCompat;
 import com.banya.datagen.ModDataGenerator;
 import com.banya.network.ModNetwork;
 import com.banya.registry.ModAttachments;
@@ -49,6 +50,8 @@ public final class Banya {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+        // Off the parallel dispatch: this mutates the Hardening effect's modifier table.
+        event.enqueueWork(ColdSweatCompat::init);
         LOGGER.info("Banya: common setup complete");
     }
 }

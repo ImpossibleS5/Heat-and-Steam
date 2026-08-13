@@ -324,6 +324,21 @@ public final class Config {
                     "A longer gap starts the cycle count over.")
             .defineInRange("contrastCycleMemoryTicks", 12000, 200, 240000);
 
+    public static final ModConfigSpec.DoubleValue HARDENING_FREEZING_POINT_DROP = BUILDER
+            .comment(
+                    "How far one Hardening level lowers Cold Sweat's freezing point, in its MC units.",
+                    "1 unit is about 23 °C, so 0.15 buys roughly three and a half degrees per cycle",
+                    "and a full three-cycle session lets you stand about ten degrees more cold.",
+                    "Ignored when Cold Sweat is not installed. 0 turns the hook off.")
+            .defineInRange("hardeningFreezingPointDrop", 0.15, 0.0, 2.0);
+
+    public static final ModConfigSpec.DoubleValue HARDENING_COLD_RESISTANCE = BUILDER
+            .comment(
+                    "Share of incoming cold damage one Hardening level blocks in Cold Sweat, 0-1.",
+                    "Kept well under 1 on purpose: the banya is a head start against the cold,",
+                    "not a replacement for a coat. Ignored when Cold Sweat is not installed.")
+            .defineInRange("hardeningColdResistance", 0.15, 0.0, 1.0);
+
     public static final ModConfigSpec.DoubleValue HEIGHT_BONUS = BUILDER
             .comment(
                     "Extra Warmth gain at the very top of the room, as a fraction.",
