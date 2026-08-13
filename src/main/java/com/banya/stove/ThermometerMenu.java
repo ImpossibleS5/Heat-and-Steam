@@ -52,6 +52,16 @@ public class ThermometerMenu extends AbstractContainerMenu {
         return this.data.get(StoveBlockEntity.DATA_SEALED) != 0;
     }
 
+    /** Air cells in the parnaya. */
+    public int getRoomVolume() {
+        return this.data.get(StoveBlockEntity.DATA_ROOM_VOLUME);
+    }
+
+    /** Wall cells around it — what the fire's heat has to be shared over. */
+    public int getRoomWalls() {
+        return this.data.get(StoveBlockEntity.DATA_ROOM_WALLS);
+    }
+
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY; // nothing to move: the instrument has no slots

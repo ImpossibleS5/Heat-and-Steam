@@ -48,7 +48,10 @@ public final class Config {
     public static final ModConfigSpec.IntValue REFERENCE_VOLUME = BUILDER
             .comment(
                     "Room volume (in blocks) that heats at full rate.",
-                    "Larger rooms warm up proportionally slower.")
+                    "Bigger rooms take proportionally less of the fire's heat — but the comparison is",
+                    "made on wall area, not volume: this figure stands for a cube of that volume, and",
+                    "its six faces are the area a full-rate parnaya has. Heat leaves through the",
+                    "shell, so shell is what sets the ceiling. Raise this to make halls heatable.")
             .defineInRange("referenceVolume", 64, 1, 32768);
 
     static { BUILDER.pop(); }
@@ -215,7 +218,11 @@ public final class Config {
             .defineInRange("emberSmokeFraction", 0.6, 0.0, 2.0);
 
     public static final ModConfigSpec.DoubleValue SOOT_SMOKE_LEVEL = BUILDER
-            .comment("Smoke (%) a chimneyless room needs before its walls start to blacken.")
+            .comment(
+                    "Smoke (%) a room needs before its walls start to blacken.",
+                    "Only counts while the smoke has nowhere to go: no flue at all, or the damper",
+                    "shut. Seasoning a banya is therefore something you do on purpose, by firing it",
+                    "closed, and no ordinary firing will blacken it by accident.")
             .defineInRange("sootSmokeLevel", 40.0, 0.0, 100.0);
 
     public static final ModConfigSpec.DoubleValue SOOT_CHANCE_PER_STEP = BUILDER
@@ -224,12 +231,36 @@ public final class Config {
                     "Low on purpose: the patina should creep on over many firings, not appear at once.")
             .defineInRange("sootChancePerStep", 0.08, 0.0, 1.0);
 
+    public static final ModConfigSpec.DoubleValue SOOT_BAND_LIGHT = BUILDER
+            .comment(
+                    "Share of ALL the room's walls that must be blackened for the first step of the",
+                    "soot bonus. Counted against every wall, not only the timber among them: a stone",
+                    "floor, the stove and a window never blacken, so 100 % is not a real target.",
+                    "Steps rather than a sliding scale, so one more blackened plank cannot nudge the",
+                    "temperature the bather is reading.")
+            .defineInRange("sootBandLight", 0.15, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue SOOT_BAND_MEDIUM = BUILDER
+            .comment("Share of the walls needed for the second step of the soot bonus.")
+            .defineInRange("sootBandMedium", 0.30, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue SOOT_BAND_HEAVY = BUILDER
+            .comment("Share of the walls needed for the full soot bonus.")
+            .defineInRange("sootBandHeavy", 0.50, 0.0, 1.0);
+
     public static final ModConfigSpec.DoubleValue SOOT_STEAM_BONUS = BUILDER
             .comment(
-                    "Steam quality bonus at fully blackened walls, in a banya with no chimney.",
+                    "Steam quality bonus at the top soot step, while the smoke is not being vented.",
                     "0.25 means a seasoned black banya warms you a quarter faster than any other.",
-                    "This is the payoff for putting up with the smoke.")
+                    "This is the payoff for putting up with the smoke — open the damper and it goes.")
             .defineInRange("sootSteamBonus", 0.25, 0.0, 3.0);
+
+    public static final ModConfigSpec.DoubleValue SOOT_INSULATION_BONUS = BUILDER
+            .comment(
+                    "Heat loss the room saves at the top soot step, as a fraction.",
+                    "Soot on the timber is insulation in its own right, so unlike the steam bonus",
+                    "this one holds whatever the damper is doing — it is a property of the walls.")
+            .defineInRange("sootInsulationBonus", 0.15, 0.0, 0.9);
 
     public static final ModConfigSpec.DoubleValue SMOKE_STING_LEVEL = BUILDER
             .comment("Smoke (%) at which the bather's eyes start to sting.")

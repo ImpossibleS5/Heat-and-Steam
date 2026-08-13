@@ -75,6 +75,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("gui.banya.thermometer.percent", "%s%%");
             add("gui.banya.thermometer.sealed", "Парная замкнута");
             add("gui.banya.thermometer.leaking", "Парная не замкнута");
+            add("gui.banya.thermometer.room", "Объём %s, стены %s");
             add("message.banya.thermometer.no_stove", "Печь не найдена");
             add("message.banya.overheat", "Голова кружится — пора выйти");
             add("message.banya.steam.heavy", "Тяжёлый пар — камни ещё не раскалились");
@@ -98,7 +99,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("advancements.banya.root.description", "Протопить баню и прогреться в ней");
             add("advancements.banya.light_steam.title", "С лёгким паром!");
             add("advancements.banya.light_steam.description", "Попариться веником, как положено");
-            add("advancements.banya.black_banya.title", "По-чёрному");
+            add("advancements.banya.black_banya.title", "Баня по-чёрному");
             add("advancements.banya.black_banya.description",
                     "Париться там, где копоть на стенах делает пар мягче");
             add("advancements.banya.walrus.title", "Морж");
@@ -163,6 +164,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("gui.banya.thermometer.percent", "%s%%");
             add("gui.banya.thermometer.sealed", "Room is sealed");
             add("gui.banya.thermometer.leaking", "Room is not sealed");
+            add("gui.banya.thermometer.room", "Volume %s, walls %s");
             add("message.banya.thermometer.no_stove", "No stove nearby");
             add("message.banya.overheat", "Your head is swimming — time to step out");
             add("message.banya.steam.heavy", "Heavy steam — the stones are not hot enough yet");
@@ -186,7 +188,7 @@ public class ModLanguageProvider extends LanguageProvider {
             add("advancements.banya.root.description", "Fire the banya up and warm through in it");
             add("advancements.banya.light_steam.title", "S lyogkim parom!");
             add("advancements.banya.light_steam.description", "Take a proper venik round");
-            add("advancements.banya.black_banya.title", "Po-Chornomu");
+            add("advancements.banya.black_banya.title", "Banya po-chornomu");
             add("advancements.banya.black_banya.description",
                     "Steam where the soot on the walls makes the steam softer");
             add("advancements.banya.walrus.title", "Walrus");

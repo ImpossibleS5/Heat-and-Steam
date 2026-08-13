@@ -146,9 +146,11 @@ public class StoveBlock extends Block implements EntityBlock {
 
         level.playSound(null, pos, ModSounds.STEAM_HISS.get(), SoundSource.BLOCKS,
                 0.8F, lightSteam ? 1.6F : 1.1F);
-        if (level instanceof ServerLevel serverLevel) {
+        // Above the masonry, not inside it: a T2 or T3 has casing directly over the firebox.
+        BlockPos steamCell = StoveBlockEntity.particleCellAbove(level, pos);
+        if (level instanceof ServerLevel serverLevel && steamCell != null) {
             serverLevel.sendParticles(ModParticles.STEAM.get(),
-                    pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5,
+                    steamCell.getX() + 0.5, steamCell.getY() + 0.1, steamCell.getZ() + 0.5,
                     lightSteam ? 30 : 10, 0.3, 0.3, 0.3, 0.02);
         }
         if (!lightSteam) {

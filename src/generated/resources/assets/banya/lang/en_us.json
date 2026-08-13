@@ -1,6 +1,6 @@
 {
   "advancements.banya.black_banya.description": "Steam where the soot on the walls makes the steam softer",
-  "advancements.banya.black_banya.title": "Po-Chornomu",
+  "advancements.banya.black_banya.title": "Banya po-chornomu",
   "advancements.banya.choked.description": "Stay in the smoke until you pass out",
   "advancements.banya.choked.title": "Ugorel...",
   "advancements.banya.light_steam.description": "Take a proper venik round",
@@ -35,6 +35,7 @@
   "gui.banya.thermometer.humidity": "Humidity",
   "gui.banya.thermometer.leaking": "Room is not sealed",
   "gui.banya.thermometer.percent": "%s%%",
+  "gui.banya.thermometer.room": "Volume %s, walls %s",
   "gui.banya.thermometer.sealed": "Room is sealed",
   "gui.banya.thermometer.smoke": "Smoke",
   "gui.banya.thermometer.temperature": "Temperature",

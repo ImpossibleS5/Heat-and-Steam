@@ -43,7 +43,7 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        // super.render draws the dim and the panel already — see ThermometerScreen.
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderTooltip(graphics, mouseX, mouseY);
     }

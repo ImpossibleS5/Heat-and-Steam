@@ -7,6 +7,8 @@ import com.banya.climate.RoomShape;
 import com.banya.climate.Soot;
 import com.banya.item.FirewoodItem;
 import com.banya.player.Exposure;
+import com.banya.player.PlayerWarmth;
+import com.banya.player.WarmthZone;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import com.banya.registry.ModEffects;
@@ -64,12 +66,21 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     public static final int DATA_HEAT_INDEX = 5;
     /** 1 when the room is sealed, 0 when the climate is leaking away. */
     public static final int DATA_SEALED = 6;
-    public static final int DATA_SIZE = 7;
+    /**
+     * Air cells in the room and wall cells around it. Size is the quietest reason a parnaya will not
+     * get hot — the fire's heat is shared out over the shell — and without a readout there is
+     * nothing in game to tell a player their banya is simply too big.
+     */
+    public static final int DATA_ROOM_VOLUME = 7;
+    public static final int DATA_ROOM_WALLS = 8;
+    public static final int DATA_SIZE = 9;
 
     /** The basket is sized for the biggest stove; smaller tiers simply refuse the extra slots. */
     public static final int STONE_SLOTS = StoveTier.MAX_STONE_SLOTS;
     /** Smoke effects are refreshed every step, so they need only outlive one interval. */
     private static final int SMOKE_EFFECT_TICKS = 60;
+    /** How far above the firebox a particle may be pushed to clear the stove's own masonry. */
+    private static final int PARTICLE_RISE = 3;
 
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
@@ -153,6 +164,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_HEAT_INDEX -> (int) Math.round(
                         RoomClimate.heatIndex(temperature, humidity) * steamQuality());
                 case DATA_SEALED -> room == null ? 0 : 1;
+                case DATA_ROOM_VOLUME -> room == null ? 0 : room.volume();
+                case DATA_ROOM_WALLS -> room == null ? 0 : room.walls().size();
                 default -> 0;
             };
         }
@@ -257,8 +270,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         this.tier = StoveStructure.detect(level, this.worldPosition, facing);
         ChimneyState chimney = Chimney.detect(level,
                 StoveStructure.chimneyBases(level, this.worldPosition, facing));
+        // Soot is insulation as well as steam: a seasoned room keeps more of what the fire gives it.
         this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(),
-                this.room, level, RoomClimate.leakMultiplier(chimney));
+                this.room, level,
+                RoomClimate.leakMultiplier(chimney) * Soot.insulationMultiplier(this.sootFraction));
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);
         this.smoke = RoomClimate.nextSmoke(this.smoke, smokeOutputForStep(), this.room, chimney);
         this.chimneyState = chimney;
@@ -300,9 +315,28 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         if (top == null) {
             return;
         }
+        // Above the outlet, not inside it: ventOutlet has already checked that the cell over it is
+        // open to the sky, and smoke drawn within the flue block is simply buried in its model.
         serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                top.getX() + 0.5, top.getY() + 0.2, top.getZ() + 0.5,
+                top.getX() + 0.5, top.getY() + 1.1, top.getZ() + 0.5,
                 isBurning() ? 3 : 1, 0.1, 0.05, 0.1, 0.01);
+    }
+
+    /**
+     * Where a particle can be drawn above the stove. A T2 or T3 carries masonry directly over its
+     * firebox, so the cell above it is solid and anything spawned there never becomes visible.
+     *
+     * @return the first cell overhead that nothing occupies, or null if the stove is built in solid
+     */
+    @Nullable
+    public static BlockPos particleCellAbove(Level level, BlockPos firebox) {
+        for (int offset = 1; offset <= PARTICLE_RISE; offset++) {
+            BlockPos pos = firebox.above(offset);
+            if (level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()) {
+                return pos;
+            }
+        }
+        return null;
     }
 
     /**
@@ -314,9 +348,12 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 || StoveStones.totalHeat(this.stones) <= 0.0F) {
             return;
         }
+        BlockPos cell = particleCellAbove(level, this.worldPosition);
+        if (cell == null) {
+            return;
+        }
         serverLevel.sendParticles(ModParticles.STEAM.get(),
-                this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 1.0,
-                this.worldPosition.getZ() + 0.5, 1, 0.25, 0.05, 0.25, 0.01);
+                cell.getX() + 0.5, cell.getY() + 0.1, cell.getZ() + 0.5, 1, 0.25, 0.05, 0.25, 0.01);
     }
 
     /**
@@ -328,9 +365,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         if (!this.fuelSparks || !isBurning() || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        serverLevel.sendParticles(ParticleTypes.LAVA,
-                this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 1.0,
-                this.worldPosition.getZ() + 0.5, 2, 0.3, 0.1, 0.3, 0.0);
+        BlockPos cell = particleCellAbove(level, this.worldPosition);
+        if (cell != null) {
+            serverLevel.sendParticles(ParticleTypes.LAVA,
+                    cell.getX() + 0.5, cell.getY() + 0.1, cell.getZ() + 0.5, 2, 0.3, 0.1, 0.3, 0.0);
+        }
 
         double chance = Config.SPARK_IGNITE_CHANCE.get();
         if (chance <= 0.0 || serverLevel.random.nextDouble() >= chance) {
@@ -347,12 +386,16 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Blackens the parnaya a little at a time while it is full of smoke and has no flue. This is
-     * how a banya po-chornomu earns its patina — and its steam: {@link #steamQuality()} pays the
-     * soot back as a bonus.
+     * Blackens the parnaya a little at a time while it is full of smoke that has nowhere to go —
+     * either no flue at all, or one with the damper shut. This is how a banya po-chornomu earns its
+     * patina, and how any banya can be seasoned on purpose by firing it closed: the payback is in
+     * {@link #steamQuality()} and in the insulation soot gives the walls.
+     *
+     * <p>Keyed on the damper rather than on the presence of a chimney, because a shut damper keeps
+     * the smoke in exactly as a missing flue does — the smoke model already treats the two alike.
      */
     private void seasonWalls(Level level, ChimneyState chimney) {
-        if (this.room == null || chimney != ChimneyState.NONE
+        if (this.room == null || chimney == ChimneyState.OPEN
                 || this.smoke < Config.SOOT_SMOKE_LEVEL.get()
                 || level.random.nextDouble() >= Config.SOOT_CHANCE_PER_STEP.get()) {
             return;
@@ -366,14 +409,15 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * How good the steam is here. A seasoned black banya beats anything with a chimney, which is
-     * the reward the design promises for putting up with the smoke.
+     * How good the steam is here. A seasoned black banya beats anything vented, which is the reward
+     * the design promises for putting up with the smoke — and shutting the damper claims it back for
+     * a banya that has a chimney, at the price of breathing what the fire makes.
      */
     public double steamQuality() {
-        if (this.chimneyState != ChimneyState.NONE) {
+        if (this.chimneyState == ChimneyState.OPEN) {
             return 1.0;
         }
-        return 1.0 + this.sootFraction * Config.SOOT_STEAM_BONUS.get();
+        return 1.0 + Soot.bonusFactor(this.sootFraction) * Config.SOOT_STEAM_BONUS.get();
     }
 
     /**
@@ -448,8 +492,10 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 player.setData(ModAttachments.EXPOSURE,
                         current.merge(heatIndex, relativeHeightOf(player)));
                 applySmokeTo(player);
-                // Standing in steam the soot has actually improved, not merely in a sooty room.
-                if (quality > 1.0 && player instanceof ServerPlayer served) {
+                // Steaming in a black banya, not merely standing in a sooty room: the soot has to be
+                // paying out, and the bather has to be warmed through to feel it.
+                if (quality > 1.0 && player instanceof ServerPlayer served
+                        && WarmthZone.of(PlayerWarmth.get(served)) != WarmthZone.NEUTRAL) {
                     ModTriggers.BLACK_BANYA.get().trigger(served);
                 }
             }

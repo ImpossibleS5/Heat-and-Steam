@@ -71,7 +71,12 @@ public final class PlayerWarmth {
         warnOnEnteringOverheat(player, zoneBefore, zoneAfter);
         set(player, warmth);
 
-        if (zoneBefore == WarmthZone.NEUTRAL && zoneAfter != WarmthZone.NEUTRAL) {
+        // Every step spent warmed through, not only the step that crossed the line. As an edge it
+        // was missed by anyone who was already warm when the check first ran — and the root
+        // advancement going unearned hides the whole tree below it, since vanilla only draws
+        // unfinished advancements within two steps of a finished one. The criterion is one-shot, so
+        // repeating the call costs nothing.
+        if (zoneAfter != WarmthZone.NEUTRAL) {
             ModTriggers.FIRST_STEAM.get().trigger(player);
         }
 

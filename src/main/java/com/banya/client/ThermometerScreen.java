@@ -26,12 +26,14 @@ public class ThermometerScreen extends AbstractContainerScreen<ThermometerMenu> 
      * "Задымлённость" is half again as wide.
      */
     private static final int ROW_START_Y = 26;
-    private static final int ROW_HEIGHT = 22;
+    private static final int ROW_HEIGHT = 20;
     private static final int MARGIN_X = 12;
     private static final int BAR_WIDTH = PANEL_WIDTH - 2 * MARGIN_X;
     private static final int BAR_OFFSET_Y = 10;
     private static final int BAR_HEIGHT = 6;
-    private static final int SEAL_Y = ROW_START_Y + 4 * ROW_HEIGHT + 6;
+    private static final int SEAL_Y = ROW_START_Y + 4 * ROW_HEIGHT + 4;
+    /** The size line sits under the seal line; the rows gave up two pixels each to make room. */
+    private static final int ROOM_Y = SEAL_Y + 11;
 
     private static final int LABEL_COLOR = 0x404040;
     private static final int BAR_BORDER = 0xFF373737;
@@ -61,7 +63,9 @@ public class ThermometerScreen extends AbstractContainerScreen<ThermometerMenu> 
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        // No renderBackground here: AbstractContainerScreen already draws the dim and the panel from
+        // inside super.render. Calling it as well laid the dim down twice and all but blacked out
+        // the world behind the instrument.
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
@@ -96,6 +100,15 @@ public class ThermometerScreen extends AbstractContainerScreen<ThermometerMenu> 
                 : Component.translatable("gui.banya.thermometer.leaking").withStyle(ChatFormatting.DARK_RED);
         graphics.drawString(this.font, seal,
                 (this.imageWidth - this.font.width(seal)) / 2, SEAL_Y, LABEL_COLOR, false);
+
+        // Size is the quietest reason a parnaya will not get hot: the fire's heat is shared over the
+        // shell, so a hall stays lukewarm however well it is built. Nothing else in game says so.
+        if (this.menu.isSealed()) {
+            Component room = Component.translatable("gui.banya.thermometer.room",
+                    this.menu.getRoomVolume(), this.menu.getRoomWalls());
+            graphics.drawString(this.font, room,
+                    (this.imageWidth - this.font.width(room)) / 2, ROOM_Y, LABEL_COLOR, false);
+        }
     }
 
     private void row(GuiGraphics graphics, int index, String key, Component value, float fill, int color) {

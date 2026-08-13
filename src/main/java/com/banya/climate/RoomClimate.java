@@ -49,7 +49,7 @@ public final class RoomClimate {
         // That is what gives each banya a ceiling set by its walls, wood and size, instead of
         // every room climbing to the same cap at the same rate.
         double loss = coefficient * (2.0 - averageInsulation(level, room)) * excess;
-        double gain = heatInput * volumeFactor(room);
+        double gain = heatInput * sizeFactor(room);
         return clamp(current + gain - loss, ambient, Config.MAX_TEMPERATURE.get());
     }
 
@@ -133,10 +133,25 @@ public final class RoomClimate {
         return INSULATION_DEFAULT;
     }
 
-    /** Rooms larger than the reference volume warm up proportionally slower. */
-    private static double volumeFactor(RoomShape room) {
-        double reference = Config.REFERENCE_VOLUME.get();
-        return Math.min(1.0, reference / Math.max(1.0, room.volume()));
+    /**
+     * How much of the fire's heat a room of this size takes, 1.0 at the reference banya and less
+     * above it.
+     *
+     * <p>Measured against the room's <em>wall area</em>, not its volume. Heat leaves through the
+     * shell, so a room's ceiling is set by how much shell it has; dividing the gain by volume while
+     * the loss ignored size altogether made the equilibrium fall as 1/V, and a parnaya three times
+     * the reference could not be brought past 30 °C by any stove, wood or stonework. Area grows as
+     * the square of a room's side and volume as the cube, so a hall is still much harder to heat
+     * than a parnaya — it is simply no longer hopeless.
+     *
+     * <p>The reference area is derived from {@code referenceVolume} rather than being a dial of its
+     * own: six faces of a cube of that volume, which is 96 for the default 64 and leaves the
+     * reference-sized banya reading exactly as it did before.
+     */
+    private static double sizeFactor(RoomShape room) {
+        double volume = Config.REFERENCE_VOLUME.get();
+        double referenceArea = 6.0 * Math.cbrt(volume * volume);
+        return Math.min(1.0, referenceArea / Math.max(1.0, room.walls().size()));
     }
 
     private static double approach(double current, double target, double rate) {

@@ -1,5 +1,6 @@
 package com.banya.climate;
 
+import com.banya.Config;
 import com.banya.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -18,6 +19,9 @@ import org.jetbrains.annotations.Nullable;
  * glass take no patina.
  */
 public final class Soot {
+    /** Steps of seasoning between a clean room and a fully earned bonus. */
+    public static final int MAX_BAND = 3;
+
     private Soot() {}
 
     /** The blackened counterpart of a wall block, or {@code null} if it does not take soot. */
@@ -53,22 +57,58 @@ public final class Soot {
         return true;
     }
 
-    /** Share of the room's walls that have blackened, 0..1. */
+    /**
+     * Share of the room's walls that have blackened, 0..1.
+     *
+     * <p>Counted against <em>every</em> wall, not only the ones that could take soot. A stone floor,
+     * a window and the stove itself are as much a part of the parnaya as its timber, so a room half
+     * built of masonry is genuinely only half a black banya — measuring against the timber alone
+     * gave a stone bathhouse with one wooden wall the full bonus for blackening that one wall.
+     */
     public static double fractionOf(LevelReader level, RoomShape room) {
         if (room.walls().isEmpty()) {
             return 0.0;
         }
         int sooted = 0;
-        int eligible = 0;
         for (BlockPos wall : room.walls()) {
-            BlockState state = level.getBlockState(wall);
-            if (isSooted(state)) {
+            if (isSooted(level.getBlockState(wall))) {
                 sooted++;
-                eligible++;
-            } else if (sootedForm(state) != null) {
-                eligible++;
             }
         }
-        return eligible == 0 ? 0.0 : (double) sooted / eligible;
+        return (double) sooted / room.walls().size();
+    }
+
+    /**
+     * How far the seasoning has got, as one of four steps.
+     *
+     * <p>Steps rather than a sliding scale: the bonus is a property of the room, and a room should
+     * not read a degree warmer because one more plank went black while the bather sat in it.
+     *
+     * @return 0 for a clean room, up to {@link #MAX_BAND} for a thoroughly seasoned one
+     */
+    public static int band(double fraction) {
+        if (fraction >= Config.SOOT_BAND_HEAVY.get()) {
+            return 3;
+        }
+        if (fraction >= Config.SOOT_BAND_MEDIUM.get()) {
+            return 2;
+        }
+        if (fraction >= Config.SOOT_BAND_LIGHT.get()) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /** How much of the full bonus this room has earned: none, a third, two thirds or all of it. */
+    public static double bonusFactor(double fraction) {
+        return band(fraction) / (double) MAX_BAND;
+    }
+
+    /**
+     * Heat loss multiplier for a seasoned room. Soot on the timber insulates whatever the damper is
+     * doing, so unlike the steam bonus this one does not care where the smoke goes.
+     */
+    public static double insulationMultiplier(double fraction) {
+        return 1.0 - bonusFactor(fraction) * Config.SOOT_INSULATION_BONUS.get();
     }
 }

@@ -1,6 +1,6 @@
 {
   "advancements.banya.black_banya.description": "Париться там, где копоть на стенах делает пар мягче",
-  "advancements.banya.black_banya.title": "По-чёрному",
+  "advancements.banya.black_banya.title": "Баня по-чёрному",
   "advancements.banya.choked.description": "Остаться в дыму до потери сознания",
   "advancements.banya.choked.title": "Угорел…",
   "advancements.banya.light_steam.description": "Попариться веником, как положено",
@@ -35,6 +35,7 @@
   "gui.banya.thermometer.humidity": "Влажность",
   "gui.banya.thermometer.leaking": "Парная не замкнута",
   "gui.banya.thermometer.percent": "%s%%",
+  "gui.banya.thermometer.room": "Объём %s, стены %s",
   "gui.banya.thermometer.sealed": "Парная замкнута",
   "gui.banya.thermometer.smoke": "Задымлённость",
   "gui.banya.thermometer.temperature": "Температура",
