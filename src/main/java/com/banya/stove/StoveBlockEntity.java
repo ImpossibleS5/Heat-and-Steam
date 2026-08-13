@@ -73,7 +73,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
      */
     public static final int DATA_ROOM_VOLUME = 7;
     public static final int DATA_ROOM_WALLS = 8;
-    public static final int DATA_SIZE = 9;
+    /** Firebox temperature in °C — what the fuel burns at, not what the room feels. */
+    public static final int DATA_FIRE_TEMPERATURE = 9;
+    /** Basket temperature in °C, weighted by the mass of the rock in it. */
+    public static final int DATA_STONE_TEMPERATURE = 10;
+    public static final int DATA_SIZE = 11;
 
     /** The basket is sized for the biggest stove; smaller tiers simply refuse the extra slots. */
     public static final int STONE_SLOTS = StoveTier.MAX_STONE_SLOTS;
@@ -81,6 +85,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private static final int SMOKE_EFFECT_TICKS = 60;
     /** How far above the firebox a particle may be pushed to clear the stove's own masonry. */
     private static final int PARTICLE_RISE = 3;
+    /**
+     * How hot coals are next to flames. Shape rather than balance: embers are cooler than a fire by
+     * their nature, and the dial worth having is how long they last ({@code emberTicks}).
+     */
+    private static final double EMBER_FIRE_FRACTION = 0.6;
 
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
@@ -140,6 +149,11 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     /** Burn time the current piece of fuel started with, for the flame gauge. */
     private int burnTimeTotal;
     private double temperature = Config.AMBIENT_TEMPERATURE.get();
+    /**
+     * Temperature of the firebox itself, in °C — what the fuel burns at rather than what the room
+     * feels. The stones climb towards this and nothing in the stove goes past it.
+     */
+    private double fireTemperature = Config.AMBIENT_TEMPERATURE.get();
     /** Room humidity, 0-100. Raised by throwing water on the stones, decays by condensation. */
     private double humidity;
     /** Room smoke, 0-100. Made by the fire, cleared mainly by opening the place up. */
@@ -166,6 +180,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
                 case DATA_SEALED -> room == null ? 0 : 1;
                 case DATA_ROOM_VOLUME -> room == null ? 0 : room.volume();
                 case DATA_ROOM_WALLS -> room == null ? 0 : room.walls().size();
+                case DATA_FIRE_TEMPERATURE -> (int) Math.round(fireTemperature);
+                case DATA_STONE_TEMPERATURE -> Math.round(StoveStones.averageTemperature(stones));
                 default -> 0;
             };
         }
@@ -268,6 +284,13 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
         Direction facing = getBlockState().getValue(StoveBlock.FACING);
         this.tier = StoveStructure.detect(level, this.worldPosition, facing);
+
+        // The firebox has a temperature of its own, and the stones climb towards it. Nothing in a
+        // stove ever gets hotter than what is burning in it.
+        this.fireTemperature = RoomClimate.approach(this.fireTemperature, targetFireTemperature(),
+                Config.FIRE_TEMPERATURE_PER_STEP.get());
+        StoveStones.heatTowards(this.stones, (float) this.fireTemperature,
+                Config.STONE_HEATING_MODIFIER.get());
         ChimneyState chimney = Chimney.detect(level,
                 StoveStructure.chimneyBases(level, this.worldPosition, facing));
         // Soot is insulation as well as steam: a seasoned room keeps more of what the fire gives it.
@@ -286,17 +309,38 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Heat offered to the room this step. While the fire burns, part of it also charges the stones;
-     * once it goes out the stones pay that heat back, which is what keeps a real каменка warm long
-     * after the wood is gone.
+     * Heat offered to the room this step: what the flames give it directly, plus what the stones
+     * give it, less what the stones spend doing so.
+     *
+     * <p>The two are separate on purpose. Flames warm a room while they burn and stop the moment
+     * they go out; the каменка works off the gradient between the rock and the air, so it goes on
+     * giving long after the fire is dead, and cools as it gives. Both halves of that are in
+     * {@link StoveStones#giveToRoom}.
      */
     private double heatInputForStep() {
+        double fromStones = StoveStones.giveToRoom(this.stones, this.temperature);
         if (isBurning()) {
-            StoveStones.charge(this.stones, Config.STONE_CHARGE_PER_STEP.get(), this.tier.capacityFactor());
-            return Config.HEAT_PER_STEP.get() * this.fuelHeatFactor * this.tier.heatFactor();
+            return Config.HEAT_PER_STEP.get() * this.fuelHeatFactor * this.tier.heatFactor()
+                    + fromStones;
         }
-        // The stones pay their heat back, which is what keeps a каменка warm after the wood is gone.
-        return StoveStones.release(this.stones, Config.STONE_RELEASE_PER_STEP.get());
+        return fromStones;
+    }
+
+    /**
+     * The temperature the firebox is heading for: what this fuel burns at in this stove.
+     *
+     * <p>Coals keep a fraction of it during the ember window, which is what makes the damper a
+     * judgement call — and a cold stove is simply heading for the room it stands in.
+     */
+    private double targetFireTemperature() {
+        double full = Config.FIRE_TEMPERATURE.get() * this.fuelHeatFactor * this.tier.heatFactor();
+        if (isBurning()) {
+            return full;
+        }
+        if (hasEmbers()) {
+            return full * EMBER_FIRE_FRACTION;
+        }
+        return this.temperature;
     }
 
     /**
@@ -345,7 +389,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
      */
     private void showSteamOffStones(Level level) {
         if (isBurning() || !(level instanceof ServerLevel serverLevel)
-                || StoveStones.totalHeat(this.stones) <= 0.0F) {
+                || StoveStones.averageTemperature(this.stones) <= this.temperature) {
             return;
         }
         BlockPos cell = particleCellAbove(level, this.worldPosition);
@@ -442,7 +486,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
     /** Whether the basket holds stones hot enough to flash water into light steam. */
     public boolean hasHotStones() {
-        return StoveStones.totalHeat(this.stones) > 0;
+        return StoveStones.averageTemperature(this.stones) >= Config.STEAM_STONE_TEMPERATURE.get();
     }
 
     /**
@@ -626,6 +670,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         tag.putInt("EmberTicks", this.emberTicks);
         tag.putInt("BurnTimeTotal", this.burnTimeTotal);
         tag.putDouble("Temperature", this.temperature);
+        tag.putDouble("FireTemperature", this.fireTemperature);
         tag.putDouble("Humidity", this.humidity);
         tag.putDouble("Smoke", this.smoke);
     }
@@ -644,6 +689,9 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         this.burnTimeTotal = tag.getInt("BurnTimeTotal");
         this.temperature = tag.contains("Temperature")
                 ? tag.getDouble("Temperature")
+                : Config.AMBIENT_TEMPERATURE.get();
+        this.fireTemperature = tag.contains("FireTemperature")
+                ? tag.getDouble("FireTemperature")
                 : Config.AMBIENT_TEMPERATURE.get();
         this.humidity = tag.getDouble("Humidity");
         this.smoke = tag.getDouble("Smoke");

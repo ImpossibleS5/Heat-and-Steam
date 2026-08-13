@@ -3,6 +3,7 @@ package com.banya.item;
 import com.banya.Config;
 import com.banya.registry.ModSounds;
 import com.banya.registry.ModTags;
+import com.banya.stove.StoneHeat;
 import com.banya.stove.StoveStones;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -13,7 +14,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 /**
  * A banya stone. Its heat and its cracks live on the stack, so a stone carries its warmth out of
@@ -48,9 +52,13 @@ public class BanyaStoneItem extends Item {
 
     /**
      * A stone straight out of the fire cannot be carried at all — not in the hand, not buried in the
-     * pack. It burns whoever is holding it and lands on the floor, where it can cool off or be
-     * quenched. Picking it back up is refused until it does; see
-     * {@link com.banya.player.StoneHandlingEvents}.
+     * pack. It sets light to whoever is holding it and lands on the floor, where it cools off or is
+     * quenched.
+     *
+     * <p>Picking it straight back up is allowed, and simply burns you again a second later. That
+     * loop is the mechanic, not a hole in it: the stone teaches its own rule, and it means the only
+     * ways past a glowing stone are the two real ones — wait, or throw water on it. Refusing the
+     * pickup instead was tidier and said far less.
      */
     private static void scald(Player player, ItemStack stack) {
         ItemStack dropped = stack.copy();
@@ -74,11 +82,14 @@ public class BanyaStoneItem extends Item {
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         Level level = entity.level();
         if (!level.isClientSide() && level.getGameTime() % SETTLE_INTERVAL_TICKS == 0) {
-            float before = StoveStones.storedHeat(stack);
+            double scald = Config.STONE_SCALD_TEMPERATURE.get();
+            float before = StoveStones.temperature(stack);
             float after = StoveStones.settle(stack, level.getGameTime(),
                     coolingMultiplier(level, entity.blockPosition()));
-            if (before > 0.0F && after <= 0.0F) {
-                // The hiss that tells the player it is safe to pick up again.
+            if (before >= scald && after < scald) {
+                // The hiss that says it is safe to pick up again — at the moment that becomes true,
+                // not when the stone finally reaches the temperature of the room, which for a
+                // quenched one is several silent minutes later.
                 level.playSound(null, entity.blockPosition(), ModSounds.STONE_QUENCH.get(),
                         SoundSource.BLOCKS, 0.4F, 2.0F);
             }
@@ -94,21 +105,37 @@ public class BanyaStoneItem extends Item {
     }
 
     @Override
-    public boolean isBarVisible(ItemStack stack) {
-        return StoveStones.storedHeat(stack) > 0.0F;
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
+                                TooltipFlag flag) {
+        StoneHeat heat = StoneHeat.of(StoveStones.temperature(stack));
+        if (heat != null) {
+            tooltip.add(heat.describe(StoveStones.temperature(stack)));
+        }
     }
 
     @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return StoveStones.temperature(stack) >= StoneHeat.COLD_TEMPERATURE;
+    }
+
+    /**
+     * Against a fixed visible scale rather than anything the stone owns, the way TFC draws its own
+     * heat: the gauge answers "how hot is this", and a scale that varied per stone made the same
+     * bar mean different things in two different hands.
+     */
+    @Override
     public int getBarWidth(ItemStack stack) {
-        float capacity = Math.max(1, StoveStones.capacityOf(stack));
-        // A big stove banks more into a stone than the stone holds on its own, so a freshly pulled
-        // one can read over full. Clamp, or the bar runs off the end of the icon.
-        float filled = Math.min(1.0F, StoveStones.storedHeat(stack) / capacity);
+        float filled = Math.min(1.0F,
+                StoveStones.temperature(stack) / StoneHeat.MAX_VISIBLE_TEMPERATURE);
         return Math.clamp(Math.round(BAR_SEGMENTS * filled), 1, BAR_SEGMENTS);
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        return HEAT_BAR_COLOR;
+        StoneHeat heat = StoneHeat.of(StoveStones.temperature(stack));
+        if (heat == null || heat.color().getColor() == null) {
+            return HEAT_BAR_COLOR;
+        }
+        return heat.color().getColor();
     }
 }

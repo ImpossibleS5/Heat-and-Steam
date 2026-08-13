@@ -37,6 +37,20 @@ public final class Config {
             .comment("Heat the stove offers per simulation step (1 second) while burning.")
             .defineInRange("heatPerStep", 3.0, 0.1, 50.0);
 
+    public static final ModConfigSpec.DoubleValue FIRE_TEMPERATURE = BUILDER
+            .comment(
+                    "Temperature (°C) a firebox burning dry oak settles at.",
+                    "Scaled by the wood species and the stove's tier, and it is what the stones in",
+                    "the basket climb towards — nothing in the stove ever gets hotter than its fire.",
+                    "Coals hold a fraction of it during the ember window.")
+            .defineInRange("fireTemperature", 500.0, 0.0, 3000.0);
+
+    public static final ModConfigSpec.DoubleValue FIRE_TEMPERATURE_PER_STEP = BUILDER
+            .comment(
+                    "Degrees a second the firebox moves towards the temperature it is heading for.",
+                    "Lighting a cold stove is not instant, and neither is it going out.")
+            .defineInRange("fireTemperaturePerStep", 8.0, 0.1, 1000.0);
+
     public static final ModConfigSpec.DoubleValue LEAK_COEFFICIENT = BUILDER
             .comment(
                     "Fraction of the room's excess heat lost per simulation step through perfect walls.",
@@ -167,6 +181,13 @@ public final class Config {
                     "Below this a ladle produces heavy steam: much less humidity and no benefit.")
             .defineInRange("steamTemperature", 70.0, 0.0, 300.0);
 
+    public static final ModConfigSpec.DoubleValue STEAM_STONE_TEMPERATURE = BUILDER
+            .comment(
+                    "Temperature (°C) the stones must be at to flash a ladle of water into steam.",
+                    "Water only cracks into light steam off rock that is properly hot; below this it",
+                    "merely boils off the surface, which is the heavy steam nobody wants.")
+            .defineInRange("steamStoneTemperature", 150.0, 0.0, 2000.0);
+
     public static final ModConfigSpec.DoubleValue HEAVY_STEAM_MULTIPLIER = BUILDER
             .comment("Fraction of the normal humidity gained when the stones are too cold.")
             .defineInRange("heavySteamMultiplier", 0.4, 0.0, 1.0);
@@ -284,26 +305,34 @@ public final class Config {
 
     static { BUILDER.pop(); }
 
-    // The basket: what it banks and how it gives it back.
+    // The basket. Stones carry a real temperature in °C and a thermal mass; everything else about
+    // them follows from those two, the way TerraFirmaCraft models item heat.
     static { BUILDER.push("stones"); }
 
-    public static final ModConfigSpec.DoubleValue STONE_CAPACITY_PER_QUALITY = BUILDER
+    public static final ModConfigSpec.DoubleValue STONE_THERMAL_MASS_PER_QUALITY = BUILDER
             .comment(
-                    "Heat a single stone stores per point of quality (low=1, mid=2, high=3).",
-                    "Stored heat is spent at stoneReleasePerStep once the fire dies down.")
-            .defineInRange("stoneCapacityPerQuality", 60.0, 1.0, 10000.0);
+                    "Thermal mass a stone has per point of quality (low=1 .. soapstone=4).",
+                    "Mass is not a tank: it is how slowly the stone's temperature moves. The same",
+                    "number makes better rock slower to heat AND slower to give its heat back, which",
+                    "is the whole trade soapstone is mined for. Both rates divide by it.")
+            .defineInRange("stoneThermalMassPerQuality", 4.0, 0.1, 1000.0);
 
-    public static final ModConfigSpec.DoubleValue STONE_CHARGE_PER_STEP = BUILDER
-            .comment("Heat the stones absorb per simulation step while the stove burns.")
-            .defineInRange("stoneChargePerStep", 3.0, 0.1, 100.0);
-
-    public static final ModConfigSpec.IntValue STONE_COOLING_PER_STEP = BUILDER
+    public static final ModConfigSpec.DoubleValue STONE_HEATING_MODIFIER = BUILDER
             .comment(
-                    "Heat a stone loses per second once it is out of a stove.",
-                    "Applies wherever the stone is — carried, dropped, or shut in a chest. Chests",
-                    "used to be perfect thermoses because items in them never tick; cooling is now",
-                    "worked out from a timestamp on read, so storage buys no time.")
-            .defineInRange("stoneCoolingPerStep", 2, 0, 1000);
+                    "How hard the fire pushes a stone's temperature up, per second, before mass.",
+                    "A stone gains stoneHeatingModifier / mass degrees a second and never passes the",
+                    "firebox temperature: river stone (mass 4) climbs 3 °C/s, soapstone (mass 16)",
+                    "0.75 °C/s. Each stone heats on its own — a full basket is not a slower basket.")
+            .defineInRange("stoneHeatingModifier", 12.0, 0.1, 1000.0);
+
+    public static final ModConfigSpec.DoubleValue STONE_COOLING_MODIFIER = BUILDER
+            .comment(
+                    "How fast a stone loses temperature outside a stove, per second, before mass.",
+                    "Falls by stoneCoolingModifier / mass degrees a second wherever it is — carried,",
+                    "dropped, or shut in a chest. Items in chests never tick, so cooling is worked",
+                    "out from a timestamp when the stone is read: storage buys no time at all.",
+                    "Stones in a basket are exempt; the stove models those itself.")
+            .defineInRange("stoneCoolingModifier", 5.0, 0.0, 1000.0);
 
     public static final ModConfigSpec.DoubleValue STONE_WATER_COOLING_MULTIPLIER = BUILDER
             .comment(
@@ -312,16 +341,17 @@ public final class Config {
                     "deliberately not in it: dropping a stone in lava does not quench it.")
             .defineInRange("stoneWaterCoolingMultiplier", 20.0, 1.0, 1000.0);
 
-    public static final ModConfigSpec.DoubleValue STONE_BURN_FRACTION = BUILDER
+    public static final ModConfigSpec.DoubleValue STONE_SCALD_TEMPERATURE = BUILDER
             .comment(
-                    "Share of its capacity past which a stone is too hot to carry at all.",
-                    "It burns whoever picks it up and drops on the floor, and cannot be picked back",
-                    "up until it cools. A fraction rather than a flat number, so a humble river",
-                    "stone at full glow is every bit as dangerous as soapstone.")
-            .defineInRange("stoneBurnFraction", 0.8, 0.0, 1.0);
+                    "Temperature (°C) past which a stone cannot be carried at all.",
+                    "It sets light to whoever is holding it and lands on the floor — every second,",
+                    "for as long as it is that hot. Picking it back up is allowed and simply repeats",
+                    "the burn, so the only ways on are to wait it out or to quench it in water.",
+                    "A flat figure, not a share of anything: 100 °C is 100 °C in any hand.")
+            .defineInRange("stoneScaldTemperature", 100.0, 0.0, 2000.0);
 
     public static final ModConfigSpec.DoubleValue STONE_BURN_SECONDS = BUILDER
-            .comment("Seconds of fire from grabbing a scalding stone.")
+            .comment("Seconds of fire from holding a scalding stone.")
             .defineInRange("stoneBurnSeconds", 3.0, 0.0, 60.0);
 
     public static final ModConfigSpec.DoubleValue STONE_POURS_PER_CRACK = BUILDER
@@ -332,9 +362,29 @@ public final class Config {
                     "and 240 for the best — a few sessions versus a few dozen.")
             .defineInRange("stonePoursPerCrack", 15.0, 1.0, 100000.0);
 
-    public static final ModConfigSpec.DoubleValue STONE_RELEASE_PER_STEP = BUILDER
-            .comment("Degrees C the stones give back per simulation step after the fire goes out.")
-            .defineInRange("stoneReleasePerStep", 1.5, 0.1, 50.0);
+    public static final ModConfigSpec.DoubleValue STONE_ROOM_COEFFICIENT = BUILDER
+            .comment(
+                    "How readily the basket gives its heat to the parnaya.",
+                    "The room gains stoneRoomCoefficient × (масса / stoneReferenceMass) × (T камней −",
+                    "T комнаты) degrees a second, and the stones lose exactly that heat back out of",
+                    "their own temperature. One term, running whether or not the fire is lit: while",
+                    "it burns the stones add to the fire, and once it dies they are all that is left",
+                    "holding the room. That is what a каменка is for.")
+            .defineInRange("stoneRoomCoefficient", 0.005, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue STONE_REFERENCE_MASS = BUILDER
+            .comment(
+                    "Thermal mass that counts as a full basket for the purpose of heating the room.",
+                    "64 is four soapstones — a loaded T1. Twice the mass warms the room twice as",
+                    "hard at the same temperature, which is why a bigger stove is worth building.")
+            .defineInRange("stoneReferenceMass", 64.0, 1.0, 100000.0);
+
+    public static final ModConfigSpec.DoubleValue STONE_ENERGY_TO_DEGREES = BUILDER
+            .comment(
+                    "Stone degrees given up per degree the basket adds to the room, before mass.",
+                    "Ties the two halves of the exchange together: raise it and the stones spend",
+                    "themselves faster for the same warmth, lower it and they last longer.")
+            .defineInRange("stoneEnergyToDegrees", 8.0, 0.1, 1000.0);
 
     static { BUILDER.pop(); }
 

@@ -30,6 +30,8 @@
   "effect.banya.hardening": "Hardening",
   "effect.banya.smoke_poisoning": "Smoke Poisoning",
   "entity.banya.seat": "Seat",
+  "gui.banya.stove.fire": "Fire %s °C",
+  "gui.banya.stove.stones": "Stones %s °C",
   "gui.banya.thermometer.degrees": "%s °C",
   "gui.banya.thermometer.heat_index": "Feels like",
   "gui.banya.thermometer.humidity": "Humidity",
@@ -85,5 +87,10 @@
   "subtitles.banya.tub_fill": "Tub fills",
   "subtitles.banya.venik_steep": "Venik steeps",
   "subtitles.banya.venik_whisk": "Venik swishes",
-  "subtitles.banya.wood_load": "Firewood stacked"
+  "subtitles.banya.wood_load": "Firewood stacked",
+  "tooltip.banya.stone_heat.faint_red": "Faint red (%s °C)",
+  "tooltip.banya.stone_heat.hot": "Hot (%s °C)",
+  "tooltip.banya.stone_heat.red": "Glowing red (%s °C)",
+  "tooltip.banya.stone_heat.very_hot": "Very hot (%s °C)",
+  "tooltip.banya.stone_heat.warm": "Warm (%s °C)"
 }

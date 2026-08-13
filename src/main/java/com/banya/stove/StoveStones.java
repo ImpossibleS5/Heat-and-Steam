@@ -51,61 +51,55 @@ public final class StoveStones {
     }
 
     /**
-     * Heat one stone can hold, scaled by how good the rock is.
+     * How much this stone's temperature resists being moved, in either direction.
      *
-     * <p>The stove it sits in scales this further: a massive stove banks several times as much in
-     * the same stone, which is what lets it hold a banya warm past a game day. Out of a stove the
-     * plain capacity applies, so a stone carried away cannot hold more than it earned.
+     * <p>Quality is the whole story: soapstone is four times the thermal mass of a river cobble, so
+     * it takes four times as long to heat and four times as long to give that heat back. One number
+     * for both halves is what makes better rock a trade rather than a strict upgrade — and it is why
+     * there is no separate dial for charge time any more.
      */
-    public static int capacityOf(ItemStack stack) {
-        return capacityOf(stack, 1.0);
-    }
-
-    public static int capacityOf(ItemStack stack, double tierFactor) {
-        return (int) Math.round(qualityOf(stack) * Config.STONE_CAPACITY_PER_QUALITY.get() * tierFactor);
+    public static float thermalMass(ItemStack stack) {
+        return (float) (qualityOf(stack) * Config.STONE_THERMAL_MASS_PER_QUALITY.get());
     }
 
     /**
-     * Heat as last written down, with no cooling applied for the time since. This is the stove's own
-     * working value and what the item's gauge draws; anything outside a stove wants
-     * {@link #heatAt} instead.
-     *
-     * <p>Heat is a float on purpose. With whole numbers a three-a-second fire could not be shared
-     * between eight stones, so it went to one stone at a time and the basket appeared to heat in
-     * turn rather than together.
+     * Temperature in °C as last written down, with no cooling applied for the time since. This is
+     * the stove's own working value; anything outside a stove wants {@link #temperatureAt} instead.
      */
-    public static float storedHeat(ItemStack stack) {
-        return Math.max(0.0F, stack.getOrDefault(ModDataComponents.HEAT.get(), 0.0F));
+    public static float temperature(ItemStack stack) {
+        return Math.max(0.0F, stack.getOrDefault(ModDataComponents.TEMPERATURE.get(), 0.0F));
     }
 
-    public static void setHeat(ItemStack stack, float heat) {
-        stack.set(ModDataComponents.HEAT.get(), Math.max(0.0F, heat));
+    public static void setTemperature(ItemStack stack, float temperature) {
+        stack.set(ModDataComponents.TEMPERATURE.get(), Math.max(0.0F, temperature));
     }
 
     /**
-     * Heat right now: what was stored, less the cooling owed for the time since it was written.
+     * Temperature right now: what was written down, less the cooling owed for the time since.
      *
      * <p>Cooling is worked out on read rather than ticked down because items in a chest never tick,
      * which made a chest a perfect thermos. A stone now goes cold wherever it is left — in a
      * backpack, in a barrel, lying in the grass, even in an unloaded chunk — and it costs nothing
-     * per tick to do it.
+     * per tick to do it. The rate divides by thermal mass, so the better the rock the longer it
+     * stays dangerous.
      */
-    public static float heatAt(ItemStack stack, long gameTime) {
-        return heatAt(stack, gameTime, 1.0);
+    public static float temperatureAt(ItemStack stack, long gameTime) {
+        return temperatureAt(stack, gameTime, 1.0);
     }
 
-    private static float heatAt(ItemStack stack, long gameTime, double multiplier) {
-        float stored = storedHeat(stack);
-        Long written = stack.get(ModDataComponents.HEAT_TIME.get());
-        if (stored <= 0.0F || written == null) {
+    private static float temperatureAt(ItemStack stack, long gameTime, double multiplier) {
+        float stored = temperature(stack);
+        Long written = stack.get(ModDataComponents.TEMPERATURE_TIME.get());
+        float mass = thermalMass(stack);
+        if (stored <= 0.0F || written == null || mass <= 0.0F) {
             // Never stamped: a stone straight from the creative menu or a recipe. Put it on the
             // clock at its first settle rather than charging it for all the time since the world
             // began, which would read as "hot stones arrive cold".
             return stored;
         }
         long elapsed = Math.max(0L, gameTime - written);
-        double cooling = Config.STONE_COOLING_PER_STEP.get() * multiplier
-                * elapsed / SECOND_IN_TICKS;
+        double cooling = Config.STONE_COOLING_MODIFIER.get() * multiplier * elapsed
+                / (SECOND_IN_TICKS * mass);
         return (float) Math.max(0.0, stored - cooling);
     }
 
@@ -117,15 +111,15 @@ public final class StoveStones {
      * @return the heat it is left with
      */
     public static float settle(ItemStack stack, long gameTime, double multiplier) {
-        float heat = heatAt(stack, gameTime, multiplier);
-        setHeat(stack, heat);
+        float temperature = temperatureAt(stack, gameTime, multiplier);
+        setTemperature(stack, temperature);
         stamp(stack, gameTime);
-        return heat;
+        return temperature;
     }
 
     /** Puts a stone on the clock without cooling it, for heat that is being modelled elsewhere. */
     public static void stamp(ItemStack stack, long gameTime) {
-        stack.set(ModDataComponents.HEAT_TIME.get(), gameTime);
+        stack.set(ModDataComponents.TEMPERATURE_TIME.get(), gameTime);
     }
 
     /**
@@ -141,81 +135,102 @@ public final class StoveStones {
         }
     }
 
-    /** Heat past which a stone is too hot to keep hold of, as a share of what it can hold. */
+    /**
+     * Whether this stone is too hot to keep hold of. A flat temperature, not a share of anything:
+     * a humble river cobble at 300 °C burns exactly as badly as soapstone at 300 °C.
+     */
     public static boolean isScalding(ItemStack stack, long gameTime) {
-        float capacity = capacityOf(stack);
-        return capacity > 0.0F
-                && heatAt(stack, gameTime) >= capacity * Config.STONE_BURN_FRACTION.get();
+        return isStone(stack)
+                && temperatureAt(stack, gameTime) >= Config.STONE_SCALD_TEMPERATURE.get();
     }
 
     public static int cracksOf(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.CRACKS.get(), 0);
     }
 
-    /** Heat banked across the whole basket. */
-    public static float totalHeat(IItemHandler stones) {
+    /** Thermal mass of the whole basket — how much banya there is to warm the room with. */
+    public static float totalThermalMass(IItemHandler stones) {
         float total = 0.0F;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
-            total += storedHeat(stones.getStackInSlot(slot));
+            total += thermalMass(stones.getStackInSlot(slot));
         }
         return total;
     }
 
-    /** The fire heats the whole basket at once, so every stone takes an equal share. */
-    public static void charge(IItemHandler stones, double amount, double tierFactor) {
-        int sharing = 0;
+    /**
+     * Temperature of the basket as one body, weighted by mass — one cold pebble among soapstone
+     * should not drag the reading down as far as it drags the heat down.
+     */
+    public static float averageTemperature(IItemHandler stones) {
+        float mass = 0.0F;
+        float weighted = 0.0F;
         for (int slot = 0; slot < stones.getSlots(); slot++) {
             ItemStack stack = stones.getStackInSlot(slot);
-            if (!stack.isEmpty() && storedHeat(stack) < capacityOf(stack, tierFactor)) {
-                sharing++;
+            float stoneMass = thermalMass(stack);
+            if (stoneMass > 0.0F) {
+                mass += stoneMass;
+                weighted += temperature(stack) * stoneMass;
             }
         }
-        if (sharing == 0) {
-            return;
-        }
+        return mass <= 0.0F ? 0.0F : weighted / mass;
+    }
 
-        float share = (float) (amount / sharing);
+    /**
+     * Pushes every stone towards the temperature of the fire under it.
+     *
+     * <p>Each stone climbs at {@code modifier / its own mass} on its own account, and never past the
+     * fire: nothing in a stove gets hotter than what is burning in it. Deliberately not shared out
+     * between the stones — a stone in a fire heats at the rate its own rock allows, so a full basket
+     * is not a slower basket, it is simply a bigger one.
+     */
+    public static void heatTowards(IItemHandler stones, float target, double modifier) {
         for (int slot = 0; slot < stones.getSlots(); slot++) {
             ItemStack stack = stones.getStackInSlot(slot);
-            if (stack.isEmpty()) {
+            float mass = thermalMass(stack);
+            float current = temperature(stack);
+            if (mass <= 0.0F || current >= target) {
                 continue;
             }
-            float capacity = capacityOf(stack, tierFactor);
-            if (storedHeat(stack) < capacity) {
-                setHeat(stack, Math.min(capacity, storedHeat(stack) + share));
-            }
+            setTemperature(stack, (float) Math.min(target, current + modifier / mass));
         }
     }
 
     /**
-     * Draws heat back out of the basket, evenly, the way it went in.
+     * The basket's exchange with the parnaya, both halves of it: what the room gains, and what the
+     * stones spend to give it.
      *
-     * @return how much was actually available
+     * <p>Runs whether or not the fire is lit, because heat does not wait for the flames to go out.
+     * While the stove burns the stones add to it; once it dies they are the only thing still holding
+     * the room warm, and they cool as they do it. That is the whole of what a каменка is for, and it
+     * replaces the old pair of dials — a flat "radiation" while burning and a flat "release" after —
+     * with the one gradient that drives both.
+     *
+     * @param roomTemperature the parnaya's current temperature
+     * @return degrees the room gains this step
      */
-    public static double release(IItemHandler stones, double amount) {
-        int sharing = 0;
-        for (int slot = 0; slot < stones.getSlots(); slot++) {
-            if (storedHeat(stones.getStackInSlot(slot)) > 0.0F) {
-                sharing++;
-            }
-        }
-        if (sharing == 0) {
+    public static double giveToRoom(IItemHandler stones, double roomTemperature) {
+        float mass = totalThermalMass(stones);
+        if (mass <= 0.0F) {
             return 0.0;
         }
+        double gradient = averageTemperature(stones) - roomTemperature;
+        if (gradient <= 0.0) {
+            return 0.0; // a cold basket is not a heat sink: the room keeps what it has
+        }
 
-        float share = (float) (amount / sharing);
-        float drawn = 0.0F;
+        double gain = Config.STONE_ROOM_COEFFICIENT.get()
+                * (mass / Config.STONE_REFERENCE_MASS.get())
+                * gradient;
+        // Paid for out of the stones themselves, and never past the room they are warming.
+        float spent = (float) (gain * Config.STONE_ENERGY_TO_DEGREES.get() / mass);
         for (int slot = 0; slot < stones.getSlots(); slot++) {
             ItemStack stack = stones.getStackInSlot(slot);
-            float heat = storedHeat(stack);
-            if (heat <= 0.0F) {
-                continue;
+            float current = temperature(stack);
+            if (thermalMass(stack) > 0.0F && current > roomTemperature) {
+                setTemperature(stack, (float) Math.max(roomTemperature, current - spent));
             }
-            float taken = Math.min(share, heat);
-            setHeat(stack, heat - taken);
-            drawn += taken;
         }
-        return drawn;
+        return gain;
     }
 
     /**

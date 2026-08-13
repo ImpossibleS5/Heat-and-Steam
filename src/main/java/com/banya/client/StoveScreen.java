@@ -1,8 +1,10 @@
 package com.banya.client;
 
 import com.banya.Banya;
+import com.banya.stove.StoneHeat;
 import com.banya.stove.StoveBlockEntity;
 import com.banya.stove.StoveMenu;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -29,6 +31,10 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
     private static final int GAUGE_BORDER = 0xFF373737;
     private static final int GAUGE_EMPTY = 0xFF8B8B8B;
     private static final int GAUGE_FLAME = 0xFFFF9A2E;
+    /** The strip right of the burn gauge, clear of both the basket and the player inventory. */
+    private static final int TEXT_X = 92;
+    private static final int TEXT_Y = 54;
+    private static final int LABEL_COLOR = 0x404040;
 
     public StoveScreen(StoveMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -71,6 +77,30 @@ public class StoveScreen extends AbstractContainerScreen<StoveMenu> {
             graphics.fill(x + 1, y + 1, x + 18, y + 18, SLOT_HIGHLIGHT);
             graphics.fill(x + 1, y + 1, x + 17, y + 17, SLOT_FILL);
         }
+    }
+
+    /**
+     * The two temperatures the fire owns: what it burns at, and what the basket has climbed to.
+     *
+     * <p>Worth the line of text — the stones' own gauges say "hot" but never say whether they are
+     * hot enough to make steam, and until the fire is hotter than the rock nothing is happening at
+     * all. The room's own reading stays on the thermometer, where it belongs.
+     */
+    private void renderTemperatures(GuiGraphics graphics) {
+        Component fire = Component.translatable("gui.banya.stove.fire", this.menu.getFireTemperature());
+        graphics.drawString(this.font, fire, TEXT_X, TEXT_Y, LABEL_COLOR, false);
+
+        int stone = this.menu.getStoneTemperature();
+        StoneHeat heat = StoneHeat.of(stone);
+        Component stones = Component.translatable("gui.banya.stove.stones", stone)
+                .withStyle(heat == null ? ChatFormatting.DARK_GRAY : heat.color());
+        graphics.drawString(this.font, stones, TEXT_X, TEXT_Y + 10, LABEL_COLOR, false);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
+        renderTemperatures(graphics);
     }
 
     private void renderBurnGauge(GuiGraphics graphics) {

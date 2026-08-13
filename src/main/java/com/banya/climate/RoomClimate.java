@@ -154,7 +154,12 @@ public final class RoomClimate {
         return Math.min(1.0, referenceArea / Math.max(1.0, room.walls().size()));
     }
 
-    private static double approach(double current, double target, double rate) {
+    /**
+     * Moves a value towards a target by at most {@code rate}, without overshooting. Used for things
+     * that have somewhere to get to rather than something to leak into — a firebox heading for the
+     * temperature its fuel burns at, where Newton's law would be the wrong shape.
+     */
+    public static double approach(double current, double target, double rate) {
         if (current > target) {
             return Math.max(target, current - rate);
         }

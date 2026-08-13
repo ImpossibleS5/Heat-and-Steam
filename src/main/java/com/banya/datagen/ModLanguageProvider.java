@@ -38,6 +38,13 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.SOAPSTONE.get(), "Талькохлорит");
             add("message.banya.stone.cracked", "Камень треснул");
             add("message.banya.stone.too_hot", "Камень раскалён — его не удержать");
+            add("gui.banya.stove.fire", "Печь %s °C");
+            add("gui.banya.stove.stones", "Камни %s °C");
+            add("tooltip.banya.stone_heat.warm", "Тёплый (%s °C)");
+            add("tooltip.banya.stone_heat.hot", "Горячий (%s °C)");
+            add("tooltip.banya.stone_heat.very_hot", "Очень горячий (%s °C)");
+            add("tooltip.banya.stone_heat.faint_red", "Раскалённый (%s °C)");
+            add("tooltip.banya.stone_heat.red", "Добела (%s °C)");
             add(ModBlocks.CHOPPING_BLOCK.get(), "Колода для колки");
             add(ModBlocks.DRYING_RACK.get(), "Дровница");
             add(ModItems.FIREWOOD_BIRCH.get(), "Берёзовые поленья");
@@ -127,6 +134,13 @@ public class ModLanguageProvider extends LanguageProvider {
             add(ModItems.SOAPSTONE.get(), "Soapstone");
             add("message.banya.stone.cracked", "A stone cracked");
             add("message.banya.stone.too_hot", "The stone is scalding — you cannot hold it");
+            add("gui.banya.stove.fire", "Fire %s °C");
+            add("gui.banya.stove.stones", "Stones %s °C");
+            add("tooltip.banya.stone_heat.warm", "Warm (%s °C)");
+            add("tooltip.banya.stone_heat.hot", "Hot (%s °C)");
+            add("tooltip.banya.stone_heat.very_hot", "Very hot (%s °C)");
+            add("tooltip.banya.stone_heat.faint_red", "Faint red (%s °C)");
+            add("tooltip.banya.stone_heat.red", "Glowing red (%s °C)");
             add(ModBlocks.CHOPPING_BLOCK.get(), "Chopping Block");
             add(ModBlocks.DRYING_RACK.get(), "Drying Rack");
             add(ModItems.FIREWOOD_BIRCH.get(), "Birch Firewood");

@@ -30,6 +30,8 @@
   "effect.banya.hardening": "Закалка",
   "effect.banya.smoke_poisoning": "Угар",
   "entity.banya.seat": "Сиденье",
+  "gui.banya.stove.fire": "Печь %s °C",
+  "gui.banya.stove.stones": "Камни %s °C",
   "gui.banya.thermometer.degrees": "%s °C",
   "gui.banya.thermometer.heat_index": "Ощущается как",
   "gui.banya.thermometer.humidity": "Влажность",
@@ -85,5 +87,10 @@
   "subtitles.banya.tub_fill": "Ушат наполняется",
   "subtitles.banya.venik_steep": "Веник запаривается",
   "subtitles.banya.venik_whisk": "Свист веника",
-  "subtitles.banya.wood_load": "Дрова укладываются"
+  "subtitles.banya.wood_load": "Дрова укладываются",
+  "tooltip.banya.stone_heat.faint_red": "Раскалённый (%s °C)",
+  "tooltip.banya.stone_heat.hot": "Горячий (%s °C)",
+  "tooltip.banya.stone_heat.red": "Добела (%s °C)",
+  "tooltip.banya.stone_heat.very_hot": "Очень горячий (%s °C)",
+  "tooltip.banya.stone_heat.warm": "Тёплый (%s °C)"
 }

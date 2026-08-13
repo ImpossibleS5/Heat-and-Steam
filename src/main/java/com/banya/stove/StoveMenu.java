@@ -101,6 +101,16 @@ public class StoveMenu extends AbstractContainerMenu {
     }
 
     /** Burn time the current fuel item started with, or 0 when nothing is burning. */
+    /** Firebox temperature in °C: what this fuel is burning at in this stove. */
+    public int getFireTemperature() {
+        return this.data.get(StoveBlockEntity.DATA_FIRE_TEMPERATURE);
+    }
+
+    /** Basket temperature in °C, weighted by the mass of rock in it. */
+    public int getStoneTemperature() {
+        return this.data.get(StoveBlockEntity.DATA_STONE_TEMPERATURE);
+    }
+
     public int getBurnTimeTotal() {
         return this.data.get(StoveBlockEntity.DATA_BURN_TIME_TOTAL);
     }
