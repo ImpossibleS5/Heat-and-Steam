@@ -253,7 +253,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         Direction facing = getBlockState().getValue(StoveBlock.FACING);
         this.tier = StoveStructure.detect(level, this.worldPosition, facing);
         ChimneyState chimney = Chimney.detect(level,
-                StoveStructure.chimneyBases(this.worldPosition, facing));
+                StoveStructure.chimneyBases(level, this.worldPosition, facing));
         this.temperature = RoomClimate.nextTemperature(this.temperature, heatInputForStep(),
                 this.room, level, RoomClimate.leakMultiplier(chimney));
         this.humidity = RoomClimate.nextHumidity(this.humidity, this.room);

@@ -21,9 +21,10 @@ public final class Chimney {
     /**
      * Picks the best flue among the columns a stove may vent through.
      *
-     * <p>A stove offers more than one candidate column, so that upgrading it with masonry cannot
-     * move the flue out from under an already-built chimney. An open path wins over a shut one, and
-     * any real flue wins over none: if smoke has a way out anywhere, it takes it.
+     * <p>A stove offers a candidate column above every cell it occupies, so that neither upgrading
+     * it with masonry nor choosing an unexpected corner can move the flue out from under an
+     * already-built chimney. An open path wins over a shut one, and any real flue wins over none: if
+     * smoke has a way out anywhere, it takes it.
      *
      * @param bases where a flue could start — see {@link StoveStructure#chimneyBases}
      */
@@ -31,6 +32,9 @@ public final class Chimney {
         ChimneyState best = ChimneyState.NONE;
         for (BlockPos base : bases) {
             ChimneyState found = detectOne(level, base);
+            if (found == ChimneyState.OPEN) {
+                return found; // nothing outranks an open flue, so the rest need not be walked
+            }
             if (rank(found) > rank(best)) {
                 best = found;
             }
@@ -61,6 +65,13 @@ public final class Chimney {
                 continue;
             }
             if (state.getBlock() instanceof ChimneyBlock) {
+                continue;
+            }
+            // The stove's own upper course is part of the path, not the end of it: on a T3 the
+            // column starts inside that course, and a flue may just as well begin above it. Only
+            // that one block, though — the stove is two courses tall, so casing any higher is a
+            // decorative pillar, and a solid pillar out through the roof must not read as a flue.
+            if (offset == 0 && state.getBlock() instanceof StoveCasingBlock) {
                 continue;
             }
             // The column has ended. It only counts as a flue if it broke out into the open.

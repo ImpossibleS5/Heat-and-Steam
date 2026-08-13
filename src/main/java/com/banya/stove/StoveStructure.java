@@ -6,6 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +26,13 @@ import java.util.Optional;
  * <pre>
  *   T2, seen from above            T3 adds a course on top
  *     К К К                          К К К
- *     К К К                          К · К    · = the flue's way out
+ *     К К К                          К · К    · = the gap left in the middle
  *     К ▣ К   ▣ = firebox, facing    К К К
  *             the player
  * </pre>
+ *
+ * <p>The gap is where a flue naturally goes, but it is not the only place one may stand: see
+ * {@link #chimneyBases}.
  */
 public final class StoveStructure {
     /** How far the firebox can sit from any cell of its own body, horizontally. */
@@ -44,24 +48,35 @@ public final class StoveStructure {
     }
 
     /**
-     * The columns a flue may rise from: straight up out of the firebox, or up out of the middle of
-     * the body behind it.
+     * The columns a flue may rise from: one above every cell the stove actually occupies.
      *
-     * <p>Deliberately <em>not</em> keyed on the tier. It used to be — a bare firebox vented upwards,
-     * a built-up one out of the centre — and that quietly broke every stove the player upgraded: the
-     * moment masonry made it a T2 the base jumped to the other column, found air under the roof, and
-     * the stove turned into a banya po-chornomu with its chimney left standing as dead brickwork.
-     * Both columns are checked instead, which costs a handful of block lookups and cannot go wrong
-     * in either direction. A false positive is not possible: a T3 requires casing directly above the
-     * firebox, and casing is neither a chimney nor open to the sky.
+     * <p>Deliberately keyed on the <em>blocks that are there</em>, never on the derived tier. Keying
+     * it on the tier quietly broke every stove the player upgraded — the base jumped to another
+     * column, found air under the roof, and the stove turned into a banya po-chornomu with its
+     * chimney left standing as dead brickwork.
+     *
+     * <p>Offering only two columns had the same failure one step later. A T3 needs casing directly
+     * above the firebox, so its one legal flue cell was the gap in the middle of the upper course —
+     * exactly one block away from where the player's chimney had stood since it was a T1. Building
+     * the last course silently required moving the flue, and on a T2 anything but those two columns
+     * never vented at all. Every column of the footprint is a candidate now, so wherever the flue
+     * goes through the stove, it works. A bare T1 still offers only the column over its firebox.
      */
-    public static List<BlockPos> chimneyBases(BlockPos firebox, Direction facing) {
-        return List.of(firebox.above(), centre(firebox, facing).above());
-    }
+    public static List<BlockPos> chimneyBases(LevelReader level, BlockPos firebox, Direction facing) {
+        Direction back = facing.getOpposite();
+        Direction right = back.getClockWise();
+        List<BlockPos> bases = new ArrayList<>();
 
-    /** The middle of the three-by-three body, one block behind the firebox. */
-    private static BlockPos centre(BlockPos firebox, Direction facing) {
-        return firebox.relative(facing.getOpposite());
+        for (int depth = 0; depth <= 2; depth++) {
+            for (int side = -1; side <= 1; side++) {
+                BlockPos cell = firebox.relative(back, depth).relative(right, side);
+                if (cell.equals(firebox)
+                        || level.getBlockState(cell).is(ModBlocks.STOVE_CASING.get())) {
+                    bases.add(cell.above());
+                }
+            }
+        }
+        return bases;
     }
 
     /**
