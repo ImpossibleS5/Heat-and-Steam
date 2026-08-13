@@ -8,6 +8,7 @@ import com.banya.player.WarmthHudData;
 import com.banya.registry.ModEntities;
 import com.banya.registry.ModItems;
 import com.banya.registry.ModMenus;
+import com.banya.registry.ModParticles;
 import com.banya.stove.StoveStones;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -19,6 +20,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -76,6 +78,11 @@ public final class BanyaClient {
     @SubscribeEvent
     static void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, WARMTH_LAYER, new WarmthHudLayer());
+    }
+
+    @SubscribeEvent
+    static void onRegisterParticles(final RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(ModParticles.STEAM.get(), SteamParticle.Provider::new);
     }
 
     @SubscribeEvent

@@ -2,6 +2,7 @@ package com.banya.stove;
 
 import com.banya.item.LadleItem;
 import com.banya.registry.ModBlockEntities;
+import com.banya.registry.ModParticles;
 import com.banya.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -146,7 +147,7 @@ public class StoveBlock extends Block implements EntityBlock {
         level.playSound(null, pos, ModSounds.STEAM_HISS.get(), SoundSource.BLOCKS,
                 0.8F, lightSteam ? 1.6F : 1.1F);
         if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.CLOUD,
+            serverLevel.sendParticles(ModParticles.STEAM.get(),
                     pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5,
                     lightSteam ? 30 : 10, 0.3, 0.3, 0.3, 0.02);
         }

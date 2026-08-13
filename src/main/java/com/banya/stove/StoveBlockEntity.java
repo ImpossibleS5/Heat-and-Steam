@@ -10,6 +10,7 @@ import com.banya.player.Exposure;
 import com.banya.registry.ModAttachments;
 import com.banya.registry.ModBlockEntities;
 import com.banya.registry.ModEffects;
+import com.banya.registry.ModParticles;
 import com.banya.registry.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,6 +18,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -260,6 +262,8 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         this.smoke = RoomClimate.nextSmoke(this.smoke, smokeOutputForStep(), this.room, chimney);
         this.chimneyState = chimney;
         seasonWalls(level, chimney);
+        showFlueSmoke(level, chimney);
+        showSteamOffStones(level);
         throwSparks(level);
         exposeOccupants(level);
         setChanged();
@@ -277,6 +281,41 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         }
         // The stones pay their heat back, which is what keeps a каменка warm after the wood is gone.
         return StoveStones.release(this.stones, Config.STONE_RELEASE_PER_STEP.get());
+    }
+
+    /**
+     * Smoke leaving the top of the flue. Worth the extra column walk once every simulation step:
+     * from outside, a chimney drawing properly is the only way to tell a working banya from a cold
+     * one without going in.
+     */
+    private void showFlueSmoke(Level level, ChimneyState chimney) {
+        if (chimney != ChimneyState.OPEN || !(isBurning() || hasEmbers())
+                || !(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        Direction facing = getBlockState().getValue(StoveBlock.FACING);
+        BlockPos top = Chimney.ventOutlet(level,
+                StoveStructure.chimneyBases(level, this.worldPosition, facing));
+        if (top == null) {
+            return;
+        }
+        serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                top.getX() + 0.5, top.getY() + 0.2, top.getZ() + 0.5,
+                isBurning() ? 3 : 1, 0.1, 0.05, 0.1, 0.01);
+    }
+
+    /**
+     * Stones giving their heat back after the fire is out. The wisp is the only sign that the
+     * каменка is still worth sitting with, since there are no flames left to see.
+     */
+    private void showSteamOffStones(Level level) {
+        if (isBurning() || !(level instanceof ServerLevel serverLevel)
+                || StoveStones.totalHeat(this.stones) <= 0.0F) {
+            return;
+        }
+        serverLevel.sendParticles(ModParticles.STEAM.get(),
+                this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 1.0,
+                this.worldPosition.getZ() + 0.5, 1, 0.25, 0.05, 0.25, 0.01);
     }
 
     /**
@@ -420,6 +459,14 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
         player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, SMOKE_EFFECT_TICKS, 0, true, false));
+        if (player.level() instanceof ServerLevel serverLevel) {
+            // Smoke you can see hanging around you, so the reading on the thermometer is not the
+            // only warning before Угар starts. Sent to this player alone: whoever is standing in it.
+            serverLevel.sendParticles(player instanceof ServerPlayer served ? served : null,
+                    ParticleTypes.SMOKE, false,
+                    player.getX(), player.getEyeY(), player.getZ(),
+                    2, 0.8, 0.5, 0.8, 0.005);
+        }
 
         double choke = Config.SMOKE_CHOKE_LEVEL.get();
         if (this.smoke < choke) {

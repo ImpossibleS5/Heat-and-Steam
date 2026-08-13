@@ -3,7 +3,9 @@ package com.banya.wood;
 import com.banya.Config;
 import com.banya.item.FirewoodItem;
 import com.banya.registry.ModBlockEntities;
+import com.banya.registry.ModParticles;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Containers;
@@ -54,7 +56,14 @@ public class DryingRackBlockEntity extends BlockEntity {
             return;
         }
 
-        this.dryProgress += dryingRate(level, pos);
+        int rate = dryingRate(level, pos);
+        this.dryProgress += rate;
+        if (level instanceof ServerLevel serverLevel && rate > 1) {
+            // Only while the sun is actually on it: the wisp is the tell that this spot dries
+            // faster than a shaded one, which is otherwise invisible until the wood is done.
+            serverLevel.sendParticles(ModParticles.STEAM.get(),
+                    pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5, 1, 0.2, 0.1, 0.2, 0.005);
+        }
         if (this.dryProgress < Config.FIREWOOD_DRY_STEPS.get()) {
             return;
         }

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -40,6 +41,36 @@ public final class Chimney {
             }
         }
         return best;
+    }
+
+    /**
+     * Where the smoke actually comes out: the last flue block of the first column that reaches the
+     * open. Only wanted when something is being drawn there, so it is a separate walk rather than
+     * something {@link #detect} has to carry around.
+     *
+     * @return the topmost flue block, or null if no column vents
+     */
+    @Nullable
+    public static BlockPos ventOutlet(Level level, List<BlockPos> bases) {
+        for (BlockPos base : bases) {
+            BlockPos outlet = null;
+            for (int offset = 0; offset < Config.CHIMNEY_MAX_HEIGHT.get(); offset++) {
+                BlockPos pos = base.above(offset);
+                BlockState state = level.getBlockState(pos);
+                if (state.getBlock() instanceof ChimneyBlock || state.getBlock() instanceof DamperBlock) {
+                    outlet = pos;
+                    continue;
+                }
+                if (offset == 0 && state.getBlock() instanceof StoveCasingBlock) {
+                    continue;
+                }
+                break;
+            }
+            if (outlet != null && reachesSky(level, outlet.above())) {
+                return outlet;
+            }
+        }
+        return null;
     }
 
     /** How much a state counts as "venting", for picking between columns. */
