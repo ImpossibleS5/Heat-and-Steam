@@ -1,0 +1,137 @@
+{
+  "chop": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.wood.break"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.chop"
+  },
+  "damper_close": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.iron_trapdoor.close"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.damper_close"
+  },
+  "damper_open": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.iron_trapdoor.open"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.damper_open"
+  },
+  "felt_hat_equip": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.armor.equip_leather"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.felt_hat_equip"
+  },
+  "hardening": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "entity.player.splash.high_speed"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.hardening"
+  },
+  "ladle_fill": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.bucket.fill"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.ladle_fill"
+  },
+  "steam_hiss": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.fire.extinguish"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.steam_hiss"
+  },
+  "stone_crack": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.stone.break"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.stone_crack"
+  },
+  "stone_quench": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.fire.extinguish"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.stone_quench"
+  },
+  "stone_scald": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.fire.extinguish"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.stone_scald"
+  },
+  "stove_crackle": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.campfire.crackle"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.stove_crackle"
+  },
+  "tub_fill": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "item.bucket.empty"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.tub_fill"
+  },
+  "whisk_soak": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.brewing_stand.brew"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.whisk_soak"
+  },
+  "whisk_swish": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.grass.break"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.whisk_swish"
+  },
+  "wood_load": {
+    "sounds": [
+      {
+        "type": "event",
+        "name": "block.wood.place"
+      }
+    ],
+    "subtitle": "subtitles.heat_and_steam.wood_load"
+  }
+}

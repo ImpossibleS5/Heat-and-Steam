@@ -1,0 +1,108 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bricks"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#bricks"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#bricks"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#bricks"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#bricks"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#door",
+          "uv": [
+            2.0,
+            14.0,
+            14.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#door",
+          "uv": [
+            14.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#door",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#door",
+          "uv": [
+            2.0,
+            0.0,
+            14.0,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#door",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        }
+      },
+      "from": [
+        3,
+        2,
+        -0.5
+      ],
+      "to": [
+        13,
+        12,
+        0.5
+      ]
+    }
+  ],
+  "textures": {
+    "bricks": "minecraft:block/bricks",
+    "door": "heat_and_steam:block/stove_door",
+    "particle": "minecraft:block/bricks",
+    "top": "heat_and_steam:block/stove_top"
+  }
+}

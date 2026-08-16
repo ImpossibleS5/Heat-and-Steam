@@ -1,6 +1,6 @@
 {
   "values": [
-    "banya:stove",
-    "banya:soapstone_ore"
+    "heat_and_steam:stove",
+    "heat_and_steam:talcochlorite_ore"
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "parent": "heat_and_steam:light_steam",
+  "criteria": {
+    "smoke_sauna": {
+      "trigger": "heat_and_steam:smoke_sauna"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.heat_and_steam.smoke_sauna.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:charcoal"
+    },
+    "title": {
+      "translate": "advancements.heat_and_steam.smoke_sauna.title"
+    }
+  },
+  "requirements": [
+    [
+      "smoke_sauna"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

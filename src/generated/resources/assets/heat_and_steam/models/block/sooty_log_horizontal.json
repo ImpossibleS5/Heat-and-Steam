@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "heat_and_steam:block/sooty_log_top",
+    "side": "heat_and_steam:block/sooty_log"
+  }
+}

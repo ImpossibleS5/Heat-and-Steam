@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "bottom": "banya:block/chopping_block_bottom",
-    "side": "banya:block/chopping_block_side",
-    "top": "banya:block/chopping_block_top_loaded"
-  }
-}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "open=false": {
+      "model": "heat_and_steam:block/damper_closed"
+    },
+    "open=true": {
+      "model": "heat_and_steam:block/damper"
+    }
+  }
+}

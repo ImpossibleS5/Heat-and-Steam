@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "filled=false": {
+      "model": "heat_and_steam:block/tub"
+    },
+    "filled=true": {
+      "model": "heat_and_steam:block/tub_filled"
+    }
+  }
+}

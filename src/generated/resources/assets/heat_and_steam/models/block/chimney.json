@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "heat_and_steam:block/flue_mouth",
+    "side": "minecraft:block/bricks",
+    "top": "heat_and_steam:block/flue_mouth"
+  }
+}

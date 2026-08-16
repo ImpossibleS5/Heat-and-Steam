@@ -1,0 +1,137 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_apron"
+      },
+      "when": {
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_apron",
+        "y": 90
+      },
+      "when": {
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_apron",
+        "y": 180
+      },
+      "when": {
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_apron",
+        "y": 270
+      },
+      "when": {
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_post"
+      },
+      "when": {
+        "OR": [
+          {
+            "north": "false"
+          },
+          {
+            "west": "false"
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_post",
+        "y": 90
+      },
+      "when": {
+        "OR": [
+          {
+            "east": "false"
+          },
+          {
+            "north": "false"
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_post",
+        "y": 180
+      },
+      "when": {
+        "OR": [
+          {
+            "south": "false"
+          },
+          {
+            "east": "false"
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "heat_and_steam:block/sauna_bench_post",
+        "y": 270
+      },
+      "when": {
+        "OR": [
+          {
+            "west": "false"
+          },
+          {
+            "south": "false"
+          }
+        ]
+      }
+    }
+  ]
+}

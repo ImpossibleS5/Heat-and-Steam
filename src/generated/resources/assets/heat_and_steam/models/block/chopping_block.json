@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "east": {
+          "texture": "#bark"
+        },
+        "north": {
+          "texture": "#bark"
+        },
+        "south": {
+          "texture": "#bark"
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "west": {
+          "texture": "#bark"
+        }
+      },
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        12,
+        15
+      ]
+    }
+  ],
+  "textures": {
+    "bark": "heat_and_steam:block/chopping_block_side",
+    "bottom": "heat_and_steam:block/chopping_block_bottom",
+    "particle": "heat_and_steam:block/chopping_block_side",
+    "top": "heat_and_steam:block/chopping_block_top"
+  }
+}

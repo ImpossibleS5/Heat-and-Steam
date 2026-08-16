@@ -1,0 +1,36 @@
+{
+  "parent": "heat_and_steam:root",
+  "criteria": {
+    "walrus": {
+      "conditions": {
+        "effects": {
+          "heat_and_steam:hardening": {
+            "amplifier": {
+              "min": 2
+            }
+          }
+        }
+      },
+      "trigger": "minecraft:effects_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.heat_and_steam.walrus.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "heat_and_steam:felt_hat"
+    },
+    "title": {
+      "translate": "advancements.heat_and_steam.walrus.title"
+    }
+  },
+  "requirements": [
+    [
+      "walrus"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

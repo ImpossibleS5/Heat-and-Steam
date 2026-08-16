@@ -1,0 +1,178 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "up": {
+          "texture": "#bottom"
+        }
+      },
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        2,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#inner"
+        },
+        "east": {
+          "texture": "#inner"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#inner"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#inner"
+        }
+      },
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        10,
+        4
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#inner"
+        },
+        "east": {
+          "texture": "#inner"
+        },
+        "north": {
+          "texture": "#inner"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#inner"
+        }
+      },
+      "from": [
+        2,
+        0,
+        12
+      ],
+      "to": [
+        14,
+        10,
+        14
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#inner"
+        },
+        "east": {
+          "texture": "#inner"
+        },
+        "north": {
+          "texture": "#inner"
+        },
+        "south": {
+          "texture": "#inner"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        2,
+        0,
+        4
+      ],
+      "to": [
+        4,
+        10,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#inner"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#inner"
+        },
+        "south": {
+          "texture": "#inner"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#inner"
+        }
+      },
+      "from": [
+        12,
+        0,
+        4
+      ],
+      "to": [
+        14,
+        10,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "up": {
+          "texture": "#water"
+        }
+      },
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        8,
+        12
+      ]
+    }
+  ],
+  "textures": {
+    "bottom": "heat_and_steam:block/tub_bottom",
+    "inner": "heat_and_steam:block/tub_inner",
+    "particle": "heat_and_steam:block/tub_side",
+    "side": "heat_and_steam:block/tub_side",
+    "water": "heat_and_steam:block/tub_water"
+  }
+}

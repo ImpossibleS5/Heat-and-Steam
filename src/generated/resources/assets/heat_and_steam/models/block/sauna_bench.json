@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#top"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        0,
+        4,
+        0
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ]
+    }
+  ],
+  "textures": {
+    "particle": "heat_and_steam:block/sauna_bench_top",
+    "side": "heat_and_steam:block/sauna_bench_side",
+    "top": "heat_and_steam:block/sauna_bench_top"
+  }
+}

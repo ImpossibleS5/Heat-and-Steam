@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "minecraft:missingno"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        2,
+        4,
+        2
+      ]
+    }
+  ],
+  "textures": {
+    "particle": "heat_and_steam:block/sauna_bench_side",
+    "side": "heat_and_steam:block/sauna_bench_side"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=east,state=dry": {
+      "model": "heat_and_steam:block/drying_rack_dry",
+      "y": 90
+    },
+    "facing=east,state=drying": {
+      "model": "heat_and_steam:block/drying_rack_drying",
+      "y": 90
+    },
+    "facing=east,state=empty": {
+      "model": "heat_and_steam:block/drying_rack",
+      "y": 90
+    },
+    "facing=north,state=dry": {
+      "model": "heat_and_steam:block/drying_rack_dry"
+    },
+    "facing=north,state=drying": {
+      "model": "heat_and_steam:block/drying_rack_drying"
+    },
+    "facing=north,state=empty": {
+      "model": "heat_and_steam:block/drying_rack"
+    },
+    "facing=south,state=dry": {
+      "model": "heat_and_steam:block/drying_rack_dry",
+      "y": 180
+    },
+    "facing=south,state=drying": {
+      "model": "heat_and_steam:block/drying_rack_drying",
+      "y": 180
+    },
+    "facing=south,state=empty": {
+      "model": "heat_and_steam:block/drying_rack",
+      "y": 180
+    },
+    "facing=west,state=dry": {
+      "model": "heat_and_steam:block/drying_rack_dry",
+      "y": 270
+    },
+    "facing=west,state=drying": {
+      "model": "heat_and_steam:block/drying_rack_drying",
+      "y": 270
+    },
+    "facing=west,state=empty": {
+      "model": "heat_and_steam:block/drying_rack",
+      "y": 270
+    }
+  }
+}

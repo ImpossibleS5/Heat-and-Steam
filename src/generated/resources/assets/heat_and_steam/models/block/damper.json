@@ -1,0 +1,238 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#bricks"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#bricks"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#bricks"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#bricks"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            14.75,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            4.0,
+            1.25,
+            12.0
+          ]
+        },
+        "north": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            4.0,
+            16.0,
+            12.0
+          ]
+        },
+        "up": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            1.25
+          ]
+        },
+        "west": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            4.0,
+            1.25,
+            12.0
+          ]
+        }
+      },
+      "from": [
+        -1.25,
+        4,
+        -1.25
+      ],
+      "to": [
+        17.25,
+        12,
+        0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            14.75,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            4.0,
+            1.25,
+            12.0
+          ]
+        },
+        "south": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            4.0,
+            16.0,
+            12.0
+          ]
+        },
+        "up": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            1.25
+          ]
+        },
+        "west": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            4.0,
+            1.25,
+            12.0
+          ]
+        }
+      },
+      "from": [
+        -1.25,
+        4,
+        16
+      ],
+      "to": [
+        17.25,
+        12,
+        17.25
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            0.0,
+            1.25,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            0.0,
+            1.25,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#band"
+        }
+      },
+      "from": [
+        -1.25,
+        4,
+        0
+      ],
+      "to": [
+        0,
+        12,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            0.0,
+            1.25,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#band"
+        },
+        "up": {
+          "texture": "#band",
+          "uv": [
+            0.0,
+            0.0,
+            1.25,
+            16.0
+          ]
+        }
+      },
+      "from": [
+        16,
+        4,
+        0
+      ],
+      "to": [
+        17.25,
+        12,
+        16
+      ]
+    }
+  ],
+  "textures": {
+    "band": "heat_and_steam:block/damper_band",
+    "bottom": "heat_and_steam:block/flue_mouth",
+    "bricks": "minecraft:block/bricks",
+    "particle": "heat_and_steam:block/damper_band",
+    "top": "heat_and_steam:block/damper_plate"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#front"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        1,
+        1,
+        14
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ]
+    }
+  ],
+  "textures": {
+    "front": "heat_and_steam:block/thermometer_front",
+    "particle": "heat_and_steam:block/thermometer_side",
+    "side": "heat_and_steam:block/thermometer_side"
+  }
+}

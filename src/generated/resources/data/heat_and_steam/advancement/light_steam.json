@@ -1,0 +1,27 @@
+{
+  "parent": "heat_and_steam:root",
+  "criteria": {
+    "light_steam": {
+      "trigger": "heat_and_steam:light_steam"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.heat_and_steam.light_steam.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "heat_and_steam:whisk_birch"
+    },
+    "title": {
+      "translate": "advancements.heat_and_steam.light_steam.title"
+    }
+  },
+  "requirements": [
+    [
+      "light_steam"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

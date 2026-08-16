@@ -1,10 +1,10 @@
 {
   "values": [
-    "banya:stove",
-    "banya:thermometer",
-    "banya:soapstone_ore",
-    "banya:chimney",
-    "banya:damper",
-    "banya:stove_casing"
+    "heat_and_steam:stove",
+    "heat_and_steam:thermometer",
+    "heat_and_steam:talcochlorite_ore",
+    "heat_and_steam:chimney",
+    "heat_and_steam:damper",
+    "heat_and_steam:stove_casing"
   ]
 }

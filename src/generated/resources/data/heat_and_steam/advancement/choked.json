@@ -1,0 +1,26 @@
+{
+  "parent": "heat_and_steam:root",
+  "criteria": {
+    "choked": {
+      "trigger": "heat_and_steam:choked"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.heat_and_steam.choked.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "heat_and_steam:damper"
+    },
+    "title": {
+      "translate": "advancements.heat_and_steam.choked.title"
+    }
+  },
+  "requirements": [
+    [
+      "choked"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

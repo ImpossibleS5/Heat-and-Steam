@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "heat_and_steam:block/chimney"
+    }
+  }
+}

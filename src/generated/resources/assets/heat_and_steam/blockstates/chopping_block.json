@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "loaded=false": {
+      "model": "heat_and_steam:block/chopping_block"
+    },
+    "loaded=true": {
+      "model": "heat_and_steam:block/chopping_block"
+    }
+  }
+}

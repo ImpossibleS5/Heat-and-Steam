@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "heat_and_steam:item/basalt_stone_cracked1",
+      "predicate": {
+        "heat_and_steam:cracks": 1.0
+      }
+    },
+    {
+      "model": "heat_and_steam:item/basalt_stone_cracked2",
+      "predicate": {
+        "heat_and_steam:cracks": 2.0
+      }
+    }
+  ],
+  "textures": {
+    "layer0": "heat_and_steam:item/basalt_stone"
+  }
+}

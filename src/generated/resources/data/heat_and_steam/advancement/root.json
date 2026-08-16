@@ -1,0 +1,26 @@
+{
+  "criteria": {
+    "warmed": {
+      "trigger": "heat_and_steam:first_steam"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/spruce_planks.png",
+    "description": {
+      "translate": "advancements.heat_and_steam.root.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "heat_and_steam:stove"
+    },
+    "title": {
+      "translate": "advancements.heat_and_steam.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "warmed"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "banya:block/stove_front",
-    "side": "banya:block/stove_side",
-    "top": "banya:block/stove_top"
-  }
-}

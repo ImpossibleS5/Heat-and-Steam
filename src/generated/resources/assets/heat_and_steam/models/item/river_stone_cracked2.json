@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "heat_and_steam:item/river_stone_cracked2"
+  }
+}

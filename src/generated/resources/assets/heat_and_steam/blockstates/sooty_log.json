@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "heat_and_steam:block/sooty_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "heat_and_steam:block/sooty_log"
+    },
+    "axis=z": {
+      "model": "heat_and_steam:block/sooty_log_horizontal",
+      "x": 90
+    }
+  }
+}

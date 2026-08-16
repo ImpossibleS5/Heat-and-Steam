@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "bottom": "banya:block/damper_side",
-    "side": "banya:block/damper_side",
-    "top": "banya:block/damper_top_closed"
-  }
-}

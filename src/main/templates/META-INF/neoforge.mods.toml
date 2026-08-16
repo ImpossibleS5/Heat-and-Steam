@@ -10,10 +10,12 @@ license="${mod_license}"
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
-#authors=""
+authors="ImpossibleS5"
 description='''
-Recreation of the Russian banya ritual: a living room microclimate (temperature, humidity, smoke)
-created by a stone stove and shaped by the player, with a Warmth stat, venik steaming and hardening.
+A Russian sauna, simulated. Each sealed room keeps its own microclimate: temperature, humidity and
+smoke, raised by a stone stove and shaped by the player through the damper, the door and the ladle
+of water thrown on the stones. Bathers gain Warmth for the heat they take, risk overheating without
+a felt hat, are whisked with birch and oak, and harden themselves by plunging into the cold.
 '''
 
 [[dependencies.${mod_id}]]
