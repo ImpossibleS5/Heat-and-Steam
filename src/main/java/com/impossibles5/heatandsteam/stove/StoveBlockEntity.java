@@ -50,6 +50,7 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
     private static final int SIMULATION_INTERVAL_TICKS = 20;
 
     private static final int RESCAN_EVERY_STEPS = 1;
+    private static final double FIRE_TEMPERATURE_HEADROOM = 4.0;
 
     public static final int DATA_BURN_TIME = 0;
     public static final int DATA_BURN_TIME_TOTAL = 1;
@@ -172,15 +173,6 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public void set(int index, int value) {
-            switch (index) {
-                case DATA_BURN_TIME -> burnTime = value;
-                case DATA_BURN_TIME_TOTAL -> burnTimeTotal = value;
-                case DATA_TEMPERATURE -> temperature = value;
-                case DATA_HUMIDITY -> humidity = value;
-                case DATA_SMOKE -> smoke = value;
-                default -> {
-                }
-            }
         }
 
         @Override
@@ -655,14 +647,22 @@ public class StoveBlockEntity extends BlockEntity implements MenuProvider {
         this.burnTime = tag.getInt("BurnTime");
         this.emberTicks = tag.getInt("EmberTicks");
         this.burnTimeTotal = tag.getInt("BurnTimeTotal");
-        this.temperature = tag.contains("Temperature")
-                ? tag.getDouble("Temperature")
-                : Config.AMBIENT_TEMPERATURE.get();
-        this.fireTemperature = tag.contains("FireTemperature")
-                ? tag.getDouble("FireTemperature")
-                : Config.AMBIENT_TEMPERATURE.get();
-        this.humidity = tag.getDouble("Humidity");
-        this.smoke = tag.getDouble("Smoke");
+        double ambient = Config.AMBIENT_TEMPERATURE.get();
+        this.temperature = readDouble(tag, "Temperature", ambient, ambient,
+                Config.MAX_TEMPERATURE.get());
+        this.fireTemperature = readDouble(tag, "FireTemperature", ambient, 0.0,
+                Config.FIRE_TEMPERATURE.get() * FIRE_TEMPERATURE_HEADROOM);
+        this.humidity = readDouble(tag, "Humidity", 0.0, 0.0, 100.0);
+        this.smoke = readDouble(tag, "Smoke", 0.0, 0.0, 100.0);
         this.needsRescan = true;
+    }
+
+    private static double readDouble(CompoundTag tag, String key, double fallback,
+                                     double min, double max) {
+        if (!tag.contains(key)) {
+            return fallback;
+        }
+        double value = tag.getDouble(key);
+        return Double.isFinite(value) ? Math.clamp(value, min, max) : fallback;
     }
 }
